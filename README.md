@@ -1,36 +1,60 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# MasterofArena
 
-## Getting Started
+Web application for **Armored Core VI** build analysis, garage tooling, and related systems. This repo is the **Next.js** foundation (App Router, TypeScript, Tailwind, Prisma + PostgreSQL), aligned with the MasterofArena milestone plan.
 
-First, run the development server:
+The legacy **Vite** reference app lives in a separate repository and is unchanged.
+
+## Stack
+
+- **Next.js** (App Router) · **TypeScript** · **Tailwind CSS**
+- **Prisma** · **PostgreSQL** (Supabase, Neon, Vercel Postgres, Docker, etc.)
+- **ESLint** · **Prettier**
+
+## Prerequisites
+
+- Node.js 20+
+- A PostgreSQL database and `DATABASE_URL` (see `.env.example`)
+
+## Setup
 
 ```bash
+npm install
+cp .env.example .env
+# Set DATABASE_URL in .env, then:
+npx prisma migrate dev --name init
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000).
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Scripts
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+| Script           | Description                |
+| ---------------- | -------------------------- |
+| `npm run dev`    | App Router dev (Turbopack) |
+| `npm run build`  | Production build           |
+| `npm run start`  | Run production server      |
+| `npm run lint`   | ESLint                     |
+| `npm run format` | Prettier write             |
+| `npm run db:*`   | Prisma CLI shortcuts       |
 
-## Learn More
+`postinstall` runs `prisma generate` (needed for Vercel and fresh clones).
 
-To learn more about Next.js, take a look at the following resources:
+## Layout
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+| Path          | Purpose                          |
+| ------------- | -------------------------------- |
+| `app/`        | Routes, layouts, global styles   |
+| `components/` | UI components                    |
+| `lib/`        | Shared utilities (e.g. Prisma)   |
+| `data/`       | Static / generated data (future) |
+| `prisma/`     | Schema and migrations            |
+| `docs/`       | Internal docs and deployment     |
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Deploy
 
-## Deploy on Vercel
+See [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md) for Vercel and database notes.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## License
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Private / TBD — match your upstream data and asset licenses when publishing.
