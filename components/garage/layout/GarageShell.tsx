@@ -4,12 +4,23 @@ type Props = {
   title: string;
   subtitle: ReactNode;
   actions?: ReactNode;
-  left: ReactNode;
-  center: ReactNode;
-  right: ReactNode;
+  left?: ReactNode;
+  center?: ReactNode;
+  right?: ReactNode;
+  oneColumn?: ReactNode;
+  layout?: "three" | "one";
 };
 
-export function GarageShell({ title, subtitle, actions, left, center, right }: Props) {
+export function GarageShell({
+  title,
+  subtitle,
+  actions,
+  left,
+  center,
+  right,
+  oneColumn,
+  layout = "three",
+}: Props) {
   return (
     <main
       id="garage-main"
@@ -31,11 +42,15 @@ export function GarageShell({ title, subtitle, actions, left, center, right }: P
         </div>
       </div>
 
-      <div className="grid gap-3 xl:grid-cols-[312px_minmax(0,1fr)_384px]">
-        <section className="ac6-panel ac6-left-panel min-w-0 rounded-md border p-3">{left}</section>
-        <section className="ac6-panel ac6-center-panel min-w-0 rounded-md border p-3">{center}</section>
-        <section className="ac6-panel ac6-right-panel min-w-0 rounded-md border p-3">{right}</section>
-      </div>
+      {layout === "one" ? (
+        <section className="ac6-panel min-w-0 rounded-md border p-3">{oneColumn}</section>
+      ) : (
+        <div className="grid gap-3 xl:grid-cols-[312px_minmax(0,1fr)_384px]">
+          <section className="ac6-panel ac6-left-panel min-w-0 rounded-md border p-3">{left}</section>
+          <section className="ac6-panel ac6-center-panel min-w-0 rounded-md border p-3">{center}</section>
+          <section className="ac6-panel ac6-right-panel min-w-0 rounded-md border p-3">{right}</section>
+        </div>
+      )}
     </main>
   );
 }

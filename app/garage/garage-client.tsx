@@ -6,11 +6,14 @@ import Link from "next/link";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 
 import { AimAssistPlot } from "@/components/garage/AimAssistPlot";
+import { CounterRicochetPanel } from "@/components/garage/CounterRicochetPanel";
 import { EnergyRecoveryPlot } from "@/components/garage/EnergyRecoveryPlot";
+import { MechViewerCanvas } from "@/components/garage/MechViewerCanvas";
 import { GarageCenterPanel } from "@/components/garage/layout/GarageCenterPanel";
 import { GarageLeftPanel } from "@/components/garage/layout/GarageLeftPanel";
 import { GarageRightPanel } from "@/components/garage/layout/GarageRightPanel";
 import { GarageShell } from "@/components/garage/layout/GarageShell";
+import { PartsTablePanel } from "@/components/garage/PartsTablePanel";
 import { RecoilPlot } from "@/components/garage/RecoilPlot";
 import {
   REQUIRED_ASSEMBLY_SLOTS,
@@ -35,6 +38,9 @@ import {
   type RequiredSlot,
 } from "@/lib/garage/slot-options";
 import type { CanonicalPart } from "@/lib/schema";
+import { simulateBattle } from "@/src/lib/battle";
+import { generateCounterBuilds } from "@/src/lib/counters";
+import { optimizeAdvanced } from "@/src/lib/optimizer";
 import { useGarageStore } from "@/src/lib/store/garage-store";
 
 type Props = {
@@ -43,6 +49,8 @@ type Props = {
   initialQueryB: string | null;
   initialQueryB2: string | null;
 };
+
+type MainTab = "build" | "parts" | "counters" | "viewer";
 
 function formatNumber(n: number): string {
   if (!Number.isFinite(n)) return "—";
@@ -382,6 +390,43 @@ function LegacyStatGroupsSection({
   );
 }
 
+function BuildDiffPreview({
+  buildA,
+  buildB,
+  byId,
+}: {
+  buildA: GarageBuildIds;
+  buildB: GarageBuildIds;
+  byId: Map<number, CanonicalPart>;
+}) {
+  const diffs = REQUIRED_ASSEMBLY_SLOTS.filter((slot) => buildA[slot] !== buildB[slot]).map(
+    (slot) => ({
+      slot: SLOT_LABELS[slot],
+      a: byId.get(buildA[slot])?.identity.name ?? String(buildA[slot]),
+      b: byId.get(buildB[slot])?.identity.name ?? String(buildB[slot]),
+    }),
+  );
+  return (
+    <div className="rounded border border-cyan-300/35 bg-cyan-950/20 p-3">
+      <p className="text-xs font-semibold uppercase tracking-wide text-cyan-100">
+        Diff Preview (A vs B)
+      </p>
+      {diffs.length === 0 ? (
+        <p className="mt-2 text-xs text-cyan-200/70">No slot differences.</p>
+      ) : (
+        <ul className="mt-2 space-y-1 text-xs text-cyan-100/90">
+          {diffs.map((d) => (
+            <li key={d.slot} className="font-mono">
+              <span className="text-cyan-200/70">{d.slot}: </span>
+              {d.a} <span className="text-cyan-200/70">→</span> {d.b}
+            </li>
+          ))}
+        </ul>
+      )}
+    </div>
+  );
+}
+
 function initialBuildsFromQuery(
   parts: CanonicalPart[],
   defaultBuild: GarageBuildIds,
@@ -514,29 +559,105 @@ export function GarageClient({
         : null,
     [analysisB, compareOn, engagementM],
   );
+  const battlePreview = useMemo(() => {
+    if (!analysisA || !analysisB || !compareOn) return null;
+    return simulateBattle(
+      {
+        ap: analysisA.totalAp,
+        dps: analysisA.dps,
+        impactPerSecond: analysisA.impactPerSecond,
+        stability: analysisA.totalStability,
+      },
+      {
+        ap: analysisB.totalAp,
+        dps: analysisB.dps,
+        impactPerSecond: analysisB.impactPerSecond,
+        stability: analysisB.totalStability,
+      },
+    );
+  }, [analysisA, analysisB, compareOn]);
+  const optimizerPreview = useMemo(() => {
+    if (!analysisA || !analysisB || !compareOn) return null;
+    return optimizeAdvanced(
+      { goal: "balanced", limit: 2 },
+      [
+        {
+          build: "A",
+          metrics: {
+            dps: analysisA.dps,
+            stagger: analysisA.impactPerSecond,
+            mobility: analysisA.groundedBoostSpeed,
+          },
+        },
+        {
+          build: "B",
+          metrics: {
+            dps: analysisB.dps,
+            stagger: analysisB.impactPerSecond,
+            mobility: analysisB.groundedBoostSpeed,
+          },
+        },
+      ],
+    );
+  }, [analysisA, analysisB, compareOn]);
+  const counterPreview = useMemo(() => {
+    if (!analysisA || !analysisB || !compareOn) return null;
+    return generateCounterBuilds(
+      {
+        totalAp: analysisA.totalAp,
+        totalStability: analysisA.totalStability,
+        groundedBoostSpeed: analysisA.groundedBoostSpeed,
+      },
+      [
+        {
+          build: "B",
+          dps: analysisB.dps,
+          impactPerSecond: analysisB.impactPerSecond,
+          mobility: analysisB.groundedBoostSpeed,
+        },
+      ],
+      1,
+    );
+  }, [analysisA, analysisB, compareOn]);
 
   const resetDefault = useCallback(() => {
     setBuildA({ ...defaultBuild });
     setBuildB({ ...defaultBuild });
     setCompareOn(false);
-  }, [defaultBuild]);
+  }, [defaultBuild, setBuildA, setBuildB, setCompareOn]);
 
   const copyLink = useCallback(() => {
     void navigator.clipboard.writeText(window.location.href);
   }, []);
 
   const [audioOn, setAudioOn] = useState(true);
+  const audioCtxRef = useRef<AudioContext | null>(null);
+  const lastHoverRef = useRef(0);
+  const [mainTab, setMainTab] = useState<MainTab>("build");
+  const [counterTab, setCounterTab] = useState<"ricochet">("ricochet");
   const beep = useCallback(
     (freq: number, duration = 0.02) => {
       if (!audioOn) return;
-      const Ctx = window.AudioContext || (window as unknown as { webkitAudioContext?: typeof AudioContext }).webkitAudioContext;
+      const Ctx =
+        window.AudioContext ||
+        (window as unknown as { webkitAudioContext?: typeof AudioContext })
+          .webkitAudioContext;
       if (!Ctx) return;
-      const ctx = new Ctx();
+      const ctx = audioCtxRef.current ?? new Ctx();
+      audioCtxRef.current = ctx;
+      if (ctx.state === "suspended") {
+        void ctx.resume();
+      }
       const osc = ctx.createOscillator();
       const gain = ctx.createGain();
       osc.type = "triangle";
       osc.frequency.value = freq;
-      gain.gain.value = 0.02;
+      gain.gain.setValueAtTime(0.0001, ctx.currentTime);
+      gain.gain.linearRampToValueAtTime(0.022, ctx.currentTime + 0.003);
+      gain.gain.exponentialRampToValueAtTime(
+        0.0001,
+        ctx.currentTime + duration,
+      );
       osc.connect(gain);
       gain.connect(ctx.destination);
       osc.start();
@@ -544,7 +665,12 @@ export function GarageClient({
     },
     [audioOn],
   );
-  const playHover = useCallback(() => beep(360, 0.015), [beep]);
+  const playHover = useCallback(() => {
+    const now = Date.now();
+    if (now - lastHoverRef.current < 45) return;
+    lastHoverRef.current = now;
+    beep(360, 0.015);
+  }, [beep]);
   const playClick = useCallback(() => beep(620, 0.03), [beep]);
 
   return (
@@ -565,6 +691,66 @@ export function GarageClient({
         }
         actions={
           <>
+            <button
+              type="button"
+              onMouseEnter={playHover}
+              onClick={() => {
+                playClick();
+                setMainTab("build");
+              }}
+              className={`rounded px-3 py-1.5 text-xs font-semibold uppercase tracking-wide focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-300/60 ${
+                mainTab === "build"
+                  ? "bg-cyan-300 text-cyan-950"
+                  : "border border-cyan-300/45 bg-cyan-900/20 text-cyan-100 hover:bg-cyan-800/35"
+              }`}
+            >
+              Build
+            </button>
+            <button
+              type="button"
+              onMouseEnter={playHover}
+              onClick={() => {
+                playClick();
+                setMainTab("counters");
+              }}
+              className={`rounded px-3 py-1.5 text-xs font-semibold uppercase tracking-wide focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-300/60 ${
+                mainTab === "counters"
+                  ? "bg-cyan-300 text-cyan-950"
+                  : "border border-cyan-300/45 bg-cyan-900/20 text-cyan-100 hover:bg-cyan-800/35"
+              }`}
+            >
+              Counters
+            </button>
+            <button
+              type="button"
+              onMouseEnter={playHover}
+              onClick={() => {
+                playClick();
+                setMainTab("viewer");
+              }}
+              className={`rounded px-3 py-1.5 text-xs font-semibold uppercase tracking-wide focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-300/60 ${
+                mainTab === "viewer"
+                  ? "bg-cyan-300 text-cyan-950"
+                  : "border border-cyan-300/45 bg-cyan-900/20 text-cyan-100 hover:bg-cyan-800/35"
+              }`}
+            >
+              3D Viewer
+            </button>
+            <button
+              type="button"
+              onMouseEnter={playHover}
+              onClick={() => {
+                playClick();
+                setMainTab("parts");
+              }}
+              className={`rounded px-3 py-1.5 text-xs font-semibold uppercase tracking-wide focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-300/60 ${
+                mainTab === "parts"
+                  ? "bg-cyan-300 text-cyan-950"
+                  : "border border-cyan-300/45 bg-cyan-900/20 text-cyan-100 hover:bg-cyan-800/35"
+              }`}
+            >
+              Parts
+            </button>
             <button
               type="button"
               onMouseEnter={playHover}
@@ -619,36 +805,92 @@ export function GarageClient({
             </button>
           </>
         }
+        layout={mainTab === "build" ? "three" : "one"}
+        oneColumn={
+          mainTab === "parts" ? (
+            <PartsTablePanel parts={parts} />
+          ) : mainTab === "counters" ? (
+            <div className="space-y-3">
+              <div className="flex flex-wrap gap-2">
+                <button
+                  type="button"
+                  onMouseEnter={playHover}
+                  onClick={() => {
+                    playClick();
+                    setCounterTab("ricochet");
+                  }}
+                  className={`rounded px-3 py-1.5 text-xs font-semibold uppercase tracking-wide ${
+                    counterTab === "ricochet"
+                      ? "bg-cyan-300 text-cyan-950"
+                      : "border border-cyan-300/45 bg-cyan-900/20 text-cyan-100 hover:bg-cyan-800/35"
+                  }`}
+                >
+                  Ricochet
+                </button>
+              </div>
+              {counterTab === "ricochet" ? (
+                <CounterRicochetPanel parts={parts} />
+              ) : null}
+            </div>
+          ) : mainTab === "viewer" ? (
+            <MechViewerCanvas
+              partsById={byId}
+              build={buildA}
+            />
+          ) : null
+        }
         left={
           <GarageLeftPanel>
-            <div className={`grid gap-4 ${compareOn ? "md:grid-cols-2 xl:grid-cols-1" : "grid-cols-1"}`}>
-              <SlotColumn
-                label="Build A"
-                idPrefix="build-a"
-                ids={buildA}
-                setIds={setBuildA}
-                optionsBySlot={optionsBySlot}
-                expansionOptions={expansionOptions}
-                onHover={playHover}
-                onInteract={playClick}
-              />
-              {compareOn ? (
+            {mainTab === "build" ? (
+              <div className={`grid gap-4 ${compareOn ? "md:grid-cols-2 xl:grid-cols-1" : "grid-cols-1"}`}>
                 <SlotColumn
-                  label="Build B"
-                  idPrefix="build-b"
-                  ids={buildB}
-                  setIds={setBuildB}
+                  label="Build A"
+                  idPrefix="build-a"
+                  ids={buildA}
+                  setIds={setBuildA}
                   optionsBySlot={optionsBySlot}
                   expansionOptions={expansionOptions}
                   onHover={playHover}
                   onInteract={playClick}
                 />
-              ) : null}
-            </div>
+                {compareOn ? (
+                  <SlotColumn
+                    label="Build B"
+                    idPrefix="build-b"
+                    ids={buildB}
+                    setIds={setBuildB}
+                    optionsBySlot={optionsBySlot}
+                    expansionOptions={expansionOptions}
+                    onHover={playHover}
+                    onInteract={playClick}
+                  />
+                ) : null}
+              </div>
+            ) : mainTab === "parts" ? (
+              <p className="rounded border border-cyan-300/30 bg-cyan-950/15 px-3 py-2 text-xs text-cyan-100/75">
+                PARTS tab mirrors the classic TABLES workflow with filterable, sortable part data.
+              </p>
+            ) : mainTab === "counters" ? (
+              <p className="rounded border border-cyan-300/30 bg-cyan-950/15 px-3 py-2 text-xs text-cyan-100/75">
+                COUNTERS is now a hierarchical section. Start with RICOCHET parity and expand with matchup tools next.
+              </p>
+            ) : (
+              <p className="rounded border border-cyan-300/30 bg-cyan-950/15 px-3 py-2 text-xs text-cyan-100/75">
+                3D Viewer renders the current build body slots and updates live as you change parts.
+              </p>
+            )}
           </GarageLeftPanel>
         }
         center={
           <GarageCenterPanel>
+            <>
+            {mainTab !== "build" ? (
+              <p className="rounded border border-cyan-300/35 bg-cyan-950/20 px-3 py-2 text-xs text-cyan-100/80">
+                Use top navigation to switch Build, Parts, Counters, and Viewer workflows.
+              </p>
+            ) : null}
+            {mainTab === "build" ? (
+              <>
             {!assemblyA && (
               <p className="rounded border border-amber-300/45 bg-amber-950/30 px-3 py-2 text-sm text-amber-200">
                 Invalid build A (missing part ID).
@@ -702,6 +944,38 @@ export function GarageClient({
                 </dl>
               </div>
             ) : null}
+            {compareOn ? (
+              <BuildDiffPreview
+                buildA={buildA}
+                buildB={buildB}
+                byId={byId}
+              />
+            ) : null}
+            {battlePreview ? (
+              <div className="rounded border border-cyan-300/35 bg-cyan-950/20 p-3 text-xs text-cyan-100/90">
+                <p className="font-semibold uppercase tracking-wide text-cyan-100">
+                  System Preview
+                </p>
+                <p className="mt-1">
+                  Battle sim winner:{" "}
+                  <span className="font-mono">{battlePreview.winner ?? "Draw"}</span>{" "}
+                  in{" "}
+                  <span className="font-mono">
+                    {formatNumber(battlePreview.durationSec)}s
+                  </span>
+                </p>
+                <p className="mt-1">
+                  Optimizer top build:{" "}
+                  <span className="font-mono">
+                    {optimizerPreview?.ranked[0]?.build ?? "-"}
+                  </span>
+                </p>
+                <p className="mt-1">
+                  Counter candidate count:{" "}
+                  <span className="font-mono">{counterPreview?.count ?? 0}</span>
+                </p>
+              </div>
+            ) : null}
 
             {analysisA ? (
               <div className={`grid gap-4 ${compareOn && analysisB ? "2xl:grid-cols-2" : "grid-cols-1"}`}>
@@ -723,11 +997,26 @@ export function GarageClient({
                 ) : null}
               </div>
             ) : null}
+              </>
+            ) : null}
+            </>
           </GarageCenterPanel>
         }
         right={
           <GarageRightPanel>
-            {analysisA ? (
+            {mainTab === "parts" ? (
+              <p className="rounded border border-cyan-300/35 bg-cyan-950/20 px-3 py-2 text-xs text-cyan-100/85">
+                More TABLES parity (column drag/filter presets) can be layered into PARTS next.
+              </p>
+            ) : mainTab === "counters" ? (
+              <p className="rounded border border-cyan-300/35 bg-cyan-950/20 px-3 py-2 text-xs text-cyan-100/85">
+                Next COUNTERS subtabs can include stagger breakpoints, TTK, and matchup export.
+              </p>
+            ) : mainTab === "viewer" ? (
+              <p className="rounded border border-cyan-300/35 bg-cyan-950/20 px-3 py-2 text-xs text-cyan-100/85">
+                Viewer controls: drag to rotate. This phase uses live slot geometry and color coding from selected parts.
+              </p>
+            ) : analysisA ? (
               <div className="space-y-4">
                 <LegacyStatGroupsSection
                   analysis={analysisA}
