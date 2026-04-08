@@ -11,6 +11,10 @@ const IDENTITY_SOURCE_KEYS = [
   "Description",
 ] as const;
 
+const PATCH_VERSION = "1.0.9" as const;
+const SOURCE_VERSION = "repo-1.0.9" as const;
+const SPREADSHEET_VERSION = "1.0.7" as const;
+
 function asStatValue(value: unknown): PartStatValue {
   if (value === null) return null;
   if (
@@ -76,6 +80,10 @@ export function normalizeRawPart(
       sourceIndex,
       rawFieldCount: Object.keys(raw).length,
       schemaVersion: "1.0.0",
+      patchVersion: PATCH_VERSION,
+      sourceVersion: SOURCE_VERSION,
+      spreadsheetVersion: SPREADSHEET_VERSION,
+      overrideSources: [SOURCE_VERSION],
     },
   };
 }

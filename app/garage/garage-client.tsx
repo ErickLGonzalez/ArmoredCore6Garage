@@ -1,11 +1,15 @@
 "use client";
 
 import type { Dispatch, SetStateAction } from "react";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 
 import { AimAssistPlot } from "@/components/garage/AimAssistPlot";
 import { EnergyRecoveryPlot } from "@/components/garage/EnergyRecoveryPlot";
+import { GarageCenterPanel } from "@/components/garage/layout/GarageCenterPanel";
+import { GarageLeftPanel } from "@/components/garage/layout/GarageLeftPanel";
+import { GarageRightPanel } from "@/components/garage/layout/GarageRightPanel";
+import { GarageShell } from "@/components/garage/layout/GarageShell";
 import { RecoilPlot } from "@/components/garage/RecoilPlot";
 import {
   REQUIRED_ASSEMBLY_SLOTS,
@@ -30,6 +34,7 @@ import {
   type RequiredSlot,
 } from "@/lib/garage/slot-options";
 import type { CanonicalPart } from "@/lib/schema";
+import { useGarageStore } from "@/src/lib/store/garage-store";
 
 type Props = {
   parts: CanonicalPart[];
@@ -108,7 +113,7 @@ function SlotColumn({
 
   return (
     <div className="space-y-3">
-      <p className="text-xs font-semibold uppercase tracking-wider text-zinc-500 dark:text-zinc-400">
+      <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-cyan-200/80">
         {label}
       </p>
       {REQUIRED_ASSEMBLY_SLOTS.map((slot) => {
@@ -119,13 +124,14 @@ function SlotColumn({
             key={slot}
             htmlFor={sid}
             className="block text-sm"
+            className="block text-sm"
           >
-            <span className="mb-1 block font-medium text-zinc-700 dark:text-zinc-300">
+            <span className="mb-1 block text-xs font-medium uppercase tracking-wide text-cyan-100/85">
               {SLOT_LABELS[slot]}
             </span>
             <select
               id={sid}
-              className="w-full rounded-lg border border-zinc-300 bg-white px-3 py-2 text-sm text-zinc-900 shadow-sm outline-none focus:border-zinc-500 focus:ring-2 focus:ring-zinc-400/30 dark:border-zinc-600 dark:bg-zinc-900 dark:text-zinc-100 dark:focus:border-zinc-500"
+              className="w-full rounded border border-cyan-300/40 bg-[#081724] px-2 py-1.5 text-xs text-cyan-50 outline-none focus:border-cyan-200 focus:ring-2 focus:ring-cyan-400/20"
               value={ids[slot]}
               onChange={(e) => setSlot(slot, Number(e.target.value))}
             >
@@ -145,12 +151,12 @@ function SlotColumn({
         htmlFor={`${idPrefix}-expansion`}
         className="block text-sm"
       >
-        <span className="mb-1 block font-medium text-zinc-700 dark:text-zinc-300">
+        <span className="mb-1 block text-xs font-medium uppercase tracking-wide text-cyan-100/85">
           {EXPANSION_SLOT_LABEL}
         </span>
         <select
           id={`${idPrefix}-expansion`}
-          className="w-full rounded-lg border border-zinc-300 bg-white px-3 py-2 text-sm text-zinc-900 shadow-sm outline-none focus:border-zinc-500 focus:ring-2 focus:ring-zinc-400/30 dark:border-zinc-600 dark:bg-zinc-900 dark:text-zinc-100 dark:focus:border-zinc-500"
+          className="w-full rounded border border-cyan-300/40 bg-[#081724] px-2 py-1.5 text-xs text-cyan-50 outline-none focus:border-cyan-200 focus:ring-2 focus:ring-cyan-400/20"
           value={ids.expansionId}
           onChange={(e) =>
             setIds((prev) => ({ ...prev, expansionId: Number(e.target.value) }))
@@ -198,14 +204,14 @@ function AnalysisBlock({
     [4, 5, 6].every((i) => Number.isFinite(aimPrimary[i]!));
 
   return (
-    <div className="space-y-6">
-      <h3 className="text-sm font-semibold text-zinc-900 dark:text-zinc-100">
+    <div className="space-y-6 text-cyan-50">
+      <h3 className="text-sm font-semibold tracking-wide text-cyan-100">
         {title}
       </h3>
 
       {aimOk ? (
         <div>
-          <p className="mb-2 text-xs font-medium text-zinc-500 dark:text-zinc-400">
+          <p className="mb-2 text-xs font-medium uppercase tracking-wide text-cyan-200/70">
             Aim assist vs distance (legacy-style)
           </p>
           <AimAssistPlot
@@ -213,7 +219,7 @@ function AnalysisBlock({
             primary={aimPrimary!}
             compare={compareAnalysis ? aimCompare : null}
           />
-          <p className="mt-1 text-[10px] text-zinc-500 dark:text-zinc-400">
+          <p className="mt-1 text-[10px] text-cyan-200/65">
             Cyan: this build. Red verticals: unit ideal ranges (capped 300 m). Dashed:
             compare build.
           </p>
@@ -222,7 +228,7 @@ function AnalysisBlock({
 
       {recPrimary && recPrimary.length > 0 ? (
         <div>
-          <p className="mb-2 text-xs font-medium text-zinc-500 dark:text-zinc-400">
+          <p className="mb-2 text-xs font-medium uppercase tracking-wide text-cyan-200/70">
             Recoil accumulation (legacy-style)
           </p>
           <RecoilPlot
@@ -235,7 +241,7 @@ function AnalysisBlock({
 
       {enPrimary ? (
         <div>
-          <p className="mb-2 text-xs font-medium text-zinc-500 dark:text-zinc-400">
+          <p className="mb-2 text-xs font-medium uppercase tracking-wide text-cyan-200/70">
             EN recovery (legacy-style)
           </p>
           <EnergyRecoveryPlot
@@ -243,14 +249,14 @@ function AnalysisBlock({
             primary={enPrimary}
             compare={compareAnalysis ? enCompare : null}
           />
-          <p className="mt-1 text-[10px] text-zinc-500 dark:text-zinc-400">
+          <p className="mt-1 text-[10px] text-cyan-200/65">
             Cyan: normal recharge. Red: redline. Dashed: compare build.
           </p>
         </div>
       ) : null}
 
       <div>
-        <p className="mb-2 text-xs font-medium text-zinc-500 dark:text-zinc-400">
+        <p className="mb-2 text-xs font-medium uppercase tracking-wide text-cyan-200/70">
           Summary
         </p>
         <dl className="grid gap-2 sm:grid-cols-2">
@@ -260,8 +266,8 @@ function AnalysisBlock({
               typeof v === "number" ? formatNumber(v) : formatStatValue(v);
             return (
               <div key={key}>
-                <dt className="text-xs text-zinc-500 dark:text-zinc-400">{label}</dt>
-                <dd className="font-mono text-sm font-medium text-zinc-900 dark:text-zinc-100">
+                <dt className="text-xs text-cyan-200/70">{label}</dt>
+                <dd className="font-mono text-sm font-medium text-cyan-50">
                   {display}
                 </dd>
               </div>
@@ -281,26 +287,26 @@ function LegacyStatGroupsSection({
   title: string;
 }) {
   return (
-    <div className="rounded-xl border border-zinc-200 bg-white p-5 shadow-sm dark:border-zinc-800 dark:bg-zinc-900/50">
-      <h3 className="text-sm font-semibold text-zinc-900 dark:text-zinc-100">
+    <div className="rounded border border-cyan-300/35 bg-cyan-950/20 p-4">
+      <h3 className="text-sm font-semibold tracking-wide text-cyan-100">
         {title}
       </h3>
-      <p className="mt-1 text-xs text-zinc-500 dark:text-zinc-400">
+      <p className="mt-1 text-xs text-cyan-200/70">
         Range, recoil, and EN recovery plot rows omitted (see charts above).
       </p>
       <div className="mt-4 space-y-3">
         {analysis.groups.map((group, gi) => (
           <details
             key={gi}
-            className="group rounded-lg border border-zinc-200 dark:border-zinc-700"
+            className="group rounded border border-cyan-300/25"
           >
-            <summary className="cursor-pointer select-none px-3 py-2 text-sm font-medium text-zinc-800 hover:bg-zinc-50 dark:text-zinc-200 dark:hover:bg-zinc-800/50">
+            <summary className="cursor-pointer select-none px-3 py-2 text-sm font-medium text-cyan-100 hover:bg-cyan-800/20">
               Group {gi + 1}{" "}
-              <span className="font-normal text-zinc-500">
+              <span className="font-normal text-cyan-200/70">
                 ({group.filter((r) => !skipCollapsibleRow(r)).length} stats)
               </span>
             </summary>
-            <div className="border-t border-zinc-200 dark:border-zinc-700">
+            <div className="border-t border-cyan-300/20">
               <table className="w-full text-left text-xs">
                 <tbody>
                   {group
@@ -308,17 +314,17 @@ function LegacyStatGroupsSection({
                     .map((row) => (
                       <tr
                         key={row.name}
-                        className="border-b border-zinc-100 last:border-0 dark:border-zinc-800"
+                        className="border-b border-cyan-300/10 last:border-0"
                       >
-                        <th className="w-[40%] px-3 py-1.5 font-medium text-zinc-700 dark:text-zinc-300">
+                        <th className="w-[40%] px-3 py-1.5 font-medium text-cyan-100">
                           {row.name}
                           {row.type ? (
-                            <span className="ml-1 font-normal text-zinc-400">
+                            <span className="ml-1 font-normal text-cyan-200/60">
                               ({row.type})
                             </span>
                           ) : null}
                         </th>
-                        <td className="break-all px-3 py-1.5 font-mono text-zinc-600 dark:text-zinc-400">
+                        <td className="break-all px-3 py-1.5 font-mono text-cyan-50/90">
                           {formatStatValue(row.value)}
                         </td>
                       </tr>
@@ -385,16 +391,32 @@ export function GarageClient({
   const initialUrl = useRef(
     initialBuildsFromQuery(parts, defaultBuild, initialQueryB, initialQueryB2),
   );
-  const [buildA, setBuildA] = useState<GarageBuildIds>(
-    initialUrl.current.buildA,
-  );
-  const [buildB, setBuildB] = useState<GarageBuildIds>(
-    initialUrl.current.buildB,
-  );
-  const [compareOn, setCompareOn] = useState(initialUrl.current.compareOn);
-  const [engagementM, setEngagementM] = useState(180);
+  const {
+    initialized,
+    initialize,
+    buildA: storeBuildA,
+    buildB: storeBuildB,
+    compareOn,
+    engagementM,
+    setBuildA,
+    setBuildB,
+    setCompareOn,
+    setEngagementM,
+  } = useGarageStore();
 
   useEffect(() => {
+    initialize(
+      initialUrl.current.buildA,
+      initialUrl.current.buildB,
+      initialUrl.current.compareOn,
+    );
+  }, [initialize]);
+
+  const buildA = storeBuildA ?? initialUrl.current.buildA;
+  const buildB = storeBuildB ?? initialUrl.current.buildB;
+
+  useEffect(() => {
+    if (!initialized) return;
     const qs = new URLSearchParams(searchParams.toString());
     qs.set("b", encodeGarageBuild(buildA));
     if (compareOn) qs.set("b2", encodeGarageBuild(buildB));
@@ -404,7 +426,7 @@ export function GarageClient({
       router.replace(next, { scroll: false });
     }, 240);
     return () => window.clearTimeout(t);
-  }, [buildA, buildB, compareOn, pathname, router, searchParams]);
+  }, [buildA, buildB, compareOn, pathname, router, searchParams, initialized]);
 
   const assemblyA = useMemo(
     () => assemblyFromGarageIds(buildA, byId),
@@ -468,200 +490,164 @@ export function GarageClient({
       >
         Skip to garage analysis
       </a>
-      <main
-        id="garage-main"
-        className="mx-auto max-w-6xl px-6 py-10"
-        tabIndex={-1}
-      >
-      <div className="mb-8 flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
-        <div>
-          <p className="text-sm font-medium uppercase tracking-[0.2em] text-zinc-500 dark:text-zinc-400">
-            Garage · UI v2
-          </p>
-          <h1 className="mt-2 font-[family-name:var(--font-geist-sans)] text-3xl font-semibold tracking-tight">
-            Garage
-          </h1>
-          <p className="mt-2 max-w-xl text-sm leading-relaxed text-zinc-600 dark:text-zinc-400">
-            Builds sync to the URL (<code className="rounded bg-zinc-200/80 px-1 dark:bg-zinc-800">b</code>,{" "}
-            <code className="rounded bg-zinc-200/80 px-1 dark:bg-zinc-800">b2</code>).
-            Toggle compare to overlay a second assembly on the plots.
-          </p>
-        </div>
-        <div className="flex flex-wrap gap-2">
-          <button
-            type="button"
-            onClick={() => setCompareOn((v) => !v)}
-            className="rounded-lg border border-zinc-300 bg-white px-4 py-2 text-sm font-medium text-zinc-800 shadow-sm transition-colors hover:bg-zinc-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zinc-400/60 focus-visible:ring-offset-2 dark:border-zinc-600 dark:bg-zinc-900 dark:text-zinc-100 dark:hover:bg-zinc-800 dark:focus-visible:ring-zinc-500/50 dark:focus-visible:ring-offset-zinc-950"
-          >
-            {compareOn ? "Hide compare" : "Compare build"}
-          </button>
-          <button
-            type="button"
-            onClick={copyLink}
-            className="rounded-lg border border-zinc-300 bg-white px-4 py-2 text-sm font-medium text-zinc-800 shadow-sm transition-colors hover:bg-zinc-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zinc-400/60 focus-visible:ring-offset-2 dark:border-zinc-600 dark:bg-zinc-900 dark:text-zinc-100 dark:hover:bg-zinc-800 dark:focus-visible:ring-zinc-500/50 dark:focus-visible:ring-offset-zinc-950"
-          >
-            Copy link
-          </button>
-          <button
-            type="button"
-            onClick={resetDefault}
-            className="rounded-lg border border-zinc-300 bg-white px-4 py-2 text-sm font-medium text-zinc-800 shadow-sm transition-colors hover:bg-zinc-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zinc-400/60 focus-visible:ring-offset-2 dark:border-zinc-600 dark:bg-zinc-900 dark:text-zinc-100 dark:hover:bg-zinc-800 dark:focus-visible:ring-zinc-500/50 dark:focus-visible:ring-offset-zinc-950"
-          >
-            Reset defaults
-          </button>
-        </div>
-      </div>
-
-      <div className="grid gap-10 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.2fr)]">
-        <section className="space-y-6">
-          <h2 className="text-xs font-semibold uppercase tracking-wider text-zinc-500 dark:text-zinc-400">
-            Assembly
-          </h2>
-          <div
-            className={`grid gap-6 ${compareOn ? "sm:grid-cols-2" : "grid-cols-1"}`}
-          >
-            <SlotColumn
-              label="Build A"
-              idPrefix="build-a"
-              ids={buildA}
-              setIds={setBuildA}
-              optionsBySlot={optionsBySlot}
-              expansionOptions={expansionOptions}
-            />
-            {compareOn ? (
+      <GarageShell
+        title="Garage"
+        subtitle={
+          <>
+            Builds sync to URL params <code className="rounded border border-cyan-300/40 bg-cyan-900/20 px-1">b</code> and{" "}
+            <code className="rounded border border-cyan-300/40 bg-cyan-900/20 px-1">b2</code>. Toggle compare to overlay build B on all combat curves.
+          </>
+        }
+        actions={
+          <>
+            <button
+              type="button"
+              onClick={() => setCompareOn(!compareOn)}
+              className="rounded border border-cyan-300/45 bg-cyan-900/20 px-3 py-1.5 text-xs font-semibold uppercase tracking-wide text-cyan-100 transition-colors hover:bg-cyan-800/35 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-300/60"
+            >
+              {compareOn ? "Hide Compare" : "Compare Build"}
+            </button>
+            <button
+              type="button"
+              onClick={copyLink}
+              className="rounded border border-cyan-300/45 bg-cyan-900/20 px-3 py-1.5 text-xs font-semibold uppercase tracking-wide text-cyan-100 transition-colors hover:bg-cyan-800/35 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-300/60"
+            >
+              Copy Link
+            </button>
+            <button
+              type="button"
+              onClick={resetDefault}
+              className="rounded border border-cyan-300/45 bg-cyan-900/20 px-3 py-1.5 text-xs font-semibold uppercase tracking-wide text-cyan-100 transition-colors hover:bg-cyan-800/35 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-300/60"
+            >
+              Reset
+            </button>
+          </>
+        }
+        left={
+          <GarageLeftPanel>
+            <div className={`grid gap-4 ${compareOn ? "md:grid-cols-2 xl:grid-cols-1" : "grid-cols-1"}`}>
               <SlotColumn
-                label="Build B"
-                idPrefix="build-b"
-                ids={buildB}
-                setIds={setBuildB}
+                label="Build A"
+                idPrefix="build-a"
+                ids={buildA}
+                setIds={setBuildA}
                 optionsBySlot={optionsBySlot}
                 expansionOptions={expansionOptions}
               />
-            ) : null}
-          </div>
-        </section>
-
-        <section className="min-w-0 space-y-8">
-          <h2 className="text-xs font-semibold uppercase tracking-wider text-zinc-500 dark:text-zinc-400">
-            Analysis
-          </h2>
-
-          {!assemblyA && (
-            <p className="rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-900 dark:border-amber-900/50 dark:bg-amber-950/40 dark:text-amber-200">
-              Invalid build A (missing part ID).
-            </p>
-          )}
-
-          {assemblyA && !analysisA && (
-            <p className="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-900 dark:border-red-900/50 dark:bg-red-950/40 dark:text-red-200">
-              Analysis failed for build A.
-            </p>
-          )}
-
-          {m4A && (
-            <div className="rounded-xl border border-zinc-200 bg-white p-5 shadow-sm dark:border-zinc-800 dark:bg-zinc-900/50">
-              <h3 className="text-sm font-semibold text-zinc-900 dark:text-zinc-100">
-                M4 combat preview
-              </h3>
-              <p className="mt-1 text-xs text-zinc-500 dark:text-zinc-400">
-                One engagement distance for both builds. Heuristic DPS preview only.
-              </p>
-              <label className="mt-4 block text-sm">
-                <span className="mb-2 block font-medium text-zinc-700 dark:text-zinc-300">
-                  Engagement distance ({engagementM} m)
-                </span>
-                <input
-                  type="range"
-                  min={0}
-                  max={320}
-                  value={engagementM}
-                  onChange={(e) => setEngagementM(Number(e.target.value))}
-                  className="w-full max-w-md accent-zinc-900 dark:accent-zinc-100"
+              {compareOn ? (
+                <SlotColumn
+                  label="Build B"
+                  idPrefix="build-b"
+                  ids={buildB}
+                  setIds={setBuildB}
+                  optionsBySlot={optionsBySlot}
+                  expansionOptions={expansionOptions}
                 />
-              </label>
-              <dl className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-                <div>
-                  <dt className="text-xs text-zinc-500">Build A — FCS assist</dt>
-                  <dd className="font-mono text-sm font-medium">
-                    {formatNumber(m4A.fcsAssist)}
-                  </dd>
-                </div>
-                <div>
-                  <dt className="text-xs text-zinc-500">Build A — eff. DPS (est.)</dt>
-                  <dd className="font-mono text-sm font-medium">
-                    {formatNumber(m4A.effectiveDpsEstimate)}
-                  </dd>
-                </div>
-                {m4B ? (
-                  <>
-                    <div>
-                      <dt className="text-xs text-zinc-500">Build B — FCS assist</dt>
-                      <dd className="font-mono text-sm font-medium">
-                        {formatNumber(m4B.fcsAssist)}
-                      </dd>
-                    </div>
-                    <div>
-                      <dt className="text-xs text-zinc-500">Build B — eff. DPS (est.)</dt>
-                      <dd className="font-mono text-sm font-medium">
-                        {formatNumber(m4B.effectiveDpsEstimate)}
-                      </dd>
-                    </div>
-                  </>
-                ) : null}
-              </dl>
+              ) : null}
             </div>
-          )}
+          </GarageLeftPanel>
+        }
+        center={
+          <GarageCenterPanel>
+            {!assemblyA && (
+              <p className="rounded border border-amber-300/45 bg-amber-950/30 px-3 py-2 text-sm text-amber-200">
+                Invalid build A (missing part ID).
+              </p>
+            )}
 
-          {analysisA && (
-            <div
-              className={`grid gap-8 ${compareOn && analysisB ? "xl:grid-cols-2" : "grid-cols-1"}`}
-            >
-              <div className="rounded-xl border border-zinc-200 bg-white p-5 shadow-sm dark:border-zinc-800 dark:bg-zinc-900/50">
-                <AnalysisBlock
-                  title="Build A"
-                  analysis={analysisA}
-                  compareAnalysis={compareOn ? analysisB : null}
-                />
+            {assemblyA && !analysisA && (
+              <p className="rounded border border-red-300/45 bg-red-950/30 px-3 py-2 text-sm text-red-200">
+                Analysis failed for build A.
+              </p>
+            )}
+
+            {m4A ? (
+              <div className="rounded border border-cyan-300/35 bg-cyan-950/20 p-4">
+                <h3 className="text-sm font-semibold tracking-wide text-cyan-100">Engagement Sim</h3>
+                <p className="mt-1 text-xs text-cyan-200/70">Single-distance preview for both builds.</p>
+                <label className="mt-3 block text-sm">
+                  <span className="mb-2 block text-xs font-medium uppercase tracking-wide text-cyan-200/80">
+                    Engagement distance ({engagementM} m)
+                  </span>
+                  <input
+                    type="range"
+                    min={0}
+                    max={320}
+                    value={engagementM}
+                    onChange={(e) => setEngagementM(Number(e.target.value))}
+                    className="w-full accent-cyan-300"
+                  />
+                </label>
+                <dl className="mt-4 grid gap-2 sm:grid-cols-2 lg:grid-cols-4">
+                  <div>
+                    <dt className="text-[11px] text-cyan-200/70">Build A — FCS assist</dt>
+                    <dd className="font-mono text-sm">{formatNumber(m4A.fcsAssist)}</dd>
+                  </div>
+                  <div>
+                    <dt className="text-[11px] text-cyan-200/70">Build A — eff. DPS</dt>
+                    <dd className="font-mono text-sm">{formatNumber(m4A.effectiveDpsEstimate)}</dd>
+                  </div>
+                  {m4B ? (
+                    <>
+                      <div>
+                        <dt className="text-[11px] text-cyan-200/70">Build B — FCS assist</dt>
+                        <dd className="font-mono text-sm">{formatNumber(m4B.fcsAssist)}</dd>
+                      </div>
+                      <div>
+                        <dt className="text-[11px] text-cyan-200/70">Build B — eff. DPS</dt>
+                        <dd className="font-mono text-sm">{formatNumber(m4B.effectiveDpsEstimate)}</dd>
+                      </div>
+                    </>
+                  ) : null}
+                </dl>
               </div>
-              {compareOn && analysisB ? (
-                <div className="rounded-xl border border-zinc-200 bg-white p-5 shadow-sm dark:border-zinc-800 dark:bg-zinc-900/50">
+            ) : null}
+
+            {analysisA ? (
+              <div className={`grid gap-4 ${compareOn && analysisB ? "2xl:grid-cols-2" : "grid-cols-1"}`}>
+                <div className="rounded border border-cyan-300/35 bg-cyan-950/20 p-4">
                   <AnalysisBlock
-                    title="Build B"
-                    analysis={analysisB}
-                    compareAnalysis={analysisA}
+                    title="Build A"
+                    analysis={analysisA}
+                    compareAnalysis={compareOn ? analysisB : null}
                   />
                 </div>
-              ) : compareOn && !analysisB ? (
-                <p className="text-sm text-amber-700 dark:text-amber-300">
-                  Build B is invalid or could not be analyzed.
-                </p>
-              ) : null}
-            </div>
-          )}
-
-          {analysisA && (
-            <div
-              className={
-                compareOn && analysisB
-                  ? "grid gap-6 xl:grid-cols-2"
-                  : undefined
-              }
-            >
-              <LegacyStatGroupsSection
-                analysis={analysisA}
-                title="Legacy stat groups (build A)"
-              />
-              {compareOn && analysisB ? (
+                {compareOn && analysisB ? (
+                  <div className="rounded border border-cyan-300/35 bg-cyan-950/20 p-4">
+                    <AnalysisBlock
+                      title="Build B"
+                      analysis={analysisB}
+                      compareAnalysis={analysisA}
+                    />
+                  </div>
+                ) : null}
+              </div>
+            ) : null}
+          </GarageCenterPanel>
+        }
+        right={
+          <GarageRightPanel>
+            {analysisA ? (
+              <div className="space-y-4">
                 <LegacyStatGroupsSection
-                  analysis={analysisB}
-                  title="Legacy stat groups (build B)"
+                  analysis={analysisA}
+                  title="Legacy stat groups (build A)"
                 />
-              ) : null}
-            </div>
-          )}
-        </section>
-      </div>
-      </main>
+                {compareOn && analysisB ? (
+                  <LegacyStatGroupsSection
+                    analysis={analysisB}
+                    title="Legacy stat groups (build B)"
+                  />
+                ) : null}
+              </div>
+            ) : (
+              <p className="rounded border border-cyan-300/35 bg-cyan-950/20 px-3 py-2 text-xs text-cyan-100/80">
+                Select a valid assembly to view detailed stat groups.
+              </p>
+            )}
+          </GarageRightPanel>
+        }
+      />
     </>
   );
 }

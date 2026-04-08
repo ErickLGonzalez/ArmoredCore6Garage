@@ -5,7 +5,7 @@
  *   npx tsx scripts/import-parts.ts
  *   npx tsx scripts/import-parts.ts --input path/to/parts.json
  */
-import { readFileSync, writeFileSync } from "node:fs";
+import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -18,6 +18,7 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(__dirname, "..");
 const DEFAULT_INPUT = path.join(ROOT, "data", "source", "parts.json");
 const OUTPUT = path.join(ROOT, "data", "parts.merged.json");
+const IMPORT_REPORT = path.join(ROOT, "data", "import-report.json");
 
 function parseArgs(): { input: string } {
   const argv = process.argv.slice(2);
@@ -97,7 +98,18 @@ function main() {
   }
 
   writeFileSync(OUTPUT, JSON.stringify(merged.data, null, 2), "utf-8");
+  mkdirSync(path.dirname(IMPORT_REPORT), { recursive: true });
+  const report = {
+    patchVersion: "1.0.9" as const,
+    schemaVersion: "1.0.0" as const,
+    generatedAt: merged.data.generatedAt,
+    source: relSource,
+    partCount: merged.data.partCount,
+    errorCount: 0,
+  };
+  writeFileSync(IMPORT_REPORT, JSON.stringify(report, null, 2), "utf-8");
   console.log(`Wrote ${parts.length} parts to ${path.relative(ROOT, OUTPUT)}`);
+  console.log(`Wrote import report to ${path.relative(ROOT, IMPORT_REPORT)}`);
 }
 
 main();

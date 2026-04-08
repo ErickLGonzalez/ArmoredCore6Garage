@@ -14,4 +14,6 @@ Order: **M1 → M2 → M3 → M4+ → full garage UI → polish / deploy**.
 
 ## Current focus
 
-Ship polish follow-ups as needed (mobile layout tuning, perf, optional stricter legacy snapshot diffs).
+1. Continue incremental refactor from cursor pack merge plan (`docs/CURSOR_PACK_STATUS.md`).
+2. Keep 1.0.9 data sync invariant for all visible/base stats.
+3. Ship polish follow-ups (mobile layout tuning, perf, stricter snapshot parity where useful).

@@ -123,7 +123,16 @@ function main() {
     const next = {
       ...part,
       baseStats: { ...part.baseStats, [row.field]: row.value },
-      metadata: { ...part.metadata, schemaVersion: "1.0.0" as const },
+      metadata: {
+        ...part.metadata,
+        schemaVersion: "1.0.0" as const,
+        patchVersion: "1.0.9" as const,
+        sourceVersion: "repo-1.0.9" as const,
+        spreadsheetVersion: "1.0.7" as const,
+        overrideSources: Array.from(
+          new Set([...(part.metadata.overrideSources ?? []), "spreadsheet-override"]),
+        ),
+      },
     };
     const checked = CanonicalPartSchema.safeParse(next);
     if (!checked.success) {

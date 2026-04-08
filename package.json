@@ -16,6 +16,8 @@
     "db:studio": "prisma studio",
     "data:merge": "tsx scripts/import-parts.ts",
     "data:merge:sheet": "tsx scripts/merge-spreadsheet.ts",
+    "data:validate": "tsx scripts/validate-parts.ts",
+    "data:generate:energy-models": "tsx scripts/generate-energy-models.ts",
     "test": "vitest run",
     "test:watch": "vitest"
   },
@@ -24,7 +26,8 @@
     "next": "^15.5.14",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
-    "zod": "^4.3.6"
+    "zod": "^4.3.6",
+    "zustand": "^5.0.12"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",

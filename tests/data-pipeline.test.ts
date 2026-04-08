@@ -39,6 +39,17 @@ describe("full PartsData pipeline", () => {
     expect(r.success).toBe(true);
     if (r.success) {
       expect(r.data.partCount).toBe(r.data.parts.length);
+      expect(r.data.partCount).toBe(234);
+      const known = new Set(r.data.parts.map((p) => p.identity.name));
+      expect(known.has("RF-024 TURNER")).toBe(true);
+      expect(known.has("HC-2000 FINDER EYE")).toBe(true);
+      expect(known.has("(NOTHING)")).toBe(true);
+      for (const p of r.data.parts) {
+        expect(p.metadata.patchVersion).toBe("1.0.9");
+        expect(p.metadata.sourceVersion).toBe("repo-1.0.9");
+        expect(p.metadata.spreadsheetVersion).toBe("1.0.7");
+        expect(Array.isArray(p.metadata.overrideSources)).toBe(true);
+      }
     }
   });
 });

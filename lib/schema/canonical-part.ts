@@ -22,6 +22,10 @@ export const CanonicalPartSchema = z.object({
     sourceIndex: z.number().int().nonnegative(),
     rawFieldCount: z.number().int().nonnegative(),
     schemaVersion: z.literal("1.0.0"),
+    patchVersion: z.literal("1.0.9"),
+    sourceVersion: z.literal("repo-1.0.9"),
+    spreadsheetVersion: z.literal("1.0.7"),
+    overrideSources: z.array(z.string()),
   }),
 });
 
