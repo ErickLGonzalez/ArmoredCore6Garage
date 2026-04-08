@@ -1,6 +1,6 @@
 {
   "schemaVersion": "1.0.0",
-  "generatedAt": "2026-04-08T04:17:56.724Z",
+  "generatedAt": "2026-04-08T04:22:17.092Z",
   "source": "data/source/parts.json",
   "partCount": 231,
   "parts": [
@@ -135,9 +135,18 @@
       "enrichedStats": {},
       "scalingModels": {
         "ConsecutiveHits": 2,
-        "ChgAttackPower": [265, 6],
-        "ChgImpact": [33, 6],
-        "ChgAccumImpact": [22, 6],
+        "ChgAttackPower": [
+          265,
+          6
+        ],
+        "ChgImpact": [
+          33,
+          6
+        ],
+        "ChgAccumImpact": [
+          22,
+          6
+        ],
         "ChgBlastRadius": 20,
         "PAInterference": 142,
         "Cooling": 366,
@@ -209,9 +218,18 @@
         "LeftArm": false,
         "RightBack": true,
         "LeftBack": true,
-        "AttackPower": [144, 3],
-        "Impact": [70, 3],
-        "AccumulativeImpact": [39, 3],
+        "AttackPower": [
+          144,
+          3
+        ],
+        "Impact": [
+          70,
+          3
+        ],
+        "AccumulativeImpact": [
+          39,
+          3
+        ],
         "DirectHitAdjustment": 135,
         "IdealRange": 198,
         "EffectiveRange": 262,
@@ -252,9 +270,18 @@
         "LeftArm": false,
         "RightBack": true,
         "LeftBack": true,
-        "AttackPower": [124, 4],
-        "Impact": [89, 4],
-        "AccumulativeImpact": [55, 4],
+        "AttackPower": [
+          124,
+          4
+        ],
+        "Impact": [
+          89,
+          4
+        ],
+        "AccumulativeImpact": [
+          55,
+          4
+        ],
         "DirectHitAdjustment": 150,
         "Guidance": 480,
         "EffectiveRange": 1000,
@@ -293,9 +320,18 @@
         "LeftArm": false,
         "RightBack": true,
         "LeftBack": true,
-        "AttackPower": [124, 8],
-        "Impact": [89, 8],
-        "AccumulativeImpact": [55, 8],
+        "AttackPower": [
+          124,
+          8
+        ],
+        "Impact": [
+          89,
+          8
+        ],
+        "AccumulativeImpact": [
+          55,
+          8
+        ],
         "DirectHitAdjustment": 150,
         "Guidance": 480,
         "EffectiveRange": 1000,
@@ -334,9 +370,18 @@
         "LeftArm": false,
         "RightBack": true,
         "LeftBack": true,
-        "AttackPower": [124, 12],
-        "Impact": [89, 12],
-        "AccumulativeImpact": [55, 12],
+        "AttackPower": [
+          124,
+          12
+        ],
+        "Impact": [
+          89,
+          12
+        ],
+        "AccumulativeImpact": [
+          55,
+          12
+        ],
         "DirectHitAdjustment": 150,
         "Guidance": 480,
         "EffectiveRange": 1000,
@@ -375,9 +420,18 @@
         "LeftArm": false,
         "RightBack": true,
         "LeftBack": true,
-        "AttackPower": [103, 4],
-        "Impact": [72, 4],
-        "AccumulativeImpact": [43, 4],
+        "AttackPower": [
+          103,
+          4
+        ],
+        "Impact": [
+          72,
+          4
+        ],
+        "AccumulativeImpact": [
+          43,
+          4
+        ],
         "DirectHitAdjustment": 145,
         "Guidance": 180,
         "EffectiveRange": 2500,
@@ -455,9 +509,18 @@
         "LeftArm": false,
         "RightBack": true,
         "LeftBack": true,
-        "AttackPower": [148, 4],
-        "Impact": [94, 4],
-        "AccumulativeImpact": [62, 4],
+        "AttackPower": [
+          148,
+          4
+        ],
+        "Impact": [
+          94,
+          4
+        ],
+        "AccumulativeImpact": [
+          62,
+          4
+        ],
         "DirectHitAdjustment": 150,
         "Guidance": 145,
         "EffectiveRange": 500,
@@ -496,9 +559,18 @@
         "LeftArm": false,
         "RightBack": true,
         "LeftBack": true,
-        "AttackPower": [148, 6],
-        "Impact": [94, 6],
-        "AccumulativeImpact": [62, 6],
+        "AttackPower": [
+          148,
+          6
+        ],
+        "Impact": [
+          94,
+          6
+        ],
+        "AccumulativeImpact": [
+          62,
+          6
+        ],
         "DirectHitAdjustment": 150,
         "Guidance": 145,
         "EffectiveRange": 500,
@@ -537,9 +609,18 @@
         "LeftArm": false,
         "RightBack": true,
         "LeftBack": true,
-        "AttackPower": [103, 6],
-        "Impact": [72, 6],
-        "AccumulativeImpact": [43, 6],
+        "AttackPower": [
+          103,
+          6
+        ],
+        "Impact": [
+          72,
+          6
+        ],
+        "AccumulativeImpact": [
+          43,
+          6
+        ],
         "DirectHitAdjustment": 145,
         "Guidance": 180,
         "EffectiveRange": 2500,
@@ -578,9 +659,18 @@
         "LeftArm": false,
         "RightBack": true,
         "LeftBack": true,
-        "AttackPower": [103, 10],
-        "Impact": [72, 10],
-        "AccumulativeImpact": [43, 10],
+        "AttackPower": [
+          103,
+          10
+        ],
+        "Impact": [
+          72,
+          10
+        ],
+        "AccumulativeImpact": [
+          43,
+          10
+        ],
         "DirectHitAdjustment": 145,
         "Guidance": 180,
         "EffectiveRange": 2500,
@@ -619,9 +709,18 @@
         "LeftArm": false,
         "RightBack": true,
         "LeftBack": true,
-        "AttackPower": [177, 6],
-        "Impact": [111, 6],
-        "AccumulativeImpact": [72, 6],
+        "AttackPower": [
+          177,
+          6
+        ],
+        "Impact": [
+          111,
+          6
+        ],
+        "AccumulativeImpact": [
+          72,
+          6
+        ],
         "DirectHitAdjustment": 150,
         "Guidance": 145,
         "EffectiveRange": 500,
@@ -701,9 +800,18 @@
         "LeftArm": false,
         "RightBack": true,
         "LeftBack": true,
-        "AttackPower": [688, 2],
-        "Impact": [536, 2],
-        "AccumulativeImpact": [320, 2],
+        "AttackPower": [
+          688,
+          2
+        ],
+        "Impact": [
+          536,
+          2
+        ],
+        "AccumulativeImpact": [
+          320,
+          2
+        ],
         "DirectHitAdjustment": 140,
         "Guidance": 135,
         "EffectiveRange": 1425,
@@ -742,9 +850,18 @@
         "LeftArm": false,
         "RightBack": true,
         "LeftBack": true,
-        "AttackPower": [600, 2],
-        "Impact": [402, 2],
-        "AccumulativeImpact": [240, 2],
+        "AttackPower": [
+          600,
+          2
+        ],
+        "Impact": [
+          402,
+          2
+        ],
+        "AccumulativeImpact": [
+          240,
+          2
+        ],
         "DirectHitAdjustment": 140,
         "Guidance": 145,
         "EffectiveRange": 1425,
@@ -825,9 +942,18 @@
         "LeftArm": false,
         "RightBack": true,
         "LeftBack": true,
-        "AttackPower": [486, 2],
-        "Impact": [540, 2],
-        "AccumulativeImpact": [378, 2],
+        "AttackPower": [
+          486,
+          2
+        ],
+        "Impact": [
+          540,
+          2
+        ],
+        "AccumulativeImpact": [
+          378,
+          2
+        ],
         "BlastRadius": 12,
         "DirectHitAdjustment": 165,
         "Guidance": 115,
@@ -867,9 +993,18 @@
         "LeftArm": false,
         "RightBack": true,
         "LeftBack": true,
-        "AttackPower": [28, 8],
-        "Impact": [39, 8],
-        "AccumulativeImpact": [15, 8],
+        "AttackPower": [
+          28,
+          8
+        ],
+        "Impact": [
+          39,
+          8
+        ],
+        "AccumulativeImpact": [
+          15,
+          8
+        ],
         "DirectHitAdjustment": 175,
         "IdealRange": 130,
         "EffectiveRange": 205,
@@ -1302,9 +1437,18 @@
         "LeftArm": false,
         "RightBack": true,
         "LeftBack": true,
-        "AttackPower": [415, 2],
-        "Impact": [385, 2],
-        "AccumulativeImpact": [215, 2],
+        "AttackPower": [
+          415,
+          2
+        ],
+        "Impact": [
+          385,
+          2
+        ],
+        "AccumulativeImpact": [
+          215,
+          2
+        ],
         "DirectHitAdjustment": 215,
         "Guidance": 110,
         "IdealRange": 310,
@@ -1670,9 +1814,18 @@
         "LeftArm": true,
         "RightBack": true,
         "LeftBack": true,
-        "AttackPower": [216, 4],
-        "Impact": [175, 4],
-        "AccumulativeImpact": [105, 4],
+        "AttackPower": [
+          216,
+          4
+        ],
+        "Impact": [
+          175,
+          4
+        ],
+        "AccumulativeImpact": [
+          105,
+          4
+        ],
         "DirectHitAdjustment": 155,
         "Guidance": 180,
         "EffectiveRange": 2500,
@@ -1854,9 +2007,18 @@
         "LeftArm": false,
         "RightBack": true,
         "LeftBack": true,
-        "AttackPower": [134, 4],
-        "Impact": [102, 4],
-        "AccumulativeImpact": [102, 4],
+        "AttackPower": [
+          134,
+          4
+        ],
+        "Impact": [
+          102,
+          4
+        ],
+        "AccumulativeImpact": [
+          102,
+          4
+        ],
         "DirectHitAdjustment": 175,
         "Guidance": 240,
         "EffectiveRange": 930,
@@ -2432,9 +2594,18 @@
         "LeftArm": true,
         "RightBack": true,
         "LeftBack": true,
-        "AttackPower": [45, 4],
-        "Impact": [44, 4],
-        "AccumulativeImpact": [20, 4],
+        "AttackPower": [
+          45,
+          4
+        ],
+        "Impact": [
+          44,
+          4
+        ],
+        "AccumulativeImpact": [
+          20,
+          4
+        ],
         "DirectHitAdjustment": 180,
         "Recoil": 3,
         "IdealRange": 117,
@@ -2478,9 +2649,18 @@
         "LeftArm": true,
         "RightBack": true,
         "LeftBack": true,
-        "AttackPower": [87, 2],
-        "Impact": [105, 2],
-        "AccumulativeImpact": [64, 2],
+        "AttackPower": [
+          87,
+          2
+        ],
+        "Impact": [
+          105,
+          2
+        ],
+        "AccumulativeImpact": [
+          64,
+          2
+        ],
         "DirectHitAdjustment": 125,
         "Recoil": 15,
         "IdealRange": 80,
@@ -2545,9 +2725,18 @@
       },
       "enrichedStats": {},
       "scalingModels": {
-        "ChgAttackPower": [224, 3],
-        "ChgImpact": [245, 3],
-        "ChgAccumImpact": [91, 3],
+        "ChgAttackPower": [
+          224,
+          3
+        ],
+        "ChgImpact": [
+          245,
+          3
+        ],
+        "ChgAccumImpact": [
+          91,
+          3
+        ],
         "RapidFire": 1.5,
         "MaxRecoilAngle": 12,
         "ChgIdealRange": 200,
@@ -2577,9 +2766,18 @@
         "LeftArm": true,
         "RightBack": true,
         "LeftBack": true,
-        "AttackPower": [77, 3],
-        "Impact": [64, 3],
-        "AccumulativeImpact": [25, 3],
+        "AttackPower": [
+          77,
+          3
+        ],
+        "Impact": [
+          64,
+          3
+        ],
+        "AccumulativeImpact": [
+          25,
+          3
+        ],
         "DirectHitAdjustment": 185,
         "Recoil": 7,
         "IdealRange": 165,
@@ -2664,9 +2862,18 @@
         "LeftArm": true,
         "RightBack": true,
         "LeftBack": true,
-        "AttackPower": [383, 3],
-        "Impact": [149, 3],
-        "AccumulativeImpact": [80, 3],
+        "AttackPower": [
+          383,
+          3
+        ],
+        "Impact": [
+          149,
+          3
+        ],
+        "AccumulativeImpact": [
+          80,
+          3
+        ],
         "BlastRadius": 20,
         "DirectHitAdjustment": 170,
         "Recoil": 50,
@@ -2838,9 +3045,18 @@
         "LeftArm": true,
         "RightBack": true,
         "LeftBack": true,
-        "AttackPower": [178, 3],
-        "Impact": [122, 3],
-        "AccumulativeImpact": [87, 3],
+        "AttackPower": [
+          178,
+          3
+        ],
+        "Impact": [
+          122,
+          3
+        ],
+        "AccumulativeImpact": [
+          87,
+          3
+        ],
         "DirectHitAdjustment": 145,
         "Guidance": 170,
         "EffectiveRange": 1999,
@@ -2858,9 +3074,18 @@
       },
       "enrichedStats": {},
       "scalingModels": {
-        "ChgAttackPower": [178, 6],
-        "ChgImpact": [122, 6],
-        "ChgAccumImpact": [87, 6],
+        "ChgAttackPower": [
+          178,
+          6
+        ],
+        "ChgImpact": [
+          122,
+          6
+        ],
+        "ChgAccumImpact": [
+          87,
+          6
+        ],
         "ChgBlastRadius": 15,
         "PAInterference": 187,
         "RapidFire": 2.4
@@ -3218,9 +3443,18 @@
         "LeftArm": false,
         "RightBack": true,
         "LeftBack": true,
-        "AttackPower": [655, 2],
-        "Impact": [635, 2],
-        "AccumulativeImpact": [494, 2],
+        "AttackPower": [
+          655,
+          2
+        ],
+        "Impact": [
+          635,
+          2
+        ],
+        "AccumulativeImpact": [
+          494,
+          2
+        ],
         "BlastRadius": 60,
         "DirectHitAdjustment": 140,
         "Recoil": 60,
@@ -3258,9 +3492,18 @@
         "LeftArm": false,
         "RightBack": true,
         "LeftBack": true,
-        "AttackPower": [633, 3],
-        "Impact": [199, 3],
-        "AccumulativeImpact": [76, 3],
+        "AttackPower": [
+          633,
+          3
+        ],
+        "Impact": [
+          199,
+          3
+        ],
+        "AccumulativeImpact": [
+          76,
+          3
+        ],
         "DirectHitAdjustment": 145,
         "Recoil": 70,
         "IdealRange": 240,
@@ -3278,9 +3521,18 @@
       "enrichedStats": {},
       "scalingModels": {
         "ATKHeatBuildup": 700,
-        "ChgAttackPower": [1015, 3],
-        "ChgImpact": [330, 3],
-        "ChgAccumImpact": [185, 3],
+        "ChgAttackPower": [
+          1015,
+          3
+        ],
+        "ChgImpact": [
+          330,
+          3
+        ],
+        "ChgAccumImpact": [
+          185,
+          3
+        ],
         "ChgHeatBuildup": 1000,
         "RapidFire": 0.4,
         "ChgENLoad": 1440,
@@ -3727,9 +3979,18 @@
         "LeftArm": false,
         "RightBack": true,
         "LeftBack": true,
-        "AttackPower": [146, 10],
-        "Impact": [81, 10],
-        "AccumulativeImpact": [39, 10],
+        "AttackPower": [
+          146,
+          10
+        ],
+        "Impact": [
+          81,
+          10
+        ],
+        "AccumulativeImpact": [
+          39,
+          10
+        ],
         "DirectHitAdjustment": 135,
         "IdealRange": 250,
         "EffectiveRange": 304,
@@ -3912,9 +4173,18 @@
       "enrichedStats": {},
       "scalingModels": {
         "ATKHeatBuildup": 90,
-        "ChgAttackPower": [220, 6],
-        "ChgImpact": [95, 6],
-        "ChgAccumImpact": [39, 6],
+        "ChgAttackPower": [
+          220,
+          6
+        ],
+        "ChgImpact": [
+          95,
+          6
+        ],
+        "ChgAccumImpact": [
+          39,
+          6
+        ],
         "ChgHeatBuildup": 90,
         "RapidFire": 2.5,
         "ChgENLoad": 435,
@@ -4152,9 +4422,18 @@
         "LeftArm": false,
         "RightBack": true,
         "LeftBack": true,
-        "AttackPower": [288, 6],
-        "Impact": [105, 6],
-        "AccumulativeImpact": [63, 6],
+        "AttackPower": [
+          288,
+          6
+        ],
+        "Impact": [
+          105,
+          6
+        ],
+        "AccumulativeImpact": [
+          63,
+          6
+        ],
         "DirectHitAdjustment": 135,
         "Guidance": 360,
         "EffectiveRange": 400,
@@ -4170,9 +4449,18 @@
       },
       "enrichedStats": {},
       "scalingModels": {
-        "ChgAttackPower": [1370, 2],
-        "ChgImpact": [480, 2],
-        "ChgAccumImpact": [244, 2]
+        "ChgAttackPower": [
+          1370,
+          2
+        ],
+        "ChgImpact": [
+          480,
+          2
+        ],
+        "ChgAccumImpact": [
+          244,
+          2
+        ]
       },
       "metadata": {
         "sourceFile": "data/source/parts.json",
@@ -4390,9 +4678,18 @@
       "enrichedStats": {},
       "scalingModels": {
         "ConsecutiveHits": 1,
-        "ChgAttackPower": [1450, 2],
-        "ChgImpact": [750, 2],
-        "ChgAccumImpact": [360, 2],
+        "ChgAttackPower": [
+          1450,
+          2
+        ],
+        "ChgImpact": [
+          750,
+          2
+        ],
+        "ChgAccumImpact": [
+          360,
+          2
+        ],
         "PAInterference": 127,
         "Cooling": 402,
         "CoolingDelay": 1.1,
@@ -4597,9 +4894,18 @@
         "LeftArm": true,
         "RightBack": true,
         "LeftBack": true,
-        "AttackPower": [85, 13],
-        "Impact": [61, 13],
-        "AccumulativeImpact": [41, 13],
+        "AttackPower": [
+          85,
+          13
+        ],
+        "Impact": [
+          61,
+          13
+        ],
+        "AccumulativeImpact": [
+          41,
+          13
+        ],
         "DirectHitAdjustment": 205,
         "Recoil": 100,
         "IdealRange": 76,
@@ -4682,9 +4988,18 @@
         "LeftArm": true,
         "RightBack": true,
         "LeftBack": true,
-        "AttackPower": [141, 3],
-        "Impact": [107, 3],
-        "AccumulativeImpact": [46, 3],
+        "AttackPower": [
+          141,
+          3
+        ],
+        "Impact": [
+          107,
+          3
+        ],
+        "AccumulativeImpact": [
+          46,
+          3
+        ],
         "BlastRadius": 20,
         "DirectHitAdjustment": 130,
         "Recoil": 40,
@@ -4725,9 +5040,18 @@
         "LeftArm": true,
         "RightBack": true,
         "LeftBack": true,
-        "AttackPower": [78, 13],
-        "Impact": [78, 13],
-        "AccumulativeImpact": [47, 13],
+        "AttackPower": [
+          78,
+          13
+        ],
+        "Impact": [
+          78,
+          13
+        ],
+        "AccumulativeImpact": [
+          47,
+          13
+        ],
         "DirectHitAdjustment": 155,
         "Guidance": 180,
         "EffectiveRange": 1200,
@@ -4766,9 +5090,18 @@
         "LeftArm": false,
         "RightBack": true,
         "LeftBack": true,
-        "AttackPower": [78, 10],
-        "Impact": [77, 10],
-        "AccumulativeImpact": [55, 10],
+        "AttackPower": [
+          78,
+          10
+        ],
+        "Impact": [
+          77,
+          10
+        ],
+        "AccumulativeImpact": [
+          55,
+          10
+        ],
         "DirectHitAdjustment": 145,
         "Guidance": 180,
         "EffectiveRange": 2500,
