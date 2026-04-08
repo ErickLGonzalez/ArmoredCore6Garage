@@ -1,7 +1,8 @@
 "use client";
 
 import type { Dispatch, SetStateAction } from "react";
-import { useCallback, useEffect, useMemo, useRef } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import Link from "next/link";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 
 import { AimAssistPlot } from "@/components/garage/AimAssistPlot";
@@ -87,6 +88,12 @@ const SUMMARY_METRICS: { key: keyof BuildAnalysis; label: string }[] = [
   { key: "accumulativeImpactPerSecond", label: "Σ Acc. impact/s" },
 ];
 
+const SLOT_GROUPS: { label: string; slots: RequiredSlot[] }[] = [
+  { label: "Weapons", slots: ["rightArm", "leftArm", "rightBack", "leftBack"] },
+  { label: "Frame", slots: ["head", "core", "arms", "legs"] },
+  { label: "Internals", slots: ["booster", "fcs", "generator"] },
+];
+
 type SlotColumnProps = {
   label: string;
   idPrefix: string;
@@ -94,6 +101,8 @@ type SlotColumnProps = {
   setIds: Dispatch<SetStateAction<GarageBuildIds>>;
   optionsBySlot: Map<RequiredSlot, CanonicalPart[]>;
   expansionOptions: CanonicalPart[];
+  onInteract?: () => void;
+  onHover?: () => void;
 };
 
 function SlotColumn({
@@ -103,6 +112,8 @@ function SlotColumn({
   setIds,
   optionsBySlot,
   expansionOptions,
+  onInteract,
+  onHover,
 }: SlotColumnProps) {
   const setSlot = useCallback(
     (slot: RequiredSlot, id: number) => {
@@ -116,37 +127,50 @@ function SlotColumn({
       <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-cyan-200/80">
         {label}
       </p>
-      {REQUIRED_ASSEMBLY_SLOTS.map((slot) => {
-        const opts = optionsBySlot.get(slot) ?? [];
-        const sid = `${idPrefix}-${slot}`;
-        return (
-          <label
-            key={slot}
-            htmlFor={sid}
-            className="block text-sm"
-            className="block text-sm"
-          >
-            <span className="mb-1 block text-xs font-medium uppercase tracking-wide text-cyan-100/85">
-              {SLOT_LABELS[slot]}
-            </span>
-            <select
-              id={sid}
-              className="w-full rounded border border-cyan-300/40 bg-[#081724] px-2 py-1.5 text-xs text-cyan-50 outline-none focus:border-cyan-200 focus:ring-2 focus:ring-cyan-400/20"
-              value={ids[slot]}
-              onChange={(e) => setSlot(slot, Number(e.target.value))}
-            >
-              {opts.map((p) => (
-                <option
-                  key={p.identity.id}
-                  value={p.identity.id}
+      {SLOT_GROUPS.map((group) => (
+        <div
+          key={group.label}
+          className="space-y-2"
+        >
+          <p className="text-[10px] uppercase tracking-[0.18em] text-cyan-200/60">
+            {group.label}
+          </p>
+          {group.slots.map((slot) => {
+            const opts = optionsBySlot.get(slot) ?? [];
+            const sid = `${idPrefix}-${slot}`;
+            return (
+              <label
+                key={slot}
+                htmlFor={sid}
+                className="block text-sm"
+              >
+                <span className="mb-1 block text-xs font-medium uppercase tracking-wide text-cyan-100/85">
+                  {SLOT_LABELS[slot]}
+                </span>
+                <select
+                  id={sid}
+                  className="w-full rounded border border-cyan-300/40 bg-[#081724] px-2 py-1.5 text-xs text-cyan-50 outline-none focus:border-cyan-200 focus:ring-2 focus:ring-cyan-400/20"
+                  value={ids[slot]}
+                  onMouseEnter={onHover}
+                  onChange={(e) => {
+                    onInteract?.();
+                    setSlot(slot, Number(e.target.value));
+                  }}
                 >
-                  {p.identity.name}
-                </option>
-              ))}
-            </select>
-          </label>
-        );
-      })}
+                  {opts.map((p) => (
+                    <option
+                      key={p.identity.id}
+                      value={p.identity.id}
+                    >
+                      {p.identity.name}
+                    </option>
+                  ))}
+                </select>
+              </label>
+            );
+          })}
+        </div>
+      ))}
       <label
         htmlFor={`${idPrefix}-expansion`}
         className="block text-sm"
@@ -158,9 +182,11 @@ function SlotColumn({
           id={`${idPrefix}-expansion`}
           className="w-full rounded border border-cyan-300/40 bg-[#081724] px-2 py-1.5 text-xs text-cyan-50 outline-none focus:border-cyan-200 focus:ring-2 focus:ring-cyan-400/20"
           value={ids.expansionId}
-          onChange={(e) =>
-            setIds((prev) => ({ ...prev, expansionId: Number(e.target.value) }))
-          }
+          onMouseEnter={onHover}
+          onChange={(e) => {
+            onInteract?.();
+            setIds((prev) => ({ ...prev, expansionId: Number(e.target.value) }));
+          }}
         >
           {expansionOptions.map((p) => (
             <option
@@ -264,11 +290,28 @@ function AnalysisBlock({
             const v = analysis[key];
             const display =
               typeof v === "number" ? formatNumber(v) : formatStatValue(v);
+            let delta: string | null = null;
+            let deltaClass = "text-cyan-200/70";
+            const compareValue = compareAnalysis ? compareAnalysis[key] : null;
+            if (typeof v === "number" && typeof compareValue === "number") {
+              const d = v - compareValue;
+              if (Number.isFinite(d) && Math.abs(d) > 1e-6) {
+                delta = `${d > 0 ? "+" : ""}${formatNumber(d)}`;
+                deltaClass = d > 0 ? "text-emerald-300" : "text-rose-300";
+              } else {
+                delta = "±0";
+              }
+            }
             return (
               <div key={key}>
                 <dt className="text-xs text-cyan-200/70">{label}</dt>
                 <dd className="font-mono text-sm font-medium text-cyan-50">
                   {display}
+                  {delta ? (
+                    <span className={`ml-1 text-[11px] ${deltaClass}`}>
+                      ({delta})
+                    </span>
+                  ) : null}
                 </dd>
               </div>
             );
@@ -482,6 +525,28 @@ export function GarageClient({
     void navigator.clipboard.writeText(window.location.href);
   }, []);
 
+  const [audioOn, setAudioOn] = useState(true);
+  const beep = useCallback(
+    (freq: number, duration = 0.02) => {
+      if (!audioOn) return;
+      const Ctx = window.AudioContext || (window as unknown as { webkitAudioContext?: typeof AudioContext }).webkitAudioContext;
+      if (!Ctx) return;
+      const ctx = new Ctx();
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.type = "triangle";
+      osc.frequency.value = freq;
+      gain.gain.value = 0.02;
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      osc.start();
+      osc.stop(ctx.currentTime + duration);
+    },
+    [audioOn],
+  );
+  const playHover = useCallback(() => beep(360, 0.015), [beep]);
+  const playClick = useCallback(() => beep(620, 0.03), [beep]);
+
   return (
     <>
       <a
@@ -502,24 +567,55 @@ export function GarageClient({
           <>
             <button
               type="button"
-              onClick={() => setCompareOn(!compareOn)}
+              onMouseEnter={playHover}
+              onClick={() => {
+                playClick();
+                setCompareOn(!compareOn);
+              }}
               className="rounded border border-cyan-300/45 bg-cyan-900/20 px-3 py-1.5 text-xs font-semibold uppercase tracking-wide text-cyan-100 transition-colors hover:bg-cyan-800/35 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-300/60"
             >
               {compareOn ? "Hide Compare" : "Compare Build"}
             </button>
             <button
               type="button"
-              onClick={copyLink}
+              onMouseEnter={playHover}
+              onClick={() => {
+                playClick();
+                copyLink();
+              }}
               className="rounded border border-cyan-300/45 bg-cyan-900/20 px-3 py-1.5 text-xs font-semibold uppercase tracking-wide text-cyan-100 transition-colors hover:bg-cyan-800/35 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-300/60"
             >
               Copy Link
             </button>
             <button
               type="button"
-              onClick={resetDefault}
+              onMouseEnter={playHover}
+              onClick={() => {
+                playClick();
+                resetDefault();
+              }}
               className="rounded border border-cyan-300/45 bg-cyan-900/20 px-3 py-1.5 text-xs font-semibold uppercase tracking-wide text-cyan-100 transition-colors hover:bg-cyan-800/35 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-300/60"
             >
               Reset
+            </button>
+            <Link
+              href="/garage/classic"
+              onMouseEnter={playHover}
+              onClick={playClick}
+              className="rounded border border-cyan-300/45 bg-cyan-900/20 px-3 py-1.5 text-xs font-semibold uppercase tracking-wide text-cyan-100 transition-colors hover:bg-cyan-800/35 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-300/60"
+            >
+              Classic UI
+            </Link>
+            <button
+              type="button"
+              onMouseEnter={playHover}
+              onClick={() => {
+                playClick();
+                setAudioOn((v) => !v);
+              }}
+              className="rounded border border-cyan-300/45 bg-cyan-900/20 px-3 py-1.5 text-xs font-semibold uppercase tracking-wide text-cyan-100 transition-colors hover:bg-cyan-800/35 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-300/60"
+            >
+              Audio {audioOn ? "On" : "Off"}
             </button>
           </>
         }
@@ -533,6 +629,8 @@ export function GarageClient({
                 setIds={setBuildA}
                 optionsBySlot={optionsBySlot}
                 expansionOptions={expansionOptions}
+                onHover={playHover}
+                onInteract={playClick}
               />
               {compareOn ? (
                 <SlotColumn
@@ -542,6 +640,8 @@ export function GarageClient({
                   setIds={setBuildB}
                   optionsBySlot={optionsBySlot}
                   expansionOptions={expansionOptions}
+                  onHover={playHover}
+                  onInteract={playClick}
                 />
               ) : null}
             </div>
