@@ -20,7 +20,7 @@ describe("full PartsData pipeline", () => {
     const raw: unknown = JSON.parse(readFileSync(SOURCE, "utf-8"));
     expect(Array.isArray(raw)).toBe(true);
     const arr = raw as Record<string, unknown>[];
-    expect(arr.length).toBeGreaterThan(100);
+    expect(arr.length).toBeGreaterThan(200);
 
     for (let i = 0; i < arr.length; i++) {
       const n = normalizeRawPart(arr[i]!, i, "data/source/parts.json");

@@ -26,7 +26,7 @@ npx prisma migrate dev --name init
 npm run dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000).
+Open [http://localhost:3000](http://localhost:3000) — garage preview at [/garage](http://localhost:3000/garage).
 
 ## Scripts
 
@@ -38,8 +38,9 @@ Open [http://localhost:3000](http://localhost:3000).
 | `npm run lint`       | ESLint                                   |
 | `npm run format`     | Prettier write                           |
 | `npm run db:*`       | Prisma CLI shortcuts                     |
-| `npm run data:merge` | Build `data/parts.merged.json` from JSON |
-| `npm test`           | Vitest (schema, pipeline, calc)          |
+| `npm run data:merge`       | Build `data/parts.merged.json` from JSON   |
+| `npm run data:merge:sheet` | Apply CSV/JSON overrides (see `docs/SPREADSHEET.md`) |
+| `npm test`                 | Vitest (schema, pipeline, calc, accuracy)  |
 
 `postinstall` runs `prisma generate` (needed for Vercel and fresh clones).
 
@@ -56,7 +57,7 @@ Open [http://localhost:3000](http://localhost:3000).
 | `prisma/`     | Schema and migrations                        |
 | `docs/`       | Internal docs and deployment                 |
 
-**Milestones:** (1) Foundation · (2) Data pipeline + merge · (3) Calc engine started (`analyzeBuild` weight/EN).
+**Milestones:** see [docs/MILESTONES.md](docs/MILESTONES.md) — through M3 done, M4+ and UI v2 in progress.
 
 ## Deploy
 

@@ -1,6 +1,9 @@
 import type { CanonicalPart } from "@/lib/schema";
 
-/** Assembly slots used by the garage (legacy app naming). */
+/** Flat part record as consumed by legacy AC6 formulas (PascalCase keys). */
+export type LegacyPart = Record<string, unknown>;
+
+/** Assembly slots used by the reference garage. */
 export type AssemblySlot =
   | "rightArm"
   | "leftArm"
@@ -15,19 +18,15 @@ export type AssemblySlot =
   | "generator"
   | "expansion";
 
-export type BuildAssembly = Partial<Record<AssemblySlot, CanonicalPart | null>>;
+export type BuildAssembly = Partial<
+  Record<AssemblySlot, CanonicalPart | null | undefined>
+>;
 
-export type BuildAnalysis = {
-  totalWeight: number;
-  totalEnLoad: number;
-  totalAp: number;
-  totalDef: number;
-  totalStability: number;
-  boostSpeed: number;
-  qbReload: number;
-  enEfficiency: number;
-  dps: number;
-  burstDps: number;
-  impactPerSecond: number;
-  accumulativeImpactPerSecond: number;
+/** One stat row from legacy computeAllStats. */
+export type LegacyStatRow = {
+  name: string;
+  value: number | unknown[] | Record<string, unknown> | null;
+  type?: string;
 };
+
+export type LegacyStatGroup = LegacyStatRow[];

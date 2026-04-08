@@ -42,8 +42,11 @@ export function normalizeRawPart(
     throw new Error(`Part at index ${sourceIndex} missing Name or Kind`);
   }
 
+  const idFromRow =
+    typeof raw.ID === "number" && Number.isFinite(raw.ID) ? raw.ID : sourceIndex;
+
   const identity = {
-    id: sourceIndex,
+    id: idFromRow,
     name: normalizePartName(String(nameRaw)),
     kind: String(kindRaw).trim(),
     manufacturer:

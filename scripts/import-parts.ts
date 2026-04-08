@@ -9,6 +9,8 @@ import { readFileSync, writeFileSync } from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
+import { postprocessLegacyDataset } from "@/lib/calc/postprocess";
+import type { LegacyPart } from "@/lib/calc/types";
 import { normalizeRawPart } from "@/lib/data/normalize-part";
 import { CanonicalPartSchema, MergedDatasetSchema } from "@/lib/schema";
 
@@ -38,12 +40,25 @@ function main() {
   const parts: ReturnType<typeof normalizeRawPart>[] = [];
   const errors: string[] = [];
 
+  const legacyInput: LegacyPart[] = [];
   for (let i = 0; i < parsed.length; i++) {
     const row = parsed[i];
     if (row === null || typeof row !== "object" || Array.isArray(row)) {
       errors.push(`Index ${i}: expected object`);
       continue;
     }
+    legacyInput.push(row as LegacyPart);
+  }
+
+  if (errors.length > 0) {
+    console.error("Validation errors:\n", errors.slice(0, 20).join("\n"));
+    process.exit(1);
+  }
+
+  const processed = postprocessLegacyDataset(legacyInput);
+
+  for (let i = 0; i < processed.length; i++) {
+    const row = processed[i]!;
     try {
       const normalized = normalizeRawPart(
         row as Record<string, unknown>,
