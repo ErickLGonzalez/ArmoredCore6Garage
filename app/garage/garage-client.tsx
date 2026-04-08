@@ -5,6 +5,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 
 import { AimAssistPlot } from "@/components/garage/AimAssistPlot";
+import { EnergyRecoveryPlot } from "@/components/garage/EnergyRecoveryPlot";
 import { RecoilPlot } from "@/components/garage/RecoilPlot";
 import {
   REQUIRED_ASSEMBLY_SLOTS,
@@ -12,11 +13,15 @@ import {
   computeFullAccuracy,
   type BuildAnalysis,
 } from "@/lib/calc";
-import type { BuildAssembly } from "@/lib/calc/types";
 import type { LegacyStatRow } from "@/lib/calc/types";
+import { assemblyFromGarageIds } from "@/lib/garage/assembly-from-ids";
 import { decodeGarageBuild, encodeGarageBuild } from "@/lib/garage/build-url";
 import type { GarageBuildIds } from "@/lib/garage/default-assembly";
-import { getAimAssistPlotData, getRecoilPlotPoints } from "@/lib/garage/plot-data";
+import {
+  getAimAssistPlotData,
+  getEnergyRecoveryCurves,
+  getRecoilPlotPoints,
+} from "@/lib/garage/plot-data";
 import {
   EXPANSION_SLOT_LABEL,
   partsForSlot,
@@ -55,7 +60,11 @@ function formatStatValue(v: unknown): string {
 }
 
 function skipCollapsibleRow(row: LegacyStatRow): boolean {
-  return row.type === "RangePlot" || row.type === "RecoilPlot";
+  return (
+    row.type === "RangePlot" ||
+    row.type === "RecoilPlot" ||
+    row.type === "EnergyPlot"
+  );
 }
 
 const SUMMARY_METRICS: { key: keyof BuildAnalysis; label: string }[] = [
@@ -73,24 +82,9 @@ const SUMMARY_METRICS: { key: keyof BuildAnalysis; label: string }[] = [
   { key: "accumulativeImpactPerSecond", label: "Σ Acc. impact/s" },
 ];
 
-function buildAssemblyFromIds(
-  ids: GarageBuildIds,
-  byId: ReadonlyMap<number, CanonicalPart>,
-): BuildAssembly | null {
-  const a: BuildAssembly = {};
-  for (const slot of REQUIRED_ASSEMBLY_SLOTS) {
-    const part = byId.get(ids[slot]);
-    if (!part) return null;
-    a[slot] = part;
-  }
-  const ex = byId.get(ids.expansionId);
-  if (!ex) return null;
-  a.expansion = ex;
-  return a;
-}
-
 type SlotColumnProps = {
   label: string;
+  idPrefix: string;
   ids: GarageBuildIds;
   setIds: Dispatch<SetStateAction<GarageBuildIds>>;
   optionsBySlot: Map<RequiredSlot, CanonicalPart[]>;
@@ -99,6 +93,7 @@ type SlotColumnProps = {
 
 function SlotColumn({
   label,
+  idPrefix,
   ids,
   setIds,
   optionsBySlot,
@@ -118,15 +113,18 @@ function SlotColumn({
       </p>
       {REQUIRED_ASSEMBLY_SLOTS.map((slot) => {
         const opts = optionsBySlot.get(slot) ?? [];
+        const sid = `${idPrefix}-${slot}`;
         return (
           <label
             key={slot}
+            htmlFor={sid}
             className="block text-sm"
           >
             <span className="mb-1 block font-medium text-zinc-700 dark:text-zinc-300">
               {SLOT_LABELS[slot]}
             </span>
             <select
+              id={sid}
               className="w-full rounded-lg border border-zinc-300 bg-white px-3 py-2 text-sm text-zinc-900 shadow-sm outline-none focus:border-zinc-500 focus:ring-2 focus:ring-zinc-400/30 dark:border-zinc-600 dark:bg-zinc-900 dark:text-zinc-100 dark:focus:border-zinc-500"
               value={ids[slot]}
               onChange={(e) => setSlot(slot, Number(e.target.value))}
@@ -143,11 +141,15 @@ function SlotColumn({
           </label>
         );
       })}
-      <label className="block text-sm">
+      <label
+        htmlFor={`${idPrefix}-expansion`}
+        className="block text-sm"
+      >
         <span className="mb-1 block font-medium text-zinc-700 dark:text-zinc-300">
           {EXPANSION_SLOT_LABEL}
         </span>
         <select
+          id={`${idPrefix}-expansion`}
           className="w-full rounded-lg border border-zinc-300 bg-white px-3 py-2 text-sm text-zinc-900 shadow-sm outline-none focus:border-zinc-500 focus:ring-2 focus:ring-zinc-400/30 dark:border-zinc-600 dark:bg-zinc-900 dark:text-zinc-100 dark:focus:border-zinc-500"
           value={ids.expansionId}
           onChange={(e) =>
@@ -184,6 +186,10 @@ function AnalysisBlock({
   const recPrimary = getRecoilPlotPoints(analysis.groups);
   const recCompare = compareAnalysis
     ? getRecoilPlotPoints(compareAnalysis.groups)
+    : null;
+  const enPrimary = getEnergyRecoveryCurves(analysis.groups);
+  const enCompare = compareAnalysis
+    ? getEnergyRecoveryCurves(compareAnalysis.groups)
     : null;
 
   const aimOk =
@@ -227,6 +233,22 @@ function AnalysisBlock({
         </div>
       ) : null}
 
+      {enPrimary ? (
+        <div>
+          <p className="mb-2 text-xs font-medium text-zinc-500 dark:text-zinc-400">
+            EN recovery (legacy-style)
+          </p>
+          <EnergyRecoveryPlot
+            className="h-48 w-full max-w-md"
+            primary={enPrimary}
+            compare={compareAnalysis ? enCompare : null}
+          />
+          <p className="mt-1 text-[10px] text-zinc-500 dark:text-zinc-400">
+            Cyan: normal recharge. Red: redline. Dashed: compare build.
+          </p>
+        </div>
+      ) : null}
+
       <div>
         <p className="mb-2 text-xs font-medium text-zinc-500 dark:text-zinc-400">
           Summary
@@ -246,6 +268,66 @@ function AnalysisBlock({
             );
           })}
         </dl>
+      </div>
+    </div>
+  );
+}
+
+function LegacyStatGroupsSection({
+  analysis,
+  title,
+}: {
+  analysis: BuildAnalysis;
+  title: string;
+}) {
+  return (
+    <div className="rounded-xl border border-zinc-200 bg-white p-5 shadow-sm dark:border-zinc-800 dark:bg-zinc-900/50">
+      <h3 className="text-sm font-semibold text-zinc-900 dark:text-zinc-100">
+        {title}
+      </h3>
+      <p className="mt-1 text-xs text-zinc-500 dark:text-zinc-400">
+        Range, recoil, and EN recovery plot rows omitted (see charts above).
+      </p>
+      <div className="mt-4 space-y-3">
+        {analysis.groups.map((group, gi) => (
+          <details
+            key={gi}
+            className="group rounded-lg border border-zinc-200 dark:border-zinc-700"
+          >
+            <summary className="cursor-pointer select-none px-3 py-2 text-sm font-medium text-zinc-800 hover:bg-zinc-50 dark:text-zinc-200 dark:hover:bg-zinc-800/50">
+              Group {gi + 1}{" "}
+              <span className="font-normal text-zinc-500">
+                ({group.filter((r) => !skipCollapsibleRow(r)).length} stats)
+              </span>
+            </summary>
+            <div className="border-t border-zinc-200 dark:border-zinc-700">
+              <table className="w-full text-left text-xs">
+                <tbody>
+                  {group
+                    .filter((row) => !skipCollapsibleRow(row))
+                    .map((row) => (
+                      <tr
+                        key={row.name}
+                        className="border-b border-zinc-100 last:border-0 dark:border-zinc-800"
+                      >
+                        <th className="w-[40%] px-3 py-1.5 font-medium text-zinc-700 dark:text-zinc-300">
+                          {row.name}
+                          {row.type ? (
+                            <span className="ml-1 font-normal text-zinc-400">
+                              ({row.type})
+                            </span>
+                          ) : null}
+                        </th>
+                        <td className="break-all px-3 py-1.5 font-mono text-zinc-600 dark:text-zinc-400">
+                          {formatStatValue(row.value)}
+                        </td>
+                      </tr>
+                    ))}
+                </tbody>
+              </table>
+            </div>
+          </details>
+        ))}
       </div>
     </div>
   );
@@ -325,11 +407,11 @@ export function GarageClient({
   }, [buildA, buildB, compareOn, pathname, router, searchParams]);
 
   const assemblyA = useMemo(
-    () => buildAssemblyFromIds(buildA, byId),
+    () => assemblyFromGarageIds(buildA, byId),
     [buildA, byId],
   );
   const assemblyB = useMemo(
-    () => buildAssemblyFromIds(buildB, byId),
+    () => assemblyFromGarageIds(buildB, byId),
     [buildB, byId],
   );
 
@@ -379,7 +461,18 @@ export function GarageClient({
   }, []);
 
   return (
-    <div className="mx-auto max-w-6xl px-6 py-10">
+    <>
+      <a
+        href="#garage-main"
+        className="skip-link"
+      >
+        Skip to garage analysis
+      </a>
+      <main
+        id="garage-main"
+        className="mx-auto max-w-6xl px-6 py-10"
+        tabIndex={-1}
+      >
       <div className="mb-8 flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
         <div>
           <p className="text-sm font-medium uppercase tracking-[0.2em] text-zinc-500 dark:text-zinc-400">
@@ -398,21 +491,21 @@ export function GarageClient({
           <button
             type="button"
             onClick={() => setCompareOn((v) => !v)}
-            className="rounded-lg border border-zinc-300 bg-white px-4 py-2 text-sm font-medium text-zinc-800 shadow-sm transition-colors hover:bg-zinc-50 dark:border-zinc-600 dark:bg-zinc-900 dark:text-zinc-100 dark:hover:bg-zinc-800"
+            className="rounded-lg border border-zinc-300 bg-white px-4 py-2 text-sm font-medium text-zinc-800 shadow-sm transition-colors hover:bg-zinc-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zinc-400/60 focus-visible:ring-offset-2 dark:border-zinc-600 dark:bg-zinc-900 dark:text-zinc-100 dark:hover:bg-zinc-800 dark:focus-visible:ring-zinc-500/50 dark:focus-visible:ring-offset-zinc-950"
           >
             {compareOn ? "Hide compare" : "Compare build"}
           </button>
           <button
             type="button"
             onClick={copyLink}
-            className="rounded-lg border border-zinc-300 bg-white px-4 py-2 text-sm font-medium text-zinc-800 shadow-sm transition-colors hover:bg-zinc-50 dark:border-zinc-600 dark:bg-zinc-900 dark:text-zinc-100 dark:hover:bg-zinc-800"
+            className="rounded-lg border border-zinc-300 bg-white px-4 py-2 text-sm font-medium text-zinc-800 shadow-sm transition-colors hover:bg-zinc-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zinc-400/60 focus-visible:ring-offset-2 dark:border-zinc-600 dark:bg-zinc-900 dark:text-zinc-100 dark:hover:bg-zinc-800 dark:focus-visible:ring-zinc-500/50 dark:focus-visible:ring-offset-zinc-950"
           >
             Copy link
           </button>
           <button
             type="button"
             onClick={resetDefault}
-            className="rounded-lg border border-zinc-300 bg-white px-4 py-2 text-sm font-medium text-zinc-800 shadow-sm transition-colors hover:bg-zinc-50 dark:border-zinc-600 dark:bg-zinc-900 dark:text-zinc-100 dark:hover:bg-zinc-800"
+            className="rounded-lg border border-zinc-300 bg-white px-4 py-2 text-sm font-medium text-zinc-800 shadow-sm transition-colors hover:bg-zinc-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zinc-400/60 focus-visible:ring-offset-2 dark:border-zinc-600 dark:bg-zinc-900 dark:text-zinc-100 dark:hover:bg-zinc-800 dark:focus-visible:ring-zinc-500/50 dark:focus-visible:ring-offset-zinc-950"
           >
             Reset defaults
           </button>
@@ -429,6 +522,7 @@ export function GarageClient({
           >
             <SlotColumn
               label="Build A"
+              idPrefix="build-a"
               ids={buildA}
               setIds={setBuildA}
               optionsBySlot={optionsBySlot}
@@ -437,6 +531,7 @@ export function GarageClient({
             {compareOn ? (
               <SlotColumn
                 label="Build B"
+                idPrefix="build-b"
                 ids={buildB}
                 setIds={setBuildB}
                 optionsBySlot={optionsBySlot}
@@ -545,58 +640,28 @@ export function GarageClient({
           )}
 
           {analysisA && (
-            <div className="rounded-xl border border-zinc-200 bg-white p-5 shadow-sm dark:border-zinc-800 dark:bg-zinc-900/50">
-              <h3 className="text-sm font-semibold text-zinc-900 dark:text-zinc-100">
-                Legacy stat groups (build A)
-              </h3>
-              <p className="mt-1 text-xs text-zinc-500 dark:text-zinc-400">
-                Range/recoil plot rows omitted (see charts above).
-              </p>
-              <div className="mt-4 space-y-3">
-                {analysisA.groups.map((group, gi) => (
-                  <details
-                    key={gi}
-                    className="group rounded-lg border border-zinc-200 dark:border-zinc-700"
-                  >
-                    <summary className="cursor-pointer select-none px-3 py-2 text-sm font-medium text-zinc-800 hover:bg-zinc-50 dark:text-zinc-200 dark:hover:bg-zinc-800/50">
-                      Group {gi + 1}{" "}
-                      <span className="font-normal text-zinc-500">
-                        ({group.filter((r) => !skipCollapsibleRow(r)).length} stats)
-                      </span>
-                    </summary>
-                    <div className="border-t border-zinc-200 dark:border-zinc-700">
-                      <table className="w-full text-left text-xs">
-                        <tbody>
-                          {group
-                            .filter((row) => !skipCollapsibleRow(row))
-                            .map((row) => (
-                              <tr
-                                key={row.name}
-                                className="border-b border-zinc-100 last:border-0 dark:border-zinc-800"
-                              >
-                                <th className="w-[40%] px-3 py-1.5 font-medium text-zinc-700 dark:text-zinc-300">
-                                  {row.name}
-                                  {row.type ? (
-                                    <span className="ml-1 font-normal text-zinc-400">
-                                      ({row.type})
-                                    </span>
-                                  ) : null}
-                                </th>
-                                <td className="break-all px-3 py-1.5 font-mono text-zinc-600 dark:text-zinc-400">
-                                  {formatStatValue(row.value)}
-                                </td>
-                              </tr>
-                            ))}
-                        </tbody>
-                      </table>
-                    </div>
-                  </details>
-                ))}
-              </div>
+            <div
+              className={
+                compareOn && analysisB
+                  ? "grid gap-6 xl:grid-cols-2"
+                  : undefined
+              }
+            >
+              <LegacyStatGroupsSection
+                analysis={analysisA}
+                title="Legacy stat groups (build A)"
+              />
+              {compareOn && analysisB ? (
+                <LegacyStatGroupsSection
+                  analysis={analysisB}
+                  title="Legacy stat groups (build B)"
+                />
+              ) : null}
             </div>
           )}
         </section>
       </div>
-    </div>
+      </main>
+    </>
   );
 }

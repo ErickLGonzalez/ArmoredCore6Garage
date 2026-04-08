@@ -30,10 +30,44 @@ function parseArgs(): { input: string } {
   return { input: path.resolve(argv[idx + 1]!) };
 }
 
+/** RFC-style CSV row: commas inside quoted fields, doubled quotes for escape. */
+function splitCsvRow(line: string): string[] {
+  const out: string[] = [];
+  let cur = "";
+  let inQuotes = false;
+  for (let i = 0; i < line.length; i++) {
+    const c = line[i]!;
+    if (c === '"') {
+      if (inQuotes && line[i + 1] === '"') {
+        cur += '"';
+        i++;
+        continue;
+      }
+      inQuotes = !inQuotes;
+      continue;
+    }
+    if (!inQuotes && c === ",") {
+      out.push(cur.trim());
+      cur = "";
+      continue;
+    }
+    cur += c;
+  }
+  out.push(cur.trim());
+  return out;
+}
+
+function unquoteCell(s: string): string {
+  if (s.length >= 2 && s.startsWith('"') && s.endsWith('"')) {
+    return s.slice(1, -1).replace(/""/g, '"').trim();
+  }
+  return s.trim();
+}
+
 function parseCsv(text: string): unknown[] {
-  const lines = text.trim().split(/\r?\n/);
+  const lines = text.trim().split(/\r?\n/).filter((l) => l.length > 0);
   if (lines.length < 2) return [];
-  const header = lines[0]!.split(",").map((s) => s.trim().toLowerCase());
+  const header = splitCsvRow(lines[0]!).map((s) => unquoteCell(s).toLowerCase());
   const iName = header.indexOf("partname");
   const iField = header.indexOf("field");
   const iVal = header.indexOf("value");
@@ -42,7 +76,7 @@ function parseCsv(text: string): unknown[] {
   }
   const rows: unknown[] = [];
   for (let li = 1; li < lines.length; li++) {
-    const cols = lines[li]!.split(",").map((s) => s.trim());
+    const cols = splitCsvRow(lines[li]!).map(unquoteCell);
     if (cols.length < 3) continue;
     const rawVal = cols[iVal]!;
     let value: string | number | boolean = rawVal;
