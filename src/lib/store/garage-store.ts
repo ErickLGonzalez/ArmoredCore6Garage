@@ -1,4 +1,5 @@
 import { create } from "zustand";
+import type { SetStateAction } from "react";
 
 import type { GarageBuildIds } from "@/lib/garage/default-assembly";
 
@@ -9,10 +10,10 @@ type GarageState = {
   engagementM: number;
   initialized: boolean;
   initialize: (buildA: GarageBuildIds, buildB: GarageBuildIds, compareOn: boolean) => void;
-  setBuildA: (v: GarageBuildIds) => void;
-  setBuildB: (v: GarageBuildIds) => void;
-  setCompareOn: (v: boolean) => void;
-  setEngagementM: (v: number) => void;
+  setBuildA: (v: SetStateAction<GarageBuildIds>) => void;
+  setBuildB: (v: SetStateAction<GarageBuildIds>) => void;
+  setCompareOn: (v: SetStateAction<boolean>) => void;
+  setEngagementM: (v: SetStateAction<number>) => void;
 };
 
 export const useGarageStore = create<GarageState>((set) => ({
@@ -27,8 +28,30 @@ export const useGarageStore = create<GarageState>((set) => ({
         ? prev
         : { buildA, buildB, compareOn, initialized: true },
     ),
-  setBuildA: (v) => set({ buildA: v }),
-  setBuildB: (v) => set({ buildB: v }),
-  setCompareOn: (v) => set({ compareOn: v }),
-  setEngagementM: (v) => set({ engagementM: v }),
+  setBuildA: (v) =>
+    set((state) => ({
+      buildA:
+        typeof v === "function"
+          ? state.buildA
+            ? (v as (prev: GarageBuildIds) => GarageBuildIds)(state.buildA)
+            : state.buildA
+          : v,
+    })),
+  setBuildB: (v) =>
+    set((state) => ({
+      buildB:
+        typeof v === "function"
+          ? state.buildB
+            ? (v as (prev: GarageBuildIds) => GarageBuildIds)(state.buildB)
+            : state.buildB
+          : v,
+    })),
+  setCompareOn: (v) =>
+    set((state) => ({
+      compareOn: typeof v === "function" ? (v as (prev: boolean) => boolean)(state.compareOn) : v,
+    })),
+  setEngagementM: (v) =>
+    set((state) => ({
+      engagementM: typeof v === "function" ? (v as (prev: number) => number)(state.engagementM) : v,
+    })),
 }));

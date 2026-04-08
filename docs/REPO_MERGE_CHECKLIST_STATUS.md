@@ -60,3 +60,5 @@ Implemented from `MasterofArena_Repo_Merge_Checklist` with incremental, migratio
 
 - Changes are scaffolding-first to preserve current app behavior and tests.
 - Remaining checklist items are explicit follow-up implementation tasks, not blockers for current functionality.
+- Post-ship hotfix: fixed centralized garage store setters to correctly handle `SetStateAction` callback updaters from slot selectors.
+- Cleanup: removed local `_incoming/` extraction directory after ingesting zip instructions and data packs.
