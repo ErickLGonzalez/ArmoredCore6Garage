@@ -4,7 +4,7 @@ import type { SetStateAction } from "react";
 import type { GarageBuildIds } from "@/lib/garage/default-assembly";
 
 export type GarageTab = "build" | "parts" | "counters" | "viewer" | "systems";
-export type CounterTab = "ricochet" | "ttk" | "stagger";
+export type CounterTab = "ricochet" | "ttk" | "stagger" | "weaponsTest";
 export type PartsSortState = { key: string; dir: "asc" | "desc" }[];
 
 type GarageState = {

@@ -6,6 +6,8 @@ import { rangeBandDefaultDistanceM } from "./range";
 import { recoilDamageMultiplier } from "./recoil";
 import type { FullAccuracyConfig, FullAccuracyResult, RangeBand } from "./types";
 
+export type { FullAccuracyConfig, FullAccuracyResult, RangeBand };
+
 const NEUTRAL_FCS = { close: 50, medium: 50, long: 50 };
 
 function resolveDistanceM(config: FullAccuracyConfig): {

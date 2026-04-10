@@ -7,6 +7,7 @@ import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { CounterRicochetPanel } from "@/components/garage/CounterRicochetPanel";
 import { CounterMatchupTTKPanel } from "@/components/garage/CounterMatchupTTKPanel";
 import { CounterStaggerBreakpointsPanel } from "@/components/garage/CounterStaggerBreakpointsPanel";
+import { WeaponsTestTab } from "@/components/garage/weapons-test/WeaponsTestTab";
 import {
   GarageAnalysisBlock,
   GarageBuildDiffPreview,
@@ -482,6 +483,17 @@ export function GarageClient({
                 >
                   STAGGER BREAKPOINTS
                 </button>
+                <button
+                  type="button"
+                  onMouseEnter={playHover}
+                  onClick={() => {
+                    playClick();
+                    setCounterTab("weaponsTest");
+                  }}
+                  className={tabCls(counterTab === "weaponsTest")}
+                >
+                  WEAPONS TEST
+                </button>
               </div>
               {counterTab === "ricochet" ? (
                 <CounterRicochetPanel parts={parts} />
@@ -496,6 +508,15 @@ export function GarageClient({
                 <CounterStaggerBreakpointsPanel
                   analysisA={analysisA}
                   analysisB={analysisB}
+                />
+              ) : null}
+              {counterTab === "weaponsTest" ? (
+                <WeaponsTestTab
+                  assembly={assemblyA}
+                  analysis={analysisA}
+                  compareOn={compareOn}
+                  compareAssembly={compareOn ? assemblyB : null}
+                  compareAnalysis={compareOn ? analysisB : null}
                 />
               ) : null}
             </div>
@@ -565,7 +586,8 @@ export function GarageClient({
               </p>
             ) : mainTab === "counters" ? (
               <p className="ac6-note">
-                COUNTERS INCLUDES RICOCHET, MATCHUP TTK, AND STAGGER BREAKPOINTS.
+                COUNTERS INCLUDES RICOCHET, MATCHUP TTK, STAGGER BREAKPOINTS, AND
+                WEAPONS TEST.
               </p>
             ) : mainTab === "systems" ? (
               <p className="ac6-note">

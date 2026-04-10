@@ -38,7 +38,8 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const theme = resolveTheme(cookies().get(THEME_COOKIE)?.value);
+  const cookieStore = await cookies();
+  const theme = resolveTheme(cookieStore.get(THEME_COOKIE)?.value);
   const themeVars = tokensToCssVars(await loadThemeTokens(theme));
   return (
     <html lang="en" data-ui-theme={theme} style={themeVars as CSSProperties}>

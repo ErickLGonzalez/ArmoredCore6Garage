@@ -1,5 +1,7 @@
 import type { RangeBand } from "./types";
 
+export type { RangeBand };
+
 /** Representative engagement distance when only a coarse band is chosen (metres). */
 export function rangeBandDefaultDistanceM(band: RangeBand): number {
   switch (band) {

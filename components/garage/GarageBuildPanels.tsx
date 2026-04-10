@@ -3,17 +3,10 @@
 import type { Dispatch, SetStateAction } from "react";
 import { useCallback } from "react";
 
-import { AimAssistPlot } from "@/components/garage/AimAssistPlot";
-import { EnergyRecoveryPlot } from "@/components/garage/EnergyRecoveryPlot";
-import { RecoilPlot } from "@/components/garage/RecoilPlot";
+import { GarageEChartsDashboard } from "@/components/garage/GarageEChartsDashboard";
 import { REQUIRED_ASSEMBLY_SLOTS, type BuildAnalysis } from "@/lib/calc";
 import type { LegacyStatRow } from "@/lib/calc/types";
 import type { GarageBuildIds } from "@/lib/garage/default-assembly";
-import {
-  getAimAssistPlotData,
-  getEnergyRecoveryCurves,
-  getRecoilPlotPoints,
-} from "@/lib/garage/plot-data";
 import {
   EXPANSION_SLOT_LABEL,
   SLOT_LABELS,
@@ -188,65 +181,15 @@ export function GarageAnalysisBlock({
   analysis: BuildAnalysis;
   compareAnalysis: BuildAnalysis | null;
 }) {
-  const aimPrimary = getAimAssistPlotData(analysis.groups);
-  const aimCompare = compareAnalysis
-    ? getAimAssistPlotData(compareAnalysis.groups)
-    : null;
-  const recPrimary = getRecoilPlotPoints(analysis.groups);
-  const recCompare = compareAnalysis
-    ? getRecoilPlotPoints(compareAnalysis.groups)
-    : null;
-  const enPrimary = getEnergyRecoveryCurves(analysis.groups);
-  const enCompare = compareAnalysis
-    ? getEnergyRecoveryCurves(compareAnalysis.groups)
-    : null;
-
-  const aimOk =
-    aimPrimary &&
-    aimPrimary.length >= 7 &&
-    [4, 5, 6].every((i) => Number.isFinite(aimPrimary[i]!));
-
   return (
     <div className="space-y-2.5 text-cyan-50">
       <h3 className="ac6-block-title">
         {title}
       </h3>
-      {aimOk ? (
-        <div>
-          <p className="ac6-chart-section-title">
-            AIM ASSIST
-          </p>
-          <AimAssistPlot
-            className="h-44 w-full max-w-md"
-            primary={aimPrimary!}
-            compare={compareAnalysis ? aimCompare : null}
-          />
-        </div>
-      ) : null}
-      {recPrimary && recPrimary.length > 0 ? (
-        <div>
-          <p className="ac6-chart-section-title">
-            RECOIL
-          </p>
-          <RecoilPlot
-            className="h-44 w-full max-w-md"
-            primary={recPrimary}
-            compare={compareAnalysis ? recCompare : null}
-          />
-        </div>
-      ) : null}
-      {enPrimary ? (
-        <div>
-          <p className="ac6-chart-section-title">
-            ENERGY
-          </p>
-          <EnergyRecoveryPlot
-            className="h-48 w-full max-w-md"
-            primary={enPrimary}
-            compare={compareAnalysis ? enCompare : null}
-          />
-        </div>
-      ) : null}
+      <GarageEChartsDashboard
+        analysis={analysis}
+        compareAnalysis={compareAnalysis}
+      />
       <div>
         <p className="mb-2 text-xs font-medium uppercase tracking-wide text-cyan-200/70">
           AC SPECS
@@ -309,7 +252,8 @@ export function GarageLegacyStatGroupsSection({
         {title}
       </h3>
       <p className="mt-0.5 text-[10px] uppercase tracking-[0.05em] text-cyan-200/70">
-        RANGE, RECOIL, AND EN RECOVERY PLOT ROWS OMITTED (SEE CHARTS ABOVE).
+        RANGE / RECOIL / ENERGY PLOTS RENDER IN THE ECHARTS BLOCK IN THE ANALYSIS
+        COLUMN.
       </p>
       <div className="mt-2 space-y-1.5">
         {analysis.groups.map((group, gi) => (

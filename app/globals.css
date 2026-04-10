@@ -599,3 +599,34 @@ body {
 [class*="bg-black"] {
   background-color: color-mix(in srgb, var(--ui-panel-bottom) 95%, black) !important;
 }
+
+/* Weapons test — target hit feedback */
+@keyframes ac6-target-shake {
+  0%,
+  100% {
+    transform: translate(0, 0);
+  }
+  30% {
+    transform: translate(-4px, 2px);
+  }
+  60% {
+    transform: translate(4px, -2px);
+  }
+}
+.ac6-target-shake {
+  animation: ac6-target-shake 0.22s ease-out;
+}
+
+@keyframes ac6-impact-float {
+  0% {
+    opacity: 1;
+    transform: translate(-50%, 0);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(-50%, -36px);
+  }
+}
+.ac6-impact-float {
+  animation: ac6-impact-float 0.85s ease-out forwards;
+}

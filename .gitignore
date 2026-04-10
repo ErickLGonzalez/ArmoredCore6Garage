@@ -43,4 +43,5 @@ next-env.d.ts
 
 /app/generated/prisma
 
-.vercel
+# Pack duplicate (folder is source of truth)
+/weapons_test_cursor_pack.zip
