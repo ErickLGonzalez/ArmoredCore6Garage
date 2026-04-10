@@ -19,6 +19,7 @@ import { GarageLeftPanel } from "@/components/garage/layout/GarageLeftPanel";
 import { GarageRightPanel } from "@/components/garage/layout/GarageRightPanel";
 import { GarageShell } from "@/components/garage/layout/GarageShell";
 import { PartsTablePanel } from "@/components/garage/PartsTablePanel";
+import { StandardAcViewer } from "@/components/garage/StandardAcViewer";
 import {
   REQUIRED_ASSEMBLY_SLOTS,
   analyzeBuild,
@@ -265,6 +266,7 @@ export function GarageClient({
   const [audioOn, setAudioOn] = useState(true);
   const audioCtxRef = useRef<AudioContext | null>(null);
   const lastHoverRef = useRef(0);
+  const [viewerMode, setViewerMode] = useState<"standard" | "3d">("standard");
   const mainTab = activeTab;
   const beep = useCallback(
     (freq: number, duration = 0.02) => {
@@ -303,6 +305,10 @@ export function GarageClient({
     beep(360, 0.015);
   }, [beep]);
   const playClick = useCallback(() => beep(620, 0.03), [beep]);
+  const tabCls = (on: boolean) =>
+    `classic-tab ${on ? "classic-tab-active" : ""} focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-300/60`;
+  const utilityTabCls =
+    "classic-tab focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-300/60";
 
   return (
     <>
@@ -316,8 +322,10 @@ export function GarageClient({
         title="Garage"
         subtitle={
           <>
-            Builds sync to URL params <code className="rounded border border-cyan-300/40 bg-cyan-900/20 px-1">b</code> and{" "}
-            <code className="rounded border border-cyan-300/40 bg-cyan-900/20 px-1">b2</code>. Toggle compare to overlay build B on all combat curves.
+            CLASSIC-STYLE GARAGE BASELINE. Builds sync to URL params{" "}
+            <code className="rounded border border-cyan-300/40 bg-cyan-900/20 px-1">b</code>{" "}
+            and{" "}
+            <code className="rounded border border-cyan-300/40 bg-cyan-900/20 px-1">b2</code>.
           </>
         }
         actions={
@@ -329,13 +337,9 @@ export function GarageClient({
                 playClick();
                 setActiveTab("build");
               }}
-              className={`rounded px-3 py-1.5 text-xs font-semibold uppercase tracking-wide focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-300/60 ${
-                mainTab === "build"
-                  ? "bg-cyan-300 text-cyan-950"
-                  : "border border-cyan-300/45 bg-cyan-900/20 text-cyan-100 hover:bg-cyan-800/35"
-              }`}
+              className={tabCls(mainTab === "build")}
             >
-              Build
+              Assembly
             </button>
             <button
               type="button"
@@ -344,11 +348,7 @@ export function GarageClient({
                 playClick();
                 setActiveTab("counters");
               }}
-              className={`rounded px-3 py-1.5 text-xs font-semibold uppercase tracking-wide focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-300/60 ${
-                mainTab === "counters"
-                  ? "bg-cyan-300 text-cyan-950"
-                  : "border border-cyan-300/45 bg-cyan-900/20 text-cyan-100 hover:bg-cyan-800/35"
-              }`}
+              className={tabCls(mainTab === "counters")}
             >
               Counters
             </button>
@@ -359,13 +359,20 @@ export function GarageClient({
                 playClick();
                 setActiveTab("viewer");
               }}
-              className={`rounded px-3 py-1.5 text-xs font-semibold uppercase tracking-wide focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-300/60 ${
-                mainTab === "viewer"
-                  ? "bg-cyan-300 text-cyan-950"
-                  : "border border-cyan-300/45 bg-cyan-900/20 text-cyan-100 hover:bg-cyan-800/35"
-              }`}
+              className={tabCls(mainTab === "viewer")}
             >
-              3D Viewer
+              AC Viewer
+            </button>
+            <button
+              type="button"
+              onMouseEnter={playHover}
+              onClick={() => {
+                playClick();
+                setActiveTab("systems");
+              }}
+              className={tabCls(mainTab === "systems")}
+            >
+              Systems
             </button>
             <button
               type="button"
@@ -374,11 +381,7 @@ export function GarageClient({
                 playClick();
                 setActiveTab("parts");
               }}
-              className={`rounded px-3 py-1.5 text-xs font-semibold uppercase tracking-wide focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-300/60 ${
-                mainTab === "parts"
-                  ? "bg-cyan-300 text-cyan-950"
-                  : "border border-cyan-300/45 bg-cyan-900/20 text-cyan-100 hover:bg-cyan-800/35"
-              }`}
+              className={tabCls(mainTab === "parts")}
             >
               Parts
             </button>
@@ -389,7 +392,7 @@ export function GarageClient({
                 playClick();
                 setCompareOn(!compareOn);
               }}
-              className="rounded border border-cyan-300/45 bg-cyan-900/20 px-3 py-1.5 text-xs font-semibold uppercase tracking-wide text-cyan-100 transition-colors hover:bg-cyan-800/35 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-300/60"
+              className={utilityTabCls}
             >
               {compareOn ? "Hide Compare" : "Compare Build"}
             </button>
@@ -400,7 +403,7 @@ export function GarageClient({
                 playClick();
                 copyLink();
               }}
-              className="rounded border border-cyan-300/45 bg-cyan-900/20 px-3 py-1.5 text-xs font-semibold uppercase tracking-wide text-cyan-100 transition-colors hover:bg-cyan-800/35 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-300/60"
+              className={utilityTabCls}
             >
               Copy Link
             </button>
@@ -411,7 +414,7 @@ export function GarageClient({
                 playClick();
                 resetDefault();
               }}
-              className="rounded border border-cyan-300/45 bg-cyan-900/20 px-3 py-1.5 text-xs font-semibold uppercase tracking-wide text-cyan-100 transition-colors hover:bg-cyan-800/35 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-300/60"
+              className={utilityTabCls}
             >
               Reset
             </button>
@@ -419,7 +422,7 @@ export function GarageClient({
               href="/garage/classic"
               onMouseEnter={playHover}
               onClick={playClick}
-              className="rounded border border-cyan-300/45 bg-cyan-900/20 px-3 py-1.5 text-xs font-semibold uppercase tracking-wide text-cyan-100 transition-colors hover:bg-cyan-800/35 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-300/60"
+              className={utilityTabCls}
             >
               Classic UI
             </Link>
@@ -430,7 +433,7 @@ export function GarageClient({
                 playClick();
                 setAudioOn((v) => !v);
               }}
-              className="rounded border border-cyan-300/45 bg-cyan-900/20 px-3 py-1.5 text-xs font-semibold uppercase tracking-wide text-cyan-100 transition-colors hover:bg-cyan-800/35 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-300/60"
+              className={utilityTabCls}
             >
               Audio {audioOn ? "On" : "Off"}
             </button>
@@ -456,7 +459,7 @@ export function GarageClient({
                       : "border border-cyan-300/45 bg-cyan-900/20 text-cyan-100 hover:bg-cyan-800/35"
                   }`}
                 >
-                  Ricochet
+                  RICOCHET
                 </button>
                 <button
                   type="button"
@@ -471,7 +474,7 @@ export function GarageClient({
                       : "border border-cyan-300/45 bg-cyan-900/20 text-cyan-100 hover:bg-cyan-800/35"
                   }`}
                 >
-                  Matchup TTK
+                  MATCHUP TTK
                 </button>
                 <button
                   type="button"
@@ -486,7 +489,7 @@ export function GarageClient({
                       : "border border-cyan-300/45 bg-cyan-900/20 text-cyan-100 hover:bg-cyan-800/35"
                   }`}
                 >
-                  Stagger
+                  STAGGER BREAKPOINTS
                 </button>
               </div>
               {counterTab === "ricochet" ? (
@@ -504,6 +507,32 @@ export function GarageClient({
                   analysisB={analysisB}
                 />
               ) : null}
+            </div>
+          ) : mainTab === "systems" ? (
+            <div className="space-y-3">
+              <h3 className="text-sm font-semibold uppercase tracking-[0.2em] text-cyan-100">
+                New Systems
+              </h3>
+              <div className="grid gap-3 md:grid-cols-3">
+                <div className="rounded border border-cyan-300/35 bg-cyan-950/20 p-3 text-xs text-cyan-100/90">
+                  <p className="font-semibold uppercase tracking-wide">Battle Sim</p>
+                  <p className="mt-1 font-mono">
+                    Winner: {battlePreview?.winner ?? "—"} | Time: {battlePreview ? `${formatNumber(battlePreview.durationSec)}s` : "—"}
+                  </p>
+                </div>
+                <div className="rounded border border-cyan-300/35 bg-cyan-950/20 p-3 text-xs text-cyan-100/90">
+                  <p className="font-semibold uppercase tracking-wide">Optimizer</p>
+                  <p className="mt-1 font-mono">
+                    Top Build: {optimizerPreview?.ranked[0]?.build ?? "—"} | Count: {optimizerPreview?.count ?? 0}
+                  </p>
+                </div>
+                <div className="rounded border border-cyan-300/35 bg-cyan-950/20 p-3 text-xs text-cyan-100/90">
+                  <p className="font-semibold uppercase tracking-wide">Counters</p>
+                  <p className="mt-1 font-mono">
+                    Ranked: {counterPreview?.count ?? 0} | Source: Compare Pair
+                  </p>
+                </div>
+              </div>
             </div>
           ) : mainTab === "viewer" ? (
             <MechViewerCanvas
@@ -547,9 +576,13 @@ export function GarageClient({
               <p className="rounded border border-cyan-300/30 bg-cyan-950/15 px-3 py-2 text-xs text-cyan-100/75">
                 COUNTERS is now a hierarchical section. Start with RICOCHET parity and expand with matchup tools next.
               </p>
+            ) : mainTab === "systems" ? (
+              <p className="rounded border border-cyan-300/30 bg-cyan-950/15 px-3 py-2 text-xs text-cyan-100/75">
+                SYSTEMS centralizes advanced features (battle simulation, optimizer, and counter ranking) in the same classic shell.
+              </p>
             ) : (
               <p className="rounded border border-cyan-300/30 bg-cyan-950/15 px-3 py-2 text-xs text-cyan-100/75">
-                3D Viewer renders the current build body slots and updates live as you change parts.
+                AC VIEWER (STANDARD + 3D) is now the center-pane baseline for build iteration.
               </p>
             )}
           </GarageLeftPanel>
@@ -564,6 +597,54 @@ export function GarageClient({
             ) : null}
             {mainTab === "build" ? (
               <>
+            <div className="rounded border border-cyan-300/35 bg-cyan-950/20 p-3">
+              <div className="mb-2 flex items-center justify-between">
+                <h3 className="text-sm font-semibold tracking-wide text-cyan-100">AC VIEWER</h3>
+                <div className="flex gap-2">
+                  <button
+                    type="button"
+                    onMouseEnter={playHover}
+                    onClick={() => {
+                      playClick();
+                      setViewerMode("standard");
+                    }}
+                    className={`rounded px-2.5 py-1 text-[11px] font-semibold uppercase tracking-wide ${
+                      viewerMode === "standard"
+                        ? "bg-cyan-300 text-cyan-950"
+                        : "border border-cyan-300/45 bg-cyan-900/20 text-cyan-100"
+                    }`}
+                  >
+                    Standard
+                  </button>
+                  <button
+                    type="button"
+                    onMouseEnter={playHover}
+                    onClick={() => {
+                      playClick();
+                      setViewerMode("3d");
+                    }}
+                    className={`rounded px-2.5 py-1 text-[11px] font-semibold uppercase tracking-wide ${
+                      viewerMode === "3d"
+                        ? "bg-cyan-300 text-cyan-950"
+                        : "border border-cyan-300/45 bg-cyan-900/20 text-cyan-100"
+                    }`}
+                  >
+                    3D
+                  </button>
+                </div>
+              </div>
+              {viewerMode === "standard" ? (
+                <StandardAcViewer
+                  build={buildA}
+                  partsById={byId}
+                />
+              ) : (
+                <MechViewerCanvas
+                  partsById={byId}
+                  build={buildA}
+                />
+              )}
+            </div>
             {!assemblyA && (
               <p className="rounded border border-amber-300/45 bg-amber-950/30 px-3 py-2 text-sm text-amber-200">
                 Invalid build A (missing part ID).
@@ -689,16 +770,20 @@ export function GarageClient({
               <p className="rounded border border-cyan-300/35 bg-cyan-950/20 px-3 py-2 text-xs text-cyan-100/85">
                 Viewer controls: drag to rotate. This phase uses live slot geometry and color coding from selected parts.
               </p>
+            ) : mainTab === "systems" ? (
+              <p className="rounded border border-cyan-300/35 bg-cyan-950/20 px-3 py-2 text-xs text-cyan-100/85">
+                SYSTEMS tab is the reserved extension surface for upcoming optimizer pipelines and simulation workflows.
+              </p>
             ) : analysisA ? (
               <div className="space-y-4">
                 <GarageLegacyStatGroupsSection
                   analysis={analysisA}
-                  title="Legacy stat groups (build A)"
+                  title="AC SPECS (BUILD A)"
                 />
                 {compareOn && analysisB ? (
                   <GarageLegacyStatGroupsSection
                     analysis={analysisB}
-                    title="Legacy stat groups (build B)"
+                    title="AC SPECS (BUILD B)"
                   />
                 ) : null}
               </div>

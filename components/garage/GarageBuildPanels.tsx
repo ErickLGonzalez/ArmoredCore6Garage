@@ -295,6 +295,14 @@ export function GarageLegacyStatGroupsSection({
   analysis: BuildAnalysis;
   title: string;
 }) {
+  const groupTitle = (i: number) =>
+    [
+      "DURABILITY",
+      "OFFENSIVE",
+      "MOBILITY",
+      "ENERGY",
+      "LIMITS",
+    ][i] ?? `GROUP ${i + 1}`;
   return (
     <div className="rounded border border-cyan-300/35 bg-cyan-950/20 p-4">
       <h3 className="text-sm font-semibold tracking-wide text-cyan-100">
@@ -310,7 +318,7 @@ export function GarageLegacyStatGroupsSection({
             className="group rounded border border-cyan-300/25"
           >
             <summary className="cursor-pointer select-none px-3 py-2 text-sm font-medium text-cyan-100 hover:bg-cyan-800/20">
-              Group {gi + 1}{" "}
+              {groupTitle(gi)}{" "}
               <span className="font-normal text-cyan-200/70">
                 ({group.filter((r) => !skipCollapsibleRow(r)).length} stats)
               </span>
