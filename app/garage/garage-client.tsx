@@ -511,7 +511,7 @@ export function GarageClient({
           ) : mainTab === "systems" ? (
             <div className="space-y-3">
               <h3 className="text-sm font-semibold uppercase tracking-[0.2em] text-cyan-100">
-                New Systems
+                SYSTEMS
               </h3>
               <div className="grid gap-3 md:grid-cols-3">
                 <div className="rounded border border-cyan-300/35 bg-cyan-950/20 p-3 text-xs text-cyan-100/90">
@@ -546,7 +546,7 @@ export function GarageClient({
             {mainTab === "build" ? (
               <div className={`grid gap-4 ${compareOn ? "md:grid-cols-2 xl:grid-cols-1" : "grid-cols-1"}`}>
                 <GarageSlotColumn
-                  label="Build A"
+                  label="AC SET A"
                   idPrefix="build-a"
                   ids={buildA}
                   setIds={setBuildA}
@@ -557,7 +557,7 @@ export function GarageClient({
                 />
                 {compareOn ? (
                   <GarageSlotColumn
-                    label="Build B"
+                    label="AC SET B"
                     idPrefix="build-b"
                     ids={buildB}
                     setIds={setBuildB}
@@ -676,21 +676,21 @@ export function GarageClient({
                 </label>
                 <dl className="mt-4 grid gap-2 sm:grid-cols-2 lg:grid-cols-4">
                   <div>
-                    <dt className="text-[11px] text-cyan-200/70">Build A — FCS assist</dt>
+                    <dt className="text-[11px] text-cyan-200/70">AC SET A — FCS assist</dt>
                     <dd className="font-mono text-sm">{formatNumber(m4A.fcsAssist)}</dd>
                   </div>
                   <div>
-                    <dt className="text-[11px] text-cyan-200/70">Build A — eff. DPS</dt>
+                    <dt className="text-[11px] text-cyan-200/70">AC SET A — eff. DPS</dt>
                     <dd className="font-mono text-sm">{formatNumber(m4A.effectiveDpsEstimate)}</dd>
                   </div>
                   {m4B ? (
                     <>
                       <div>
-                        <dt className="text-[11px] text-cyan-200/70">Build B — FCS assist</dt>
+                        <dt className="text-[11px] text-cyan-200/70">AC SET B — FCS assist</dt>
                         <dd className="font-mono text-sm">{formatNumber(m4B.fcsAssist)}</dd>
                       </div>
                       <div>
-                        <dt className="text-[11px] text-cyan-200/70">Build B — eff. DPS</dt>
+                        <dt className="text-[11px] text-cyan-200/70">AC SET B — eff. DPS</dt>
                         <dd className="font-mono text-sm">{formatNumber(m4B.effectiveDpsEstimate)}</dd>
                       </div>
                     </>
@@ -735,7 +735,7 @@ export function GarageClient({
               <div className={`grid gap-4 ${compareOn && analysisB ? "2xl:grid-cols-2" : "grid-cols-1"}`}>
                 <div className="rounded border border-cyan-300/35 bg-cyan-950/20 p-4">
                   <GarageAnalysisBlock
-                    title="Build A"
+                    title="AC SET A"
                     analysis={analysisA}
                     compareAnalysis={compareOn ? analysisB : null}
                   />
@@ -743,7 +743,7 @@ export function GarageClient({
                 {compareOn && analysisB ? (
                   <div className="rounded border border-cyan-300/35 bg-cyan-950/20 p-4">
                     <GarageAnalysisBlock
-                      title="Build B"
+                      title="AC SET B"
                       analysis={analysisB}
                       compareAnalysis={analysisA}
                     />

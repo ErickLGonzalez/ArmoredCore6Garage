@@ -1,6 +1,7 @@
 import Link from "next/link";
 
 import { MasterofArenaMark } from "@/components/MasterofArenaMark";
+import { UserThemeControls } from "@/components/UserThemeControls";
 
 export function SiteNav() {
   return (
@@ -26,6 +27,7 @@ export function SiteNav() {
             Garage
           </Link>
         </div>
+        <UserThemeControls />
       </nav>
     </header>
   );

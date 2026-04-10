@@ -214,7 +214,7 @@ export function GarageAnalysisBlock({
       {aimOk ? (
         <div>
           <p className="mb-2 text-xs font-medium uppercase tracking-wide text-cyan-200/70">
-            Aim assist vs distance (legacy-style)
+            AIM ASSIST
           </p>
           <AimAssistPlot
             className="h-44 w-full max-w-md"
@@ -226,7 +226,7 @@ export function GarageAnalysisBlock({
       {recPrimary && recPrimary.length > 0 ? (
         <div>
           <p className="mb-2 text-xs font-medium uppercase tracking-wide text-cyan-200/70">
-            Recoil accumulation (legacy-style)
+            RECOIL
           </p>
           <RecoilPlot
             className="h-44 w-full max-w-md"
@@ -238,7 +238,7 @@ export function GarageAnalysisBlock({
       {enPrimary ? (
         <div>
           <p className="mb-2 text-xs font-medium uppercase tracking-wide text-cyan-200/70">
-            EN recovery (legacy-style)
+            ENERGY
           </p>
           <EnergyRecoveryPlot
             className="h-48 w-full max-w-md"
@@ -249,7 +249,7 @@ export function GarageAnalysisBlock({
       ) : null}
       <div>
         <p className="mb-2 text-xs font-medium uppercase tracking-wide text-cyan-200/70">
-          Summary
+          AC SPECS
         </p>
         <dl className="grid gap-2 sm:grid-cols-2">
           {SUMMARY_METRICS.map(({ key, label }) => {

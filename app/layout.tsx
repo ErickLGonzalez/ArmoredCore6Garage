@@ -1,6 +1,9 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
+import { cookies } from "next/headers";
 
+import { resolveTheme } from "@/lib/auth/themes";
+import { THEME_COOKIE } from "@/lib/auth/session";
 import { SiteNav } from "@/components/SiteNav";
 
 import "./globals.css";
@@ -33,8 +36,9 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const theme = resolveTheme(cookies().get(THEME_COOKIE)?.value);
   return (
-    <html lang="en">
+    <html lang="en" data-ui-theme={theme}>
       <body
         className={`${geistSans.variable} ${geistMono.variable} min-h-screen bg-zinc-50 text-zinc-900 antialiased dark:bg-zinc-950 dark:text-zinc-50`}
       >

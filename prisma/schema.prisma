@@ -13,14 +13,37 @@ enum Visibility {
   PRIVATE
 }
 
+enum UiTheme {
+  BLACK
+  CATPPUCCIN_FRAPPE
+  CATPPUCCIN_LATTE
+  CATPPUCCIN_MACCHIATO
+  CATPPUCCIN_MOCHA
+  DEFAULT
+  DRACULA
+  FROSTY
+  GRUVBOX_DARK
+  GRUVBOX_LIGHT
+  ONE_DARK
+  ROSE_PINE
+  ROSE_PINE_DAWN
+  ROSE_PINE_MOON
+  SOLARIZED_DARK
+  TOKYONIGHT
+  WHITE
+}
+
 model User {
   id          String           @id @default(cuid())
   email       String           @unique
   displayName String?
+  passwordHash String?
+  theme       UiTheme          @default(TOKYONIGHT)
   createdAt   DateTime         @default(now())
   updatedAt   DateTime         @updatedAt
   builds      Build[]
   published   CommunityBuild[]
+  sessions    Session[]
 }
 
 model Build {
@@ -91,6 +114,17 @@ model BattleResult {
 
   @@index([buildAId, createdAt])
   @@index([buildBId, createdAt])
+}
+
+model Session {
+  id         String   @id @default(cuid())
+  userId     String
+  tokenHash  String   @unique
+  createdAt  DateTime @default(now())
+  expiresAt  DateTime
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, expiresAt])
 }
 
 /// Kept for compatibility with existing project metadata.
