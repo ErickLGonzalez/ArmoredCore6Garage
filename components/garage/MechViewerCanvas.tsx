@@ -1,6 +1,9 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
+import { Suspense, useEffect, useMemo, useState } from "react";
+import { Canvas } from "@react-three/fiber";
+import { Environment, OrbitControls, useGLTF } from "@react-three/drei";
+import { Box3, Color, Vector3 } from "three";
 
 import type { GarageBuildIds } from "@/lib/garage/default-assembly";
 import type { CanonicalPart } from "@/lib/schema";
@@ -10,175 +13,247 @@ type Props = {
   build: GarageBuildIds;
 };
 
-type Vec3 = { x: number; y: number; z: number };
-type Cuboid = { c: Vec3; s: Vec3; color: string; label: string };
+type ViewerSlot =
+  | "head"
+  | "core"
+  | "arms"
+  | "legs"
+  | "rightArm"
+  | "leftArm"
+  | "rightBack"
+  | "leftBack";
 
-function colorFromName(name: string) {
-  let h = 0;
-  for (let i = 0; i < name.length; i++) h = (h * 31 + name.charCodeAt(i)) | 0;
-  const hue = Math.abs(h) % 360;
-  return `hsl(${hue} 55% 45%)`;
+type SlotPlacement = {
+  slot: ViewerSlot;
+  id: number;
+  position: [number, number, number];
+  rotation?: [number, number, number];
+  scale?: [number, number, number];
+};
+
+function slotFolder(slot: ViewerSlot): string {
+  return {
+    head: "head",
+    core: "core",
+    arms: "arms",
+    legs: "legs",
+    rightArm: "right-arm",
+    leftArm: "left-arm",
+    rightBack: "right-back",
+    leftBack: "left-back",
+  }[slot];
 }
 
-function rotateY(p: Vec3, a: number): Vec3 {
-  const c = Math.cos(a);
-  const s = Math.sin(a);
-  return { x: p.x * c + p.z * s, y: p.y, z: -p.x * s + p.z * c };
+function slug(input: string): string {
+  return input.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
 }
 
-function rotateX(p: Vec3, a: number): Vec3 {
-  const c = Math.cos(a);
-  const s = Math.sin(a);
-  return { x: p.x, y: p.y * c - p.z * s, z: p.y * s + p.z * c };
-}
-
-function project(p: Vec3, w: number, h: number) {
-  const d = 6.5;
-  const z = p.z + d;
-  const k = 180 / Math.max(1, z);
-  return { x: w / 2 + p.x * k, y: h / 2 - p.y * k, z };
-}
-
-function cuboidFaces(c: Cuboid) {
-  const { x, y, z } = c.c;
-  const { x: sx, y: sy, z: sz } = c.s;
-  const v: Vec3[] = [
-    { x: x - sx, y: y - sy, z: z - sz },
-    { x: x + sx, y: y - sy, z: z - sz },
-    { x: x + sx, y: y + sy, z: z - sz },
-    { x: x - sx, y: y + sy, z: z - sz },
-    { x: x - sx, y: y - sy, z: z + sz },
-    { x: x + sx, y: y - sy, z: z + sz },
-    { x: x + sx, y: y + sy, z: z + sz },
-    { x: x - sx, y: y + sy, z: z + sz },
-  ];
+function modelCandidates(slot: ViewerSlot, id: number, partName: string): string[] {
+  const folder = slotFolder(slot);
+  const s = slug(partName);
   return [
-    [0, 1, 2, 3],
-    [4, 5, 6, 7],
-    [0, 1, 5, 4],
-    [2, 3, 7, 6],
-    [1, 2, 6, 5],
-    [0, 3, 7, 4],
-  ].map((idx) => idx.map((i) => v[i]!));
+    `/models/parts/${folder}/${id}.glb`,
+    `/models/parts/${folder}/${s}.glb`,
+    `/models/parts/${folder}/default.glb`,
+  ];
+}
+
+function colorFromId(id: number) {
+  const hue = Math.abs(id * 29) % 360;
+  return `hsl(${hue} 56% 46%)`;
+}
+
+function FallbackPart({
+  position,
+  rotation,
+  color,
+  scale = [1, 1, 1],
+}: {
+  position: [number, number, number];
+  rotation?: [number, number, number];
+  color: string;
+  scale?: [number, number, number];
+}) {
+  return (
+    <mesh
+      position={position}
+      rotation={rotation}
+      scale={scale}
+    >
+      <boxGeometry args={[0.46, 0.46, 0.46]} />
+      <meshStandardMaterial
+        color={color}
+        metalness={0.2}
+        roughness={0.7}
+      />
+    </mesh>
+  );
+}
+
+function GltfPart({
+  url,
+  position,
+  rotation,
+  scale = [1, 1, 1],
+}: {
+  url: string;
+  position: [number, number, number];
+  rotation?: [number, number, number];
+  scale?: [number, number, number];
+}) {
+  const gltf = useGLTF(url);
+  const scene = useMemo(() => gltf.scene.clone(), [gltf.scene]);
+
+  useEffect(() => {
+    const box = new Box3().setFromObject(scene);
+    const size = new Vector3();
+    box.getSize(size);
+    const maxAxis = Math.max(size.x, size.y, size.z, 0.001);
+    const normalize = 0.9 / maxAxis;
+    scene.scale.setScalar(normalize);
+    scene.position.set(0, 0, 0);
+  }, [scene]);
+
+  return (
+    <primitive
+      object={scene}
+      position={position}
+      rotation={rotation}
+      scale={scale}
+    />
+  );
+}
+
+function SlotAssembler({
+  slots,
+  modelMap,
+}: {
+  slots: SlotPlacement[];
+  modelMap: Map<string, string>;
+}) {
+  return (
+    <group>
+      <mesh
+        rotation={[-Math.PI / 2, 0, 0]}
+        position={[0, -1.05, 0]}
+      >
+        <circleGeometry args={[2.3, 48]} />
+        <meshStandardMaterial
+          color={new Color("#0f2d45")}
+          roughness={0.88}
+          metalness={0.05}
+        />
+      </mesh>
+      {slots.map((s) => {
+        const key = `${s.slot}:${s.id}`;
+        const url = modelMap.get(key);
+        if (url) {
+          return (
+            <Suspense fallback={null} key={key}>
+              <GltfPart
+                url={url}
+                position={s.position}
+                rotation={s.rotation}
+                scale={s.scale}
+              />
+            </Suspense>
+          );
+        }
+        return (
+          <FallbackPart
+            key={key}
+            position={s.position}
+            rotation={s.rotation}
+            scale={s.scale}
+            color={colorFromId(s.id)}
+          />
+        );
+      })}
+    </group>
+  );
 }
 
 export function MechViewerCanvas({ partsById, build }: Props) {
-  const canvasRef = useRef<HTMLCanvasElement>(null);
-  const draggingRef = useRef(false);
-  const lastRef = useRef({ x: 0, y: 0 });
-  const [yaw, setYaw] = useState(-0.4);
-  const [pitch, setPitch] = useState(-0.15);
+  const slots = useMemo<SlotPlacement[]>(
+    () => [
+      { slot: "head", id: build.head, position: [0, 0.9, 0] },
+      { slot: "core", id: build.core, position: [0, 0.25, 0], scale: [1.2, 1.4, 1] },
+      { slot: "arms", id: build.arms, position: [0, 0.25, 0], scale: [1.1, 1.1, 1.1] },
+      { slot: "legs", id: build.legs, position: [0, -0.5, 0], scale: [1.15, 1.4, 1.15] },
+      { slot: "rightArm", id: build.rightArm, position: [0.86, 0.24, 0], scale: [0.8, 0.8, 1.35] },
+      { slot: "leftArm", id: build.leftArm, position: [-0.86, 0.24, 0], scale: [0.8, 0.8, 1.35] },
+      { slot: "rightBack", id: build.rightBack, position: [0.72, 0.72, -0.35], scale: [0.95, 0.95, 1.2] },
+      { slot: "leftBack", id: build.leftBack, position: [-0.72, 0.72, -0.35], scale: [0.95, 0.95, 1.2] },
+    ],
+    [build],
+  );
 
-  const blocks = useMemo<Cuboid[]>(() => {
-    const getName = (id: number) => partsById.get(id)?.identity.name ?? String(id);
-    return [
-      { c: { x: 0, y: 1.55, z: 0 }, s: { x: 0.45, y: 0.28, z: 0.35 }, color: colorFromName(getName(build.head)), label: "HEAD" },
-      { c: { x: 0, y: 0.8, z: 0 }, s: { x: 0.75, y: 0.55, z: 0.45 }, color: colorFromName(getName(build.core)), label: "CORE" },
-      { c: { x: -1.05, y: 0.8, z: 0 }, s: { x: 0.25, y: 0.6, z: 0.24 }, color: colorFromName(getName(build.leftArm)), label: "L-ARM" },
-      { c: { x: 1.05, y: 0.8, z: 0 }, s: { x: 0.25, y: 0.6, z: 0.24 }, color: colorFromName(getName(build.rightArm)), label: "R-ARM" },
-      { c: { x: -0.4, y: -0.35, z: 0 }, s: { x: 0.35, y: 0.8, z: 0.35 }, color: colorFromName(getName(build.legs)), label: "LEGS-L" },
-      { c: { x: 0.4, y: -0.35, z: 0 }, s: { x: 0.35, y: 0.8, z: 0.35 }, color: colorFromName(getName(build.legs)), label: "LEGS-R" },
-      { c: { x: -1.05, y: 1.35, z: -0.45 }, s: { x: 0.25, y: 0.22, z: 0.35 }, color: colorFromName(getName(build.leftBack)), label: "L-BACK" },
-      { c: { x: 1.05, y: 1.35, z: -0.45 }, s: { x: 0.25, y: 0.22, z: 0.35 }, color: colorFromName(getName(build.rightBack)), label: "R-BACK" },
-    ];
-  }, [build, partsById]);
+  const [modelMap, setModelMap] = useState<Map<string, string>>(new Map());
 
   useEffect(() => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-    const ctx = canvas.getContext("2d");
-    if (!ctx) return;
-    let raf = 0;
-    let auto = true;
-
-    const draw = () => {
-      const dpr = window.devicePixelRatio || 1;
-      const rect = canvas.getBoundingClientRect();
-      canvas.width = Math.max(1, Math.floor(rect.width * dpr));
-      canvas.height = Math.max(1, Math.floor(rect.height * dpr));
-      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-      const w = rect.width;
-      const h = rect.height;
-      ctx.clearRect(0, 0, w, h);
-
-      ctx.fillStyle = "#0a1d2e";
-      ctx.fillRect(0, 0, w, h);
-
-      const drawFaces: {
-        depth: number;
-        pts: { x: number; y: number; z: number }[];
-        color: string;
-      }[] = [];
-
-      for (const b of blocks) {
-        for (const face of cuboidFaces(b)) {
-          const rotated = face.map((p) => rotateX(rotateY(p, yaw), pitch));
-          const pts = rotated.map((p) => project(p, w, h));
-          const depth = pts.reduce((s, p) => s + p.z, 0) / pts.length;
-          drawFaces.push({ depth, pts, color: b.color });
-        }
+    let cancelled = false;
+    const run = async () => {
+      const checks = await Promise.all(
+        slots.map(async (s) => {
+          const partName = partsById.get(s.id)?.identity.name ?? String(s.id);
+          const candidates = modelCandidates(s.slot, s.id, partName);
+          for (const c of candidates) {
+            try {
+              const res = await fetch(c, { method: "HEAD" });
+              if (res.ok) return [`${s.slot}:${s.id}`, c] as const;
+            } catch {
+              // keep searching fallbacks
+            }
+          }
+          return null;
+        }),
+      );
+      if (cancelled) return;
+      const next = new Map<string, string>();
+      for (const item of checks) {
+        if (item) next.set(item[0], item[1]);
       }
-      drawFaces.sort((a, b) => b.depth - a.depth);
-
-      for (const f of drawFaces) {
-        ctx.beginPath();
-        ctx.moveTo(f.pts[0]!.x, f.pts[0]!.y);
-        for (let i = 1; i < f.pts.length; i++) ctx.lineTo(f.pts[i]!.x, f.pts[i]!.y);
-        ctx.closePath();
-        ctx.fillStyle = f.color;
-        ctx.globalAlpha = 0.88;
-        ctx.fill();
-        ctx.globalAlpha = 1;
-        ctx.strokeStyle = "rgba(80,210,255,0.28)";
-        ctx.stroke();
-      }
-      ctx.fillStyle = "rgba(180,238,255,0.8)";
-      ctx.font = "12px monospace";
-      ctx.fillText("Drag to rotate", 12, h - 12);
+      setModelMap(next);
     };
-
-    const tick = () => {
-      if (auto && !draggingRef.current) setYaw((v) => v + 0.004);
-      draw();
-      raf = window.requestAnimationFrame(tick);
-    };
-    raf = window.requestAnimationFrame(tick);
-
-    const onDown = (e: PointerEvent) => {
-      draggingRef.current = true;
-      auto = false;
-      lastRef.current = { x: e.clientX, y: e.clientY };
-      canvas.setPointerCapture(e.pointerId);
-    };
-    const onUp = (e: PointerEvent) => {
-      draggingRef.current = false;
-      canvas.releasePointerCapture(e.pointerId);
-    };
-    const onMove = (e: PointerEvent) => {
-      if (!draggingRef.current) return;
-      const dx = e.clientX - lastRef.current.x;
-      const dy = e.clientY - lastRef.current.y;
-      lastRef.current = { x: e.clientX, y: e.clientY };
-      setYaw((v) => v + dx * 0.01);
-      setPitch((v) => Math.max(-1.2, Math.min(1.2, v + dy * 0.01)));
-    };
-
-    canvas.addEventListener("pointerdown", onDown);
-    canvas.addEventListener("pointerup", onUp);
-    canvas.addEventListener("pointermove", onMove);
-
+    void run();
     return () => {
-      window.cancelAnimationFrame(raf);
-      canvas.removeEventListener("pointerdown", onDown);
-      canvas.removeEventListener("pointerup", onUp);
-      canvas.removeEventListener("pointermove", onMove);
+      cancelled = true;
     };
-  }, [blocks, pitch, yaw]);
+  }, [slots, partsById]);
 
+  const loadedCount = modelMap.size;
   return (
     <div className="space-y-2 rounded border border-cyan-300/35 bg-cyan-950/20 p-3">
       <h3 className="text-sm font-semibold tracking-wide text-cyan-100">3D Viewer</h3>
-      <canvas ref={canvasRef} className="h-[420px] w-full rounded border border-cyan-300/20 bg-[#0b2032]" />
+      <p className="text-[11px] text-cyan-200/75">
+        GLTF slot assembler active ({loadedCount}/8 slot models found). Missing slots fall back to debug geometry.
+      </p>
+      <div className="h-[460px] w-full overflow-hidden rounded border border-cyan-300/20 bg-[#0b2032]">
+        <Canvas camera={{ position: [2.3, 1.7, 2.6], fov: 42 }}>
+          <ambientLight intensity={0.42} />
+          <directionalLight
+            intensity={1.1}
+            position={[3, 5, 2]}
+          />
+          <directionalLight
+            intensity={0.4}
+            position={[-3, 2, -2]}
+          />
+          <Suspense fallback={null}>
+            <SlotAssembler
+              slots={slots}
+              modelMap={modelMap}
+            />
+            <Environment preset="city" />
+          </Suspense>
+          <OrbitControls
+            enablePan={false}
+            minDistance={1.9}
+            maxDistance={5.4}
+            target={[0, 0.22, 0]}
+          />
+        </Canvas>
+      </div>
     </div>
   );
 }

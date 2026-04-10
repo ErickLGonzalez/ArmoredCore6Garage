@@ -5,6 +5,8 @@ import Link from "next/link";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 
 import { CounterRicochetPanel } from "@/components/garage/CounterRicochetPanel";
+import { CounterMatchupTTKPanel } from "@/components/garage/CounterMatchupTTKPanel";
+import { CounterStaggerBreakpointsPanel } from "@/components/garage/CounterStaggerBreakpointsPanel";
 import {
   GarageAnalysisBlock,
   GarageBuildDiffPreview,
@@ -456,9 +458,51 @@ export function GarageClient({
                 >
                   Ricochet
                 </button>
+                <button
+                  type="button"
+                  onMouseEnter={playHover}
+                  onClick={() => {
+                    playClick();
+                    setCounterTab("ttk");
+                  }}
+                  className={`rounded px-3 py-1.5 text-xs font-semibold uppercase tracking-wide ${
+                    counterTab === "ttk"
+                      ? "bg-cyan-300 text-cyan-950"
+                      : "border border-cyan-300/45 bg-cyan-900/20 text-cyan-100 hover:bg-cyan-800/35"
+                  }`}
+                >
+                  Matchup TTK
+                </button>
+                <button
+                  type="button"
+                  onMouseEnter={playHover}
+                  onClick={() => {
+                    playClick();
+                    setCounterTab("stagger");
+                  }}
+                  className={`rounded px-3 py-1.5 text-xs font-semibold uppercase tracking-wide ${
+                    counterTab === "stagger"
+                      ? "bg-cyan-300 text-cyan-950"
+                      : "border border-cyan-300/45 bg-cyan-900/20 text-cyan-100 hover:bg-cyan-800/35"
+                  }`}
+                >
+                  Stagger
+                </button>
               </div>
               {counterTab === "ricochet" ? (
                 <CounterRicochetPanel parts={parts} />
+              ) : null}
+              {counterTab === "ttk" ? (
+                <CounterMatchupTTKPanel
+                  analysisA={analysisA}
+                  analysisB={analysisB}
+                />
+              ) : null}
+              {counterTab === "stagger" ? (
+                <CounterStaggerBreakpointsPanel
+                  analysisA={analysisA}
+                  analysisB={analysisB}
+                />
               ) : null}
             </div>
           ) : mainTab === "viewer" ? (
