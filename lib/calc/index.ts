@@ -1,14 +1,6 @@
-export {
-  computeFullAccuracy,
-  fcsAssistAtDistance,
-  parseAimAssistGraph,
-  rangeBandDefaultDistanceM,
-  recoilDamageMultiplier,
-  type FullAccuracyConfig,
-  type FullAccuracyResult,
-  type RangeBand,
-} from "./accuracy";
-export { analyzeBuild, type BuildAnalysis } from "./analyze-build";
+export * from "@/src/lib/calc";
+
+// Compatibility exports for legacy import paths.
 export {
   assemblyToLegacyMap,
   canonicalToLegacyPart,
@@ -20,12 +12,3 @@ export {
   findLegacyStat,
   type AcPartsMap,
 } from "./compute-all-stats";
-export { mean, piecewiseLinear, total } from "./math";
-export { postprocessLegacyDataset } from "./postprocess";
-export type {
-  AssemblySlot,
-  BuildAssembly,
-  LegacyPart,
-  LegacyStatGroup,
-  LegacyStatRow,
-} from "./types";

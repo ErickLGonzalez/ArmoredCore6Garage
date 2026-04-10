@@ -1,39 +1,33 @@
 "use client";
 
-import type { Dispatch, SetStateAction } from "react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 
-import { AimAssistPlot } from "@/components/garage/AimAssistPlot";
 import { CounterRicochetPanel } from "@/components/garage/CounterRicochetPanel";
-import { EnergyRecoveryPlot } from "@/components/garage/EnergyRecoveryPlot";
+import {
+  GarageAnalysisBlock,
+  GarageBuildDiffPreview,
+  GarageLegacyStatGroupsSection,
+  GarageSlotColumn,
+} from "@/components/garage/GarageBuildPanels";
 import { MechViewerCanvas } from "@/components/garage/MechViewerCanvas";
 import { GarageCenterPanel } from "@/components/garage/layout/GarageCenterPanel";
 import { GarageLeftPanel } from "@/components/garage/layout/GarageLeftPanel";
 import { GarageRightPanel } from "@/components/garage/layout/GarageRightPanel";
 import { GarageShell } from "@/components/garage/layout/GarageShell";
 import { PartsTablePanel } from "@/components/garage/PartsTablePanel";
-import { RecoilPlot } from "@/components/garage/RecoilPlot";
 import {
   REQUIRED_ASSEMBLY_SLOTS,
   analyzeBuild,
   computeFullAccuracy,
   type BuildAnalysis,
 } from "@/lib/calc";
-import type { LegacyStatRow } from "@/lib/calc/types";
 import { assemblyFromGarageIds } from "@/lib/garage/assembly-from-ids";
 import { decodeGarageBuild, encodeGarageBuild } from "@/lib/garage/build-url";
 import type { GarageBuildIds } from "@/lib/garage/default-assembly";
 import {
-  getAimAssistPlotData,
-  getEnergyRecoveryCurves,
-  getRecoilPlotPoints,
-} from "@/lib/garage/plot-data";
-import {
-  EXPANSION_SLOT_LABEL,
   partsForSlot,
-  SLOT_LABELS,
   sortPartsByName,
   type RequiredSlot,
 } from "@/lib/garage/slot-options";
@@ -50,8 +44,6 @@ type Props = {
   initialQueryB2: string | null;
 };
 
-type MainTab = "build" | "parts" | "counters" | "viewer";
-
 function formatNumber(n: number): string {
   if (!Number.isFinite(n)) return "—";
   if (Math.abs(n) >= 10_000) {
@@ -59,372 +51,6 @@ function formatNumber(n: number): string {
   }
   if (Number.isInteger(n)) return n.toLocaleString();
   return n.toLocaleString(undefined, { maximumSignificantDigits: 5 });
-}
-
-function formatStatValue(v: unknown): string {
-  if (v === null || v === undefined) return "—";
-  if (typeof v === "number" && Number.isFinite(v)) return formatNumber(v);
-  if (typeof v === "boolean") return v ? "Yes" : "No";
-  if (typeof v === "string") return v;
-  try {
-    return JSON.stringify(v);
-  } catch {
-    return String(v);
-  }
-}
-
-function skipCollapsibleRow(row: LegacyStatRow): boolean {
-  return (
-    row.type === "RangePlot" ||
-    row.type === "RecoilPlot" ||
-    row.type === "EnergyPlot"
-  );
-}
-
-const SUMMARY_METRICS: { key: keyof BuildAnalysis; label: string }[] = [
-  { key: "totalWeight", label: "Total weight" },
-  { key: "totalEnLoad", label: "Total EN load" },
-  { key: "totalAp", label: "AP" },
-  { key: "totalDef", label: "Mean frame DEF" },
-  { key: "totalStability", label: "Attitude stability" },
-  { key: "groundedBoostSpeed", label: "Grounded boost speed" },
-  { key: "qbReload", label: "QB reload time" },
-  { key: "enSupplyEfficiency", label: "EN supply efficiency" },
-  { key: "dps", label: "Σ Damage/s (all units)" },
-  { key: "burstDps", label: "Σ burst DPS (incl. reload)" },
-  { key: "impactPerSecond", label: "Σ Impact/s" },
-  { key: "accumulativeImpactPerSecond", label: "Σ Acc. impact/s" },
-];
-
-const SLOT_GROUPS: { label: string; slots: RequiredSlot[] }[] = [
-  { label: "Weapons", slots: ["rightArm", "leftArm", "rightBack", "leftBack"] },
-  { label: "Frame", slots: ["head", "core", "arms", "legs"] },
-  { label: "Internals", slots: ["booster", "fcs", "generator"] },
-];
-
-type SlotColumnProps = {
-  label: string;
-  idPrefix: string;
-  ids: GarageBuildIds;
-  setIds: Dispatch<SetStateAction<GarageBuildIds>>;
-  optionsBySlot: Map<RequiredSlot, CanonicalPart[]>;
-  expansionOptions: CanonicalPart[];
-  onInteract?: () => void;
-  onHover?: () => void;
-};
-
-function SlotColumn({
-  label,
-  idPrefix,
-  ids,
-  setIds,
-  optionsBySlot,
-  expansionOptions,
-  onInteract,
-  onHover,
-}: SlotColumnProps) {
-  const setSlot = useCallback(
-    (slot: RequiredSlot, id: number) => {
-      setIds((prev) => ({ ...prev, [slot]: id }));
-    },
-    [setIds],
-  );
-
-  return (
-    <div className="space-y-3">
-      <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-cyan-200/80">
-        {label}
-      </p>
-      {SLOT_GROUPS.map((group) => (
-        <div
-          key={group.label}
-          className="space-y-2"
-        >
-          <p className="text-[10px] uppercase tracking-[0.18em] text-cyan-200/60">
-            {group.label}
-          </p>
-          {group.slots.map((slot) => {
-            const opts = optionsBySlot.get(slot) ?? [];
-            const sid = `${idPrefix}-${slot}`;
-            return (
-              <label
-                key={slot}
-                htmlFor={sid}
-                className="block text-sm"
-              >
-                <span className="mb-1 block text-xs font-medium uppercase tracking-wide text-cyan-100/85">
-                  {SLOT_LABELS[slot]}
-                </span>
-                <select
-                  id={sid}
-                  className="w-full rounded border border-cyan-300/40 bg-[#081724] px-2 py-1.5 text-xs text-cyan-50 outline-none focus:border-cyan-200 focus:ring-2 focus:ring-cyan-400/20"
-                  value={ids[slot]}
-                  onMouseEnter={onHover}
-                  onChange={(e) => {
-                    onInteract?.();
-                    setSlot(slot, Number(e.target.value));
-                  }}
-                >
-                  {opts.map((p) => (
-                    <option
-                      key={p.identity.id}
-                      value={p.identity.id}
-                    >
-                      {p.identity.name}
-                    </option>
-                  ))}
-                </select>
-              </label>
-            );
-          })}
-        </div>
-      ))}
-      <label
-        htmlFor={`${idPrefix}-expansion`}
-        className="block text-sm"
-      >
-        <span className="mb-1 block text-xs font-medium uppercase tracking-wide text-cyan-100/85">
-          {EXPANSION_SLOT_LABEL}
-        </span>
-        <select
-          id={`${idPrefix}-expansion`}
-          className="w-full rounded border border-cyan-300/40 bg-[#081724] px-2 py-1.5 text-xs text-cyan-50 outline-none focus:border-cyan-200 focus:ring-2 focus:ring-cyan-400/20"
-          value={ids.expansionId}
-          onMouseEnter={onHover}
-          onChange={(e) => {
-            onInteract?.();
-            setIds((prev) => ({ ...prev, expansionId: Number(e.target.value) }));
-          }}
-        >
-          {expansionOptions.map((p) => (
-            <option
-              key={p.identity.id}
-              value={p.identity.id}
-            >
-              {p.identity.name}
-            </option>
-          ))}
-        </select>
-      </label>
-    </div>
-  );
-}
-
-function AnalysisBlock({
-  title,
-  analysis,
-  compareAnalysis,
-}: {
-  title: string;
-  analysis: BuildAnalysis;
-  compareAnalysis: BuildAnalysis | null;
-}) {
-  const aimPrimary = getAimAssistPlotData(analysis.groups);
-  const aimCompare = compareAnalysis
-    ? getAimAssistPlotData(compareAnalysis.groups)
-    : null;
-  const recPrimary = getRecoilPlotPoints(analysis.groups);
-  const recCompare = compareAnalysis
-    ? getRecoilPlotPoints(compareAnalysis.groups)
-    : null;
-  const enPrimary = getEnergyRecoveryCurves(analysis.groups);
-  const enCompare = compareAnalysis
-    ? getEnergyRecoveryCurves(compareAnalysis.groups)
-    : null;
-
-  const aimOk =
-    aimPrimary &&
-    aimPrimary.length >= 7 &&
-    [4, 5, 6].every((i) => Number.isFinite(aimPrimary[i]!));
-
-  return (
-    <div className="space-y-6 text-cyan-50">
-      <h3 className="text-sm font-semibold tracking-wide text-cyan-100">
-        {title}
-      </h3>
-
-      {aimOk ? (
-        <div>
-          <p className="mb-2 text-xs font-medium uppercase tracking-wide text-cyan-200/70">
-            Aim assist vs distance (legacy-style)
-          </p>
-          <AimAssistPlot
-            className="h-44 w-full max-w-md"
-            primary={aimPrimary!}
-            compare={compareAnalysis ? aimCompare : null}
-          />
-          <p className="mt-1 text-[10px] text-cyan-200/65">
-            Cyan: this build. Red verticals: unit ideal ranges (capped 300 m). Dashed:
-            compare build.
-          </p>
-        </div>
-      ) : null}
-
-      {recPrimary && recPrimary.length > 0 ? (
-        <div>
-          <p className="mb-2 text-xs font-medium uppercase tracking-wide text-cyan-200/70">
-            Recoil accumulation (legacy-style)
-          </p>
-          <RecoilPlot
-            className="h-44 w-full max-w-md"
-            primary={recPrimary}
-            compare={compareAnalysis ? recCompare : null}
-          />
-        </div>
-      ) : null}
-
-      {enPrimary ? (
-        <div>
-          <p className="mb-2 text-xs font-medium uppercase tracking-wide text-cyan-200/70">
-            EN recovery (legacy-style)
-          </p>
-          <EnergyRecoveryPlot
-            className="h-48 w-full max-w-md"
-            primary={enPrimary}
-            compare={compareAnalysis ? enCompare : null}
-          />
-          <p className="mt-1 text-[10px] text-cyan-200/65">
-            Cyan: normal recharge. Red: redline. Dashed: compare build.
-          </p>
-        </div>
-      ) : null}
-
-      <div>
-        <p className="mb-2 text-xs font-medium uppercase tracking-wide text-cyan-200/70">
-          Summary
-        </p>
-        <dl className="grid gap-2 sm:grid-cols-2">
-          {SUMMARY_METRICS.map(({ key, label }) => {
-            const v = analysis[key];
-            const display =
-              typeof v === "number" ? formatNumber(v) : formatStatValue(v);
-            let delta: string | null = null;
-            let deltaClass = "text-cyan-200/70";
-            const compareValue = compareAnalysis ? compareAnalysis[key] : null;
-            if (typeof v === "number" && typeof compareValue === "number") {
-              const d = v - compareValue;
-              if (Number.isFinite(d) && Math.abs(d) > 1e-6) {
-                delta = `${d > 0 ? "+" : ""}${formatNumber(d)}`;
-                deltaClass = d > 0 ? "text-emerald-300" : "text-rose-300";
-              } else {
-                delta = "±0";
-              }
-            }
-            return (
-              <div key={key}>
-                <dt className="text-xs text-cyan-200/70">{label}</dt>
-                <dd className="font-mono text-sm font-medium text-cyan-50">
-                  {display}
-                  {delta ? (
-                    <span className={`ml-1 text-[11px] ${deltaClass}`}>
-                      ({delta})
-                    </span>
-                  ) : null}
-                </dd>
-              </div>
-            );
-          })}
-        </dl>
-      </div>
-    </div>
-  );
-}
-
-function LegacyStatGroupsSection({
-  analysis,
-  title,
-}: {
-  analysis: BuildAnalysis;
-  title: string;
-}) {
-  return (
-    <div className="rounded border border-cyan-300/35 bg-cyan-950/20 p-4">
-      <h3 className="text-sm font-semibold tracking-wide text-cyan-100">
-        {title}
-      </h3>
-      <p className="mt-1 text-xs text-cyan-200/70">
-        Range, recoil, and EN recovery plot rows omitted (see charts above).
-      </p>
-      <div className="mt-4 space-y-3">
-        {analysis.groups.map((group, gi) => (
-          <details
-            key={gi}
-            className="group rounded border border-cyan-300/25"
-          >
-            <summary className="cursor-pointer select-none px-3 py-2 text-sm font-medium text-cyan-100 hover:bg-cyan-800/20">
-              Group {gi + 1}{" "}
-              <span className="font-normal text-cyan-200/70">
-                ({group.filter((r) => !skipCollapsibleRow(r)).length} stats)
-              </span>
-            </summary>
-            <div className="border-t border-cyan-300/20">
-              <table className="w-full text-left text-xs">
-                <tbody>
-                  {group
-                    .filter((row) => !skipCollapsibleRow(row))
-                    .map((row) => (
-                      <tr
-                        key={row.name}
-                        className="border-b border-cyan-300/10 last:border-0"
-                      >
-                        <th className="w-[40%] px-3 py-1.5 font-medium text-cyan-100">
-                          {row.name}
-                          {row.type ? (
-                            <span className="ml-1 font-normal text-cyan-200/60">
-                              ({row.type})
-                            </span>
-                          ) : null}
-                        </th>
-                        <td className="break-all px-3 py-1.5 font-mono text-cyan-50/90">
-                          {formatStatValue(row.value)}
-                        </td>
-                      </tr>
-                    ))}
-                </tbody>
-              </table>
-            </div>
-          </details>
-        ))}
-      </div>
-    </div>
-  );
-}
-
-function BuildDiffPreview({
-  buildA,
-  buildB,
-  byId,
-}: {
-  buildA: GarageBuildIds;
-  buildB: GarageBuildIds;
-  byId: Map<number, CanonicalPart>;
-}) {
-  const diffs = REQUIRED_ASSEMBLY_SLOTS.filter((slot) => buildA[slot] !== buildB[slot]).map(
-    (slot) => ({
-      slot: SLOT_LABELS[slot],
-      a: byId.get(buildA[slot])?.identity.name ?? String(buildA[slot]),
-      b: byId.get(buildB[slot])?.identity.name ?? String(buildB[slot]),
-    }),
-  );
-  return (
-    <div className="rounded border border-cyan-300/35 bg-cyan-950/20 p-3">
-      <p className="text-xs font-semibold uppercase tracking-wide text-cyan-100">
-        Diff Preview (A vs B)
-      </p>
-      {diffs.length === 0 ? (
-        <p className="mt-2 text-xs text-cyan-200/70">No slot differences.</p>
-      ) : (
-        <ul className="mt-2 space-y-1 text-xs text-cyan-100/90">
-          {diffs.map((d) => (
-            <li key={d.slot} className="font-mono">
-              <span className="text-cyan-200/70">{d.slot}: </span>
-              {d.a} <span className="text-cyan-200/70">→</span> {d.b}
-            </li>
-          ))}
-        </ul>
-      )}
-    </div>
-  );
 }
 
 function initialBuildsFromQuery(
@@ -486,10 +112,14 @@ export function GarageClient({
     buildB: storeBuildB,
     compareOn,
     engagementM,
+    activeTab,
+    counterTab,
     setBuildA,
     setBuildB,
     setCompareOn,
     setEngagementM,
+    setActiveTab,
+    setCounterTab,
   } = useGarageStore();
 
   useEffect(() => {
@@ -633,8 +263,7 @@ export function GarageClient({
   const [audioOn, setAudioOn] = useState(true);
   const audioCtxRef = useRef<AudioContext | null>(null);
   const lastHoverRef = useRef(0);
-  const [mainTab, setMainTab] = useState<MainTab>("build");
-  const [counterTab, setCounterTab] = useState<"ricochet">("ricochet");
+  const mainTab = activeTab;
   const beep = useCallback(
     (freq: number, duration = 0.02) => {
       if (!audioOn) return;
@@ -696,7 +325,7 @@ export function GarageClient({
               onMouseEnter={playHover}
               onClick={() => {
                 playClick();
-                setMainTab("build");
+                setActiveTab("build");
               }}
               className={`rounded px-3 py-1.5 text-xs font-semibold uppercase tracking-wide focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-300/60 ${
                 mainTab === "build"
@@ -711,7 +340,7 @@ export function GarageClient({
               onMouseEnter={playHover}
               onClick={() => {
                 playClick();
-                setMainTab("counters");
+                setActiveTab("counters");
               }}
               className={`rounded px-3 py-1.5 text-xs font-semibold uppercase tracking-wide focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-300/60 ${
                 mainTab === "counters"
@@ -726,7 +355,7 @@ export function GarageClient({
               onMouseEnter={playHover}
               onClick={() => {
                 playClick();
-                setMainTab("viewer");
+                setActiveTab("viewer");
               }}
               className={`rounded px-3 py-1.5 text-xs font-semibold uppercase tracking-wide focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-300/60 ${
                 mainTab === "viewer"
@@ -741,7 +370,7 @@ export function GarageClient({
               onMouseEnter={playHover}
               onClick={() => {
                 playClick();
-                setMainTab("parts");
+                setActiveTab("parts");
               }}
               className={`rounded px-3 py-1.5 text-xs font-semibold uppercase tracking-wide focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-300/60 ${
                 mainTab === "parts"
@@ -843,7 +472,7 @@ export function GarageClient({
           <GarageLeftPanel>
             {mainTab === "build" ? (
               <div className={`grid gap-4 ${compareOn ? "md:grid-cols-2 xl:grid-cols-1" : "grid-cols-1"}`}>
-                <SlotColumn
+                <GarageSlotColumn
                   label="Build A"
                   idPrefix="build-a"
                   ids={buildA}
@@ -854,7 +483,7 @@ export function GarageClient({
                   onInteract={playClick}
                 />
                 {compareOn ? (
-                  <SlotColumn
+                  <GarageSlotColumn
                     label="Build B"
                     idPrefix="build-b"
                     ids={buildB}
@@ -945,7 +574,7 @@ export function GarageClient({
               </div>
             ) : null}
             {compareOn ? (
-              <BuildDiffPreview
+              <GarageBuildDiffPreview
                 buildA={buildA}
                 buildB={buildB}
                 byId={byId}
@@ -980,7 +609,7 @@ export function GarageClient({
             {analysisA ? (
               <div className={`grid gap-4 ${compareOn && analysisB ? "2xl:grid-cols-2" : "grid-cols-1"}`}>
                 <div className="rounded border border-cyan-300/35 bg-cyan-950/20 p-4">
-                  <AnalysisBlock
+                  <GarageAnalysisBlock
                     title="Build A"
                     analysis={analysisA}
                     compareAnalysis={compareOn ? analysisB : null}
@@ -988,7 +617,7 @@ export function GarageClient({
                 </div>
                 {compareOn && analysisB ? (
                   <div className="rounded border border-cyan-300/35 bg-cyan-950/20 p-4">
-                    <AnalysisBlock
+                    <GarageAnalysisBlock
                       title="Build B"
                       analysis={analysisB}
                       compareAnalysis={analysisA}
@@ -1018,12 +647,12 @@ export function GarageClient({
               </p>
             ) : analysisA ? (
               <div className="space-y-4">
-                <LegacyStatGroupsSection
+                <GarageLegacyStatGroupsSection
                   analysis={analysisA}
                   title="Legacy stat groups (build A)"
                 />
                 {compareOn && analysisB ? (
-                  <LegacyStatGroupsSection
+                  <GarageLegacyStatGroupsSection
                     analysis={analysisB}
                     title="Legacy stat groups (build B)"
                   />

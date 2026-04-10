@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import type { Prisma } from "@prisma/client";
 
 import { CommunityBuildCreateSchema } from "@/lib/dto/community";
 import { prisma } from "@/lib/prisma";
@@ -19,6 +20,9 @@ export async function POST(req: Request) {
       title: body.title,
       description: body.description,
       tags: body.tags,
+      visibility: body.visibility,
+      patchVersion: body.patchVersion,
+      buildMetadata: body.buildMetadata as Prisma.InputJsonValue | undefined,
     },
   });
   return NextResponse.json(row, { status: 201 });

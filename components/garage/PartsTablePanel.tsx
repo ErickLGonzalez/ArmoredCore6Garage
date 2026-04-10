@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 
 import type { CanonicalPart } from "@/lib/schema";
+import { useGarageStore } from "@/src/lib/store/garage-store";
 
 type Props = {
   parts: CanonicalPart[];
@@ -404,18 +405,52 @@ function colWidth(key: string): number {
 }
 
 export function PartsTablePanel({ parts }: Props) {
-  const [query, setQuery] = useState("");
-  const [slot, setSlot] = useState<SlotKey>("all");
-  const [sorters, setSorters] = useState<Sorter[]>([{ key: "Name", dir: "asc" }]);
+  const {
+    selectedSlot,
+    partsQuery,
+    partsSorters,
+    partsColumnFilters,
+    setSelectedSlot,
+    setPreviewPartId,
+    setPartsQuery,
+    setPartsSorters,
+    setPartsColumnFilters,
+  } = useGarageStore();
+  const initialSlot = (selectedSlot && SLOT_OPTIONS.some((s) => s.key === selectedSlot)
+    ? selectedSlot
+    : "all") as SlotKey;
+  const [query, setQuery] = useState(partsQuery);
+  const [slot, setSlot] = useState<SlotKey>(initialSlot);
+  const [sorters, setSorters] = useState<Sorter[]>(
+    partsSorters.length > 0 ? partsSorters : [{ key: "Name", dir: "asc" }],
+  );
   const [visibleCols, setVisibleCols] = useState<ColKey[]>(["Name"]);
   const [colOrder, setColOrder] = useState<ColKey[]>(["Name"]);
   const [presets, setPresets] = useState<Preset[]>([]);
   const [selectedPreset, setSelectedPreset] = useState("");
   const [dragCol, setDragCol] = useState<ColKey | null>(null);
   const [openFilterCol, setOpenFilterCol] = useState<string | null>(null);
-  const [columnFilters, setColumnFilters] = useState<Record<string, string[]>>({});
+  const [columnFilters, setColumnFilters] = useState<Record<string, string[]>>(
+    partsColumnFilters,
+  );
   const [filterSearch, setFilterSearch] = useState("");
   const partClass = getPartClass(slot);
+
+  useEffect(() => {
+    setPartsQuery(query);
+  }, [query, setPartsQuery]);
+
+  useEffect(() => {
+    setSelectedSlot(slot);
+  }, [slot, setSelectedSlot]);
+
+  useEffect(() => {
+    setPartsSorters(sorters);
+  }, [sorters, setPartsSorters]);
+
+  useEffect(() => {
+    setPartsColumnFilters(columnFilters);
+  }, [columnFilters, setPartsColumnFilters]);
 
   useEffect(() => {
     try {
@@ -908,6 +943,7 @@ export function PartsTablePanel({ parts }: Props) {
                 className={`border-t border-cyan-300/10 text-cyan-50/90 ${
                   i % 2 ? "bg-[#132739]/55" : "bg-[#0f2132]/75"
                 }`}
+                onMouseEnter={() => setPreviewPartId(p.identity.id)}
               >
                 {orderedVisibleCols.map((k) => {
                   return (

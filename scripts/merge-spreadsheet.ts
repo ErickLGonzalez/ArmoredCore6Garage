@@ -20,6 +20,16 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(__dirname, "..");
 const MERGED = path.join(ROOT, "data", "parts.merged.json");
 
+function sameStatValue(a: unknown, b: unknown): boolean {
+  if (typeof a === "number" || typeof b === "number") {
+    const na = Number(a);
+    const nb = Number(b);
+    if (!Number.isFinite(na) || !Number.isFinite(nb)) return false;
+    return Math.abs(na - nb) < 1e-9;
+  }
+  return a === b;
+}
+
 function parseArgs(): { input: string } {
   const argv = process.argv.slice(2);
   const idx = argv.indexOf("--input");
@@ -114,15 +124,32 @@ function main() {
     dataset.parts.map((p) => [p.identity.name, p] as const),
   );
 
+  let skippedUnknownField = 0;
+  let skippedCanonicalMismatch = 0;
+  let verified = 0;
   for (const row of overrides) {
     const part = byName.get(row.partName);
     if (!part) {
       console.warn(`Unknown partName (skipped): ${row.partName}`);
       continue;
     }
+    const currentValue = (part.baseStats as Record<string, unknown>)[row.field];
+    if (!(row.field in part.baseStats)) {
+      skippedUnknownField++;
+      console.warn(
+        `Locked baseStats field missing (skipped): ${row.partName}.${row.field}`,
+      );
+      continue;
+    }
+    if (!sameStatValue(currentValue, row.value)) {
+      skippedCanonicalMismatch++;
+      console.warn(
+        `Canonical mismatch (skipped): ${row.partName}.${row.field} repo=${String(currentValue)} override=${String(row.value)}`,
+      );
+      continue;
+    }
     const next = {
       ...part,
-      baseStats: { ...part.baseStats, [row.field]: row.value },
       metadata: {
         ...part.metadata,
         schemaVersion: "1.0.0" as const,
@@ -130,7 +157,10 @@ function main() {
         sourceVersion: "repo-1.0.9" as const,
         spreadsheetVersion: "1.0.7" as const,
         overrideSources: Array.from(
-          new Set([...(part.metadata.overrideSources ?? []), "spreadsheet-override"]),
+          new Set([
+            ...(part.metadata.overrideSources ?? []),
+            "spreadsheet-override-verified",
+          ]),
         ),
       },
     };
@@ -142,6 +172,7 @@ function main() {
       );
       continue;
     }
+    verified++;
     byName.set(row.partName, checked.data);
   }
 
@@ -152,7 +183,9 @@ function main() {
   };
 
   writeFileSync(MERGED, JSON.stringify(nextDataset, null, 2), "utf-8");
-  console.log(`Applied ${overrides.length} override(s) → ${MERGED}`);
+  console.log(
+    `Verified ${verified}/${overrides.length} override(s) (unknown-field=${skippedUnknownField}, canonical-mismatch=${skippedCanonicalMismatch}) → ${MERGED}`,
+  );
 }
 
 main();

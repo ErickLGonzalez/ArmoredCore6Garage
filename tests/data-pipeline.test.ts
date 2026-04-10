@@ -12,6 +12,33 @@ const SOURCE = path.join(ROOT, "data", "source", "parts.json");
 const MERGED = path.join(ROOT, "data", "parts.merged.json");
 
 describe("full PartsData pipeline", () => {
+  it("keeps merged visible/base stats synced with 1.0.9 source", () => {
+    if (!existsSync(SOURCE) || !existsSync(MERGED)) {
+      console.warn("skip: missing source or merged data");
+      return;
+    }
+    const srcRaw = JSON.parse(readFileSync(SOURCE, "utf-8")) as Record<string, unknown>[];
+    const sourceByName = new Map(
+      srcRaw.map((r, i) => {
+        const n = normalizeRawPart(r, i, "data/source/parts.json");
+        return [n.identity.name, n] as const;
+      }),
+    );
+    const merged = MergedDatasetSchema.parse(JSON.parse(readFileSync(MERGED, "utf-8")));
+    for (const p of merged.parts) {
+      if (p.identity.name === "(NOTHING)") continue;
+      const source = sourceByName.get(p.identity.name);
+      expect(source, `missing source part for ${p.identity.name}`).toBeTruthy();
+      if (!source) continue;
+      for (const key of Object.keys(source.baseStats)) {
+        expect(
+          p.baseStats[key as keyof typeof p.baseStats],
+          `${p.identity.name}.${key}`,
+        ).toEqual(source.baseStats[key as keyof typeof source.baseStats]);
+      }
+    }
+  });
+
   it("normalizes and validates every row when source exists", () => {
     if (!existsSync(SOURCE)) {
       console.warn("skip: data/source/parts.json missing");

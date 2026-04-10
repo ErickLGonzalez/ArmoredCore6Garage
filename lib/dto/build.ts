@@ -4,6 +4,9 @@ export const BuildCreateInputSchema = z.object({
   name: z.string().min(1).max(120),
   code: z.string().min(1).max(500),
   summary: z.record(z.string(), z.unknown()).optional(),
+  visibility: z.enum(["PUBLIC", "UNLISTED", "PRIVATE"]).optional(),
+  patchVersion: z.string().min(1).max(32).optional(),
+  buildMetadata: z.record(z.string(), z.unknown()).optional(),
   userId: z.string().min(1).optional(),
 });
 

@@ -5,4 +5,7 @@ export const CommunityBuildCreateSchema = z.object({
   title: z.string().min(1).max(120),
   description: z.string().max(2000).optional(),
   tags: z.array(z.string().min(1).max(32)).max(12).default([]),
+  visibility: z.enum(["PUBLIC", "UNLISTED", "PRIVATE"]).optional(),
+  patchVersion: z.string().min(1).max(32).optional(),
+  buildMetadata: z.record(z.string(), z.unknown()).optional(),
 });

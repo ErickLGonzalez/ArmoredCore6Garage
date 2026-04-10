@@ -23,6 +23,9 @@ export async function POST(req: Request) {
       name: body.name,
       code: body.code,
       summary: body.summary as Prisma.InputJsonValue | undefined,
+      visibility: body.visibility,
+      patchVersion: body.patchVersion,
+      buildMetadata: body.buildMetadata as Prisma.InputJsonValue | undefined,
       userId: body.userId,
     },
   });
