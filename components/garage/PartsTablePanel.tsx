@@ -707,21 +707,19 @@ export function PartsTablePanel({ parts }: Props) {
   };
 
   return (
-    <div className="rounded border border-cyan-300/35 bg-cyan-950/20 p-3">
-      <div className="mb-3">
+    <div className="ac6-block p-1.5">
+      <div className="mb-2">
         <p className="mb-2 text-xs uppercase tracking-[0.16em] text-cyan-200/75">
-          Part Slot Select
+          PART SLOT SELECT
         </p>
-        <div className="flex flex-wrap gap-2">
+        <div className="flex flex-wrap gap-1.5">
           {SLOT_OPTIONS.map((s) => (
             <button
               key={s.key}
               type="button"
               onClick={() => setSlot(s.key)}
-              className={`flex items-center gap-1 rounded border px-2 py-1 text-[11px] font-semibold ${
-                slot === s.key
-                  ? "border-cyan-200 bg-cyan-300 text-cyan-950"
-                  : "border-cyan-300/40 bg-[#081724] text-cyan-100"
+              className={`ac6-parts-slot-btn flex items-center gap-1 px-1.5 py-[2px] ${
+                slot === s.key ? "ac6-parts-slot-btn-active" : ""
               }`}
             >
               {s.icon ? (
@@ -737,24 +735,24 @@ export function PartsTablePanel({ parts }: Props) {
         </div>
       </div>
 
-      <div className="mb-3 flex flex-wrap items-end gap-2">
+      <div className="mb-2 flex flex-wrap items-end gap-1.5">
         <label className="text-xs text-cyan-200/80">
-          Search
+          SEARCH
           <input
-            className="ml-2 rounded border border-cyan-300/45 bg-[#081724] px-2 py-1 text-xs text-cyan-50"
+            className="ac6-inset-field ml-2 px-2 py-1 text-xs"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            placeholder="part name / manufacturer"
+            placeholder="PART NAME / MANUFACTURER"
           />
         </label>
         <label className="text-xs text-cyan-200/80">
-          Preset
+          PRESET
           <select
-            className="ml-2 rounded border border-cyan-300/45 bg-[#081724] px-2 py-1 text-xs text-cyan-50"
+            className="ac6-inset-field ml-2 px-2 py-1 text-xs"
             value={selectedPreset}
             onChange={(e) => applyPreset(e.target.value)}
           >
-            <option value="">(none)</option>
+            <option value="">(NONE)</option>
             {presets.map((p) => (
               <option key={p.name} value={p.name}>
                 {p.name}
@@ -764,41 +762,41 @@ export function PartsTablePanel({ parts }: Props) {
         </label>
         <button
           type="button"
-          className="rounded border border-cyan-300/45 bg-[#081724] px-2 py-1 text-xs text-cyan-100"
+          className="px-2 py-1 text-xs"
           onClick={savePreset}
         >
-          Save Preset
+          SAVE PRESET
         </button>
         <button
           type="button"
-          className="rounded border border-cyan-300/45 bg-[#081724] px-2 py-1 text-xs text-cyan-100 disabled:opacity-40"
+          className="px-2 py-1 text-xs disabled:opacity-40"
           disabled={!selectedPreset}
           onClick={deletePreset}
         >
-          Delete Preset
+          DELETE PRESET
         </button>
-        <p className="ml-auto text-xs text-cyan-200/70">{rows.length} parts</p>
+        <p className="ml-auto text-xs text-cyan-200/70">{rows.length} PARTS</p>
       </div>
 
-      <div className="mb-3 rounded border border-cyan-300/25 p-2">
+      <div className="ac6-inner-frame mb-2">
         <div className="mb-1 flex items-center justify-between gap-2">
           <p className="text-[11px] uppercase tracking-[0.14em] text-cyan-200/75">
-            Column Visibility
+            COLUMN VISIBILITY
           </p>
           <div className="flex gap-2">
             <button
               type="button"
-              className="rounded border border-cyan-300/35 px-2 py-1 text-[10px] text-cyan-100"
+              className="px-2 py-1 text-[10px]"
               onClick={() => setAllCols(true)}
             >
-              Select All
+              SELECT ALL
             </button>
             <button
               type="button"
-              className="rounded border border-cyan-300/35 px-2 py-1 text-[10px] text-cyan-100"
+              className="px-2 py-1 text-[10px]"
               onClick={() => setAllCols(false)}
             >
-              Deselect All
+              DESELECT ALL
             </button>
           </div>
         </div>
@@ -817,29 +815,29 @@ export function PartsTablePanel({ parts }: Props) {
         </div>
       </div>
 
-      <div className="relative h-[700px] overflow-auto rounded border border-cyan-300/25">
-        <table className="w-full text-left text-xs">
-          <thead className="sticky top-0 z-30 bg-[#0b2032]">
-            <tr className="border-b border-cyan-300/25">
+      <div className="ac6-table-wrap relative h-[800px] overflow-auto">
+        <table className="w-full text-left text-[11px]">
+          <thead className="ac6-table-headband ac6-table-thead sticky top-0 z-30">
+            <tr className="ac6-table-group-row">
               {groupRuns.map((g, i) => (
                 <th
                   key={`${g.label}-${i}`}
                   colSpan={g.span}
-                  className="px-2 py-1 text-[10px] uppercase tracking-[0.14em] text-cyan-200/75"
+                  className="px-2 py-[2px] text-[10px] uppercase tracking-[0.08em] text-cyan-200/75"
                 >
                   {g.label}
                 </th>
               ))}
             </tr>
-            <tr className="text-cyan-100">
+            <tr className="ac6-table-col-header text-cyan-100">
               {orderedVisibleCols.map((k) => {
                 const sortPos = sorters.findIndex((s) => s.key === k);
                 const hasFilter = (columnFilters[k] ?? []).length > 0;
                 return (
                   <th
                     key={k}
-                    className={`relative overflow-visible px-2 py-1 ${
-                      k === "Name" ? "sticky left-0 z-40 bg-[#0b2032]" : ""
+                    className={`relative overflow-visible px-2 py-[2px] ${
+                      k === "Name" ? "ac6-table-name-sticky" : ""
                     }`}
                     style={{ minWidth: colWidth(k), width: colWidth(k) }}
                     draggable
@@ -850,7 +848,7 @@ export function PartsTablePanel({ parts }: Props) {
                     <div className="flex items-center gap-1">
                       <button
                         type="button"
-                        className="hover:text-cyan-50"
+                        className="ac6-table-sort"
                         onClick={(e) => setSort(k, e.shiftKey)}
                       >
                         {toDisplayString(k)}
@@ -867,8 +865,8 @@ export function PartsTablePanel({ parts }: Props) {
                       ) : null}
                       <button
                         type="button"
-                        className={`rounded border px-1 text-[10px] ${
-                          hasFilter ? "border-cyan-200 bg-cyan-300 text-cyan-950" : "border-cyan-300/35 text-cyan-200/80"
+                        className={`px-[3px] py-0 text-[10px] ${
+                          hasFilter ? "ac6-filter-chip-active" : "ac6-filter-chip-off"
                         }`}
                         onClick={() => {
                           setFilterSearch("");
@@ -880,11 +878,11 @@ export function PartsTablePanel({ parts }: Props) {
                       </button>
                     </div>
                     {openFilterCol === k ? (
-                      <div className="absolute left-0 top-full z-70 mt-1 w-64 rounded border border-cyan-300/35 bg-[#0b2032] p-2 shadow-xl">
+                      <div className="ac6-filter-pop absolute left-0 top-full z-70 mt-1 w-64 p-2 shadow-xl">
                         <input
                           value={filterSearch}
                           onChange={(e) => setFilterSearch(e.target.value)}
-                          className="mb-2 w-full rounded border border-cyan-300/35 bg-[#081724] px-2 py-1 text-[11px] text-cyan-100"
+                          className="ac6-inset-field mb-2 w-full px-2 py-1 text-[11px]"
                           placeholder="Search values..."
                         />
                         <div className="max-h-56 overflow-auto pr-1">
@@ -902,31 +900,31 @@ export function PartsTablePanel({ parts }: Props) {
                         <div className="mt-2 flex flex-wrap justify-between gap-1">
                           <button
                             type="button"
-                            className="rounded border border-cyan-300/35 px-2 py-1 text-[10px] text-cyan-100"
+                            className="px-2 py-1 text-[10px]"
                             onClick={() => setAllFilterOptions(k, true)}
                           >
-                            Select All
+                            SELECT ALL
                           </button>
                           <button
                             type="button"
-                            className="rounded border border-cyan-300/35 px-2 py-1 text-[10px] text-cyan-100"
+                            className="px-2 py-1 text-[10px]"
                             onClick={() => setAllFilterOptions(k, false)}
                           >
-                            Deselect
+                            DESELECT
                           </button>
                           <button
                             type="button"
-                            className="rounded border border-cyan-300/35 px-2 py-1 text-[10px] text-cyan-100"
+                            className="px-2 py-1 text-[10px]"
                             onClick={() => clearFilter(k)}
                           >
-                            Clear
+                            CLEAR
                           </button>
                           <button
                             type="button"
-                            className="rounded border border-cyan-300/35 px-2 py-1 text-[10px] text-cyan-100"
+                            className="px-2 py-1 text-[10px]"
                             onClick={() => setOpenFilterCol(null)}
                           >
-                            Close
+                            CLOSE
                           </button>
                         </div>
                       </div>
@@ -940,8 +938,8 @@ export function PartsTablePanel({ parts }: Props) {
             {rows.map((p, i) => (
               <tr
                 key={`${p.identity.id}-${p.identity.name}`}
-                className={`border-t border-cyan-300/10 text-cyan-50/90 ${
-                  i % 2 ? "bg-[#132739]/55" : "bg-[#0f2132]/75"
+                className={`ac6-table-row text-cyan-50/90 ${
+                  i % 2 ? "ac6-table-row-even" : "ac6-table-row-odd"
                 }`}
                 onMouseEnter={() => setPreviewPartId(p.identity.id)}
               >
@@ -949,7 +947,7 @@ export function PartsTablePanel({ parts }: Props) {
                   return (
                     <td
                       key={k}
-                      className={`px-2 py-1 ${k === "Name" ? "sticky left-0 z-1 bg-[#132739]" : ""}`}
+                      className={`px-2 py-[2px] ${k === "Name" ? "ac6-table-name-sticky" : ""}`}
                       style={{ minWidth: colWidth(k), width: colWidth(k) }}
                     >
                       {fmt(getColValue(p, k))}

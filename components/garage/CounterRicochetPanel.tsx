@@ -109,19 +109,23 @@ export function CounterRicochetPanel({ parts }: Props) {
   const sx = (x: number) => pad.l + ((x - xMin) / (xMax - xMin)) * pw;
   const sy = (y: number) => pad.t + ph - (y / yMax) * ph;
 
-  const colors = ["#38bdf8", "#f59e0b", "#86efac"];
+  const colors = [
+    "var(--ui-tab-active-top)",
+    "var(--ui-accent-compare)",
+    "var(--ui-accent-positive)",
+  ];
   const dashByType = (t: string) => (t === "Energy" ? "4 3" : "8 4");
 
   return (
-    <div className="space-y-3 rounded border border-cyan-300/35 bg-cyan-950/20 p-3">
-      <h3 className="text-sm font-semibold tracking-wide text-cyan-100">
+    <div className="ac6-block space-y-2 p-2">
+      <h3 className="ac6-block-title">
         COUNTERS · RICOCHET
       </h3>
-      <div className="grid gap-2 md:grid-cols-2">
-        <label className="text-xs text-cyan-200/80">
-          Kinetic Defense
+      <div className="grid gap-1.5 md:grid-cols-2">
+        <label className="block text-[11px]">
+          <span className="ac6-chart-section-title mb-0.5 block">KINETIC DEFENSE</span>
           <input
-            className="ml-2 w-20 rounded border border-cyan-300/45 bg-[#081724] px-2 py-1 text-xs text-cyan-50"
+            className="ac6-inset-field mt-0.5 w-20 px-2 py-1 text-xs"
             type="number"
             min={850}
             max={1550}
@@ -129,10 +133,10 @@ export function CounterRicochetPanel({ parts }: Props) {
             onChange={(e) => setDefK(Math.min(1550, Math.max(850, Number(e.target.value))))}
           />
         </label>
-        <label className="text-xs text-cyan-200/80">
-          Energy Defense
+        <label className="block text-[11px]">
+          <span className="ac6-chart-section-title mb-0.5 block">ENERGY DEFENSE</span>
           <input
-            className="ml-2 w-20 rounded border border-cyan-300/45 bg-[#081724] px-2 py-1 text-xs text-cyan-50"
+            className="ac6-inset-field mt-0.5 w-20 px-2 py-1 text-xs"
             type="number"
             min={850}
             max={1550}
@@ -142,16 +146,16 @@ export function CounterRicochetPanel({ parts }: Props) {
         </label>
       </div>
 
-      <div className="grid gap-2 md:grid-cols-3">
+      <div className="grid gap-1.5 md:grid-cols-3">
         {[unitA, unitB, unitC].map((v, i) => (
-          <label key={i} className="text-xs text-cyan-200/80">
-            Unit {i + 1}
+          <label key={i} className="block text-[11px]">
+            <span className="ac6-chart-section-title mb-0.5 block">UNIT {i + 1}</span>
             <select
-              className="ml-2 max-w-[260px] rounded border border-cyan-300/45 bg-[#081724] px-2 py-1 text-xs text-cyan-50"
+              className="ac6-inset-field mt-0.5 max-w-full px-2 py-1 text-xs"
               value={v}
               onChange={(e) => (i === 0 ? setUnitA(e.target.value) : i === 1 ? setUnitB(e.target.value) : setUnitC(e.target.value))}
             >
-              <option value="">(none)</option>
+              <option value="">(NONE)</option>
               {options.map((o) => (
                 <option key={o.label} value={o.label}>
                   {o.label}
@@ -162,9 +166,25 @@ export function CounterRicochetPanel({ parts }: Props) {
         ))}
       </div>
 
-      <svg viewBox={`0 0 ${W} ${H}`} className="h-80 w-full rounded border border-cyan-300/20 bg-[#0b2032]">
-        <line x1={sx(defK)} y1={pad.t} x2={sx(defK)} y2={pad.t + ph} stroke="#ef4444" strokeDasharray="8 4" strokeWidth={1.5} />
-        <line x1={sx(defE)} y1={pad.t} x2={sx(defE)} y2={pad.t + ph} stroke="#ef4444" strokeDasharray="4 3" strokeWidth={1.5} />
+      <svg viewBox={`0 0 ${W} ${H}`} className="ac6-chart-surface h-80 w-full">
+        <line
+          x1={sx(defK)}
+          y1={pad.t}
+          x2={sx(defK)}
+          y2={pad.t + ph}
+          stroke="var(--ui-accent-danger)"
+          strokeDasharray="8 4"
+          strokeWidth={1.5}
+        />
+        <line
+          x1={sx(defE)}
+          y1={pad.t}
+          x2={sx(defE)}
+          y2={pad.t + ph}
+          stroke="var(--ui-accent-danger)"
+          strokeDasharray="4 3"
+          strokeWidth={1.5}
+        />
         {selected.map((u, idx) => {
           const pts = rangePolyline(u);
           const pstr = pts.map(([x, y]) => `${sx(x)},${sy(y)}`).join(" ");
@@ -183,16 +203,16 @@ export function CounterRicochetPanel({ parts }: Props) {
             </g>
           );
         })}
-        <text x={W / 2} y={H - 8} textAnchor="middle" className="fill-cyan-200 text-[10px]">Defense</text>
-        <text x={8} y={H / 2} transform={`rotate(-90 8 ${H / 2})`} className="fill-cyan-200 text-[10px]">Ricochet Range</text>
+        <text x={W / 2} y={H - 8} textAnchor="middle" className="fill-cyan-200 text-[10px]">DEFENSE</text>
+        <text x={8} y={H / 2} transform={`rotate(-90 8 ${H / 2})`} className="fill-cyan-200 text-[10px]">RICOCHET RANGE</text>
       </svg>
 
-      <div className="grid gap-1 text-xs text-cyan-100/90">
+      <div className="grid gap-0.5 text-[11px] text-cyan-100/90">
         {selected.map((u) => {
           const d = u.attackType === "Energy" ? defE : defK;
           return (
             <div key={u.label} className="font-mono">
-              {u.label}: {fmt(ricochetRange(u.ideal, u.maxRic, d))} m
+              {u.label}: {fmt(ricochetRange(u.ideal, u.maxRic, d))} M
             </div>
           );
         })}

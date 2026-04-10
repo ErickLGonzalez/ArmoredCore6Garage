@@ -3,7 +3,13 @@
 import { useEffect, useMemo, useState } from "react";
 
 type MeResponse = {
-  user: { id: string; email: string; displayName: string | null; theme: string } | null;
+  user: {
+    id: string;
+    username: string;
+    email: string | null;
+    displayName: string | null;
+    theme: string;
+  } | null;
   themes: string[];
 };
 
@@ -11,8 +17,20 @@ function themeLabel(theme: string): string {
   return theme.toLowerCase().replace(/_/g, " ").replace(/\b\w/g, (m) => m.toUpperCase());
 }
 
+async function applyThemeVars(theme: string) {
+  const res = await fetch(`/api/themes/${theme}`);
+  if (!res.ok) return;
+  const body = (await res.json()) as { cssVars?: Record<string, string> };
+  if (!body.cssVars) return;
+  for (const [k, v] of Object.entries(body.cssVars)) {
+    document.documentElement.style.setProperty(k, v);
+  }
+  document.documentElement.setAttribute("data-ui-theme", theme);
+}
+
 export function UserThemeControls() {
   const [data, setData] = useState<MeResponse | null>(null);
+  const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [displayName, setDisplayName] = useState("");
@@ -25,7 +43,7 @@ export function UserThemeControls() {
     const next = (await res.json()) as MeResponse;
     setData(next);
     if (next.user?.theme) {
-      document.documentElement.setAttribute("data-ui-theme", next.user.theme);
+      await applyThemeVars(next.user.theme);
     }
   };
 
@@ -34,10 +52,10 @@ export function UserThemeControls() {
   }, []);
 
   const isLoggedIn = Boolean(data?.user);
-  const currentTheme = data?.user?.theme ?? "TOKYONIGHT";
+  const currentTheme = data?.user?.theme ?? "DEFAULT";
   const themes = data?.themes ?? [];
   const userLabel = useMemo(
-    () => data?.user?.displayName || data?.user?.email || "User",
+    () => data?.user?.displayName || data?.user?.username || data?.user?.email || "User",
     [data],
   );
 
@@ -48,8 +66,13 @@ export function UserThemeControls() {
       const endpoint = mode === "login" ? "/api/auth/login" : "/api/auth/register";
       const payload =
         mode === "login"
-          ? { email, password }
-          : { email, password, displayName: displayName || undefined };
+          ? { username, password }
+          : {
+              username,
+              email: email || undefined,
+              password,
+              displayName: displayName || undefined,
+            };
       const res = await fetch(endpoint, {
         method: "POST",
         headers: { "content-type": "application/json" },
@@ -91,7 +114,7 @@ export function UserThemeControls() {
         const body = (await res.json().catch(() => ({}))) as { error?: string };
         throw new Error(body.error || "Theme update failed");
       }
-      document.documentElement.setAttribute("data-ui-theme", theme);
+      await applyThemeVars(theme);
       await loadMe();
     } catch (e) {
       setError(e instanceof Error ? e.message : "Theme update failed");
@@ -101,29 +124,44 @@ export function UserThemeControls() {
   };
 
   return (
-    <div className="min-w-[280px] rounded border border-cyan-300/35 bg-[#0a1f2f] px-3 py-2 text-[11px] text-cyan-50">
+    <div
+      className="min-w-[280px] border-2 px-2 py-1.5 text-[11px]"
+      style={{
+        borderColor: "color-mix(in srgb, var(--ui-border) 88%, transparent)",
+        background:
+          "linear-gradient(180deg, color-mix(in srgb, var(--ui-panel-top) 92%, transparent), color-mix(in srgb, var(--ui-panel-bottom) 96%, transparent))",
+        color: "var(--ui-text)",
+      }}
+    >
       {isLoggedIn ? (
         <div className="space-y-2">
           <div className="flex items-center justify-between">
-            <span className="truncate text-cyan-200/90">{userLabel}</span>
+            <span className="truncate" style={{ color: "var(--ui-text-dim)" }}>
+              {userLabel}
+            </span>
             <button
               type="button"
               onClick={logout}
               disabled={busy}
-              className="classic-tab px-2 py-1 text-[10px]"
+              className="classic-tab px-2 py-px text-[10px]"
             >
-              Logout
+              LOGOUT
             </button>
           </div>
           <label className="block">
-            <span className="mb-1 block text-[10px] uppercase tracking-wide text-cyan-200/80">
-              Color Scheme
+            <span className="mb-1 block text-[10px] uppercase tracking-wide" style={{ color: "var(--ui-text-dim)" }}>
+              COLOR SCHEME
             </span>
             <select
               value={currentTheme}
               disabled={busy}
               onChange={(e) => void setTheme(e.target.value)}
-              className="w-full border border-cyan-300/45 bg-[#081724] px-2 py-1 text-xs text-cyan-50"
+              className="w-full border px-2 py-1 text-xs"
+              style={{
+                borderColor: "color-mix(in srgb, var(--ui-border) 95%, transparent)",
+                background: "color-mix(in srgb, var(--ui-panel-bottom) 92%, black)",
+                color: "var(--ui-text)",
+              }}
             >
               {themes.map((t) => (
                 <option key={t} value={t}>
@@ -139,16 +177,16 @@ export function UserThemeControls() {
             <button
               type="button"
               onClick={() => setMode("login")}
-              className={`classic-tab px-2 py-1 text-[10px] ${mode === "login" ? "classic-tab-active" : ""}`}
+              className={`classic-tab px-2 py-px text-[10px] ${mode === "login" ? "classic-tab-active" : ""}`}
             >
-              Login
+              LOGIN
             </button>
             <button
               type="button"
               onClick={() => setMode("register")}
-              className={`classic-tab px-2 py-1 text-[10px] ${mode === "register" ? "classic-tab-active" : ""}`}
+              className={`classic-tab px-2 py-px text-[10px] ${mode === "register" ? "classic-tab-active" : ""}`}
             >
-              Register
+              REGISTER
             </button>
           </div>
           {mode === "register" ? (
@@ -156,21 +194,49 @@ export function UserThemeControls() {
               placeholder="Display name"
               value={displayName}
               onChange={(e) => setDisplayName(e.target.value)}
-              className="w-full border border-cyan-300/45 bg-[#081724] px-2 py-1 text-xs text-cyan-50"
+              className="w-full border px-2 py-1 text-xs"
+              style={{
+                borderColor: "color-mix(in srgb, var(--ui-border) 95%, transparent)",
+                background: "color-mix(in srgb, var(--ui-panel-bottom) 92%, black)",
+                color: "var(--ui-text)",
+              }}
             />
           ) : null}
           <input
-            placeholder="Email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            className="w-full border border-cyan-300/45 bg-[#081724] px-2 py-1 text-xs text-cyan-50"
+            placeholder="Username"
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
+            className="w-full border px-2 py-1 text-xs"
+            style={{
+              borderColor: "color-mix(in srgb, var(--ui-border) 95%, transparent)",
+              background: "color-mix(in srgb, var(--ui-panel-bottom) 92%, black)",
+              color: "var(--ui-text)",
+            }}
           />
+          {mode === "register" ? (
+            <input
+              placeholder="Email (optional)"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              className="w-full border px-2 py-1 text-xs"
+              style={{
+                borderColor: "color-mix(in srgb, var(--ui-border) 95%, transparent)",
+                background: "color-mix(in srgb, var(--ui-panel-bottom) 92%, black)",
+                color: "var(--ui-text)",
+              }}
+            />
+          ) : null}
           <input
             type="password"
-            placeholder="Password (min 8)"
+            placeholder="Password (min 4)"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            className="w-full border border-cyan-300/45 bg-[#081724] px-2 py-1 text-xs text-cyan-50"
+            className="w-full border px-2 py-1 text-xs"
+            style={{
+              borderColor: "color-mix(in srgb, var(--ui-border) 95%, transparent)",
+              background: "color-mix(in srgb, var(--ui-panel-bottom) 92%, black)",
+              color: "var(--ui-text)",
+            }}
           />
           <button
             type="button"

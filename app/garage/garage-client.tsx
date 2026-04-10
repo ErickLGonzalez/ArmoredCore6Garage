@@ -306,9 +306,11 @@ export function GarageClient({
   }, [beep]);
   const playClick = useCallback(() => beep(620, 0.03), [beep]);
   const tabCls = (on: boolean) =>
-    `classic-tab ${on ? "classic-tab-active" : ""} focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-300/60`;
+    `classic-tab ${on ? "classic-tab-active" : ""} focus-visible:outline-none`;
   const utilityTabCls =
-    "classic-tab focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-300/60";
+    "classic-tab focus-visible:outline-none";
+  const utilityMiniCls =
+    `${utilityTabCls} px-1.5 py-[1px] text-[9px]`;
 
   return (
     <>
@@ -316,20 +318,18 @@ export function GarageClient({
         href="#garage-main"
         className="skip-link"
       >
-        Skip to garage analysis
+        SKIP TO GARAGE ANALYSIS
       </a>
       <GarageShell
-        title="Garage"
+        title="GARAGE"
         subtitle={
           <>
-            CLASSIC-STYLE GARAGE BASELINE. Builds sync to URL params{" "}
-            <code className="rounded border border-cyan-300/40 bg-cyan-900/20 px-1">b</code>{" "}
-            and{" "}
-            <code className="rounded border border-cyan-300/40 bg-cyan-900/20 px-1">b2</code>.
+            AC BUILD SIMULATOR // CLASSIC LAYOUT
           </>
         }
         actions={
           <>
+            <div className="ac6-header-tab-row">
             <button
               type="button"
               onMouseEnter={playHover}
@@ -339,40 +339,7 @@ export function GarageClient({
               }}
               className={tabCls(mainTab === "build")}
             >
-              Assembly
-            </button>
-            <button
-              type="button"
-              onMouseEnter={playHover}
-              onClick={() => {
-                playClick();
-                setActiveTab("counters");
-              }}
-              className={tabCls(mainTab === "counters")}
-            >
-              Counters
-            </button>
-            <button
-              type="button"
-              onMouseEnter={playHover}
-              onClick={() => {
-                playClick();
-                setActiveTab("viewer");
-              }}
-              className={tabCls(mainTab === "viewer")}
-            >
-              AC Viewer
-            </button>
-            <button
-              type="button"
-              onMouseEnter={playHover}
-              onClick={() => {
-                playClick();
-                setActiveTab("systems");
-              }}
-              className={tabCls(mainTab === "systems")}
-            >
-              Systems
+              ASSEMBLY
             </button>
             <button
               type="button"
@@ -383,8 +350,43 @@ export function GarageClient({
               }}
               className={tabCls(mainTab === "parts")}
             >
-              Parts
+              PARTS
             </button>
+            <button
+              type="button"
+              onMouseEnter={playHover}
+              onClick={() => {
+                playClick();
+                setActiveTab("counters");
+              }}
+              className={tabCls(mainTab === "counters")}
+            >
+              COUNTERS
+            </button>
+            <button
+              type="button"
+              onMouseEnter={playHover}
+              onClick={() => {
+                playClick();
+                setActiveTab("viewer");
+              }}
+              className={tabCls(mainTab === "viewer")}
+            >
+              AC VIEWER
+            </button>
+            <button
+              type="button"
+              onMouseEnter={playHover}
+              onClick={() => {
+                playClick();
+                setActiveTab("systems");
+              }}
+              className={tabCls(mainTab === "systems")}
+            >
+              SYSTEMS
+            </button>
+            </div>
+            <div className="ac6-header-util-row">
             <button
               type="button"
               onMouseEnter={playHover}
@@ -392,9 +394,9 @@ export function GarageClient({
                 playClick();
                 setCompareOn(!compareOn);
               }}
-              className={utilityTabCls}
+              className={utilityMiniCls}
             >
-              {compareOn ? "Hide Compare" : "Compare Build"}
+              {compareOn ? "COMPARE: ON" : "COMPARE: OFF"}
             </button>
             <button
               type="button"
@@ -403,9 +405,9 @@ export function GarageClient({
                 playClick();
                 copyLink();
               }}
-              className={utilityTabCls}
+              className={utilityMiniCls}
             >
-              Copy Link
+              COPY URL
             </button>
             <button
               type="button"
@@ -414,17 +416,17 @@ export function GarageClient({
                 playClick();
                 resetDefault();
               }}
-              className={utilityTabCls}
+              className={utilityMiniCls}
             >
-              Reset
+              RESET AC
             </button>
             <Link
               href="/garage/classic"
               onMouseEnter={playHover}
               onClick={playClick}
-              className={utilityTabCls}
+              className={utilityMiniCls}
             >
-              Classic UI
+              LEGACY MODE
             </Link>
             <button
               type="button"
@@ -433,10 +435,11 @@ export function GarageClient({
                 playClick();
                 setAudioOn((v) => !v);
               }}
-              className={utilityTabCls}
+              className={utilityMiniCls}
             >
-              Audio {audioOn ? "On" : "Off"}
+              AUDIO {audioOn ? "ON" : "OFF"}
             </button>
+            </div>
           </>
         }
         layout={mainTab === "build" ? "three" : "one"}
@@ -444,8 +447,8 @@ export function GarageClient({
           mainTab === "parts" ? (
             <PartsTablePanel parts={parts} />
           ) : mainTab === "counters" ? (
-            <div className="space-y-3">
-              <div className="flex flex-wrap gap-2">
+            <div className="space-y-2">
+              <div className="ac6-header-tab-row">
                 <button
                   type="button"
                   onMouseEnter={playHover}
@@ -453,11 +456,7 @@ export function GarageClient({
                     playClick();
                     setCounterTab("ricochet");
                   }}
-                  className={`rounded px-3 py-1.5 text-xs font-semibold uppercase tracking-wide ${
-                    counterTab === "ricochet"
-                      ? "bg-cyan-300 text-cyan-950"
-                      : "border border-cyan-300/45 bg-cyan-900/20 text-cyan-100 hover:bg-cyan-800/35"
-                  }`}
+                  className={tabCls(counterTab === "ricochet")}
                 >
                   RICOCHET
                 </button>
@@ -468,11 +467,7 @@ export function GarageClient({
                     playClick();
                     setCounterTab("ttk");
                   }}
-                  className={`rounded px-3 py-1.5 text-xs font-semibold uppercase tracking-wide ${
-                    counterTab === "ttk"
-                      ? "bg-cyan-300 text-cyan-950"
-                      : "border border-cyan-300/45 bg-cyan-900/20 text-cyan-100 hover:bg-cyan-800/35"
-                  }`}
+                  className={tabCls(counterTab === "ttk")}
                 >
                   MATCHUP TTK
                 </button>
@@ -483,11 +478,7 @@ export function GarageClient({
                     playClick();
                     setCounterTab("stagger");
                   }}
-                  className={`rounded px-3 py-1.5 text-xs font-semibold uppercase tracking-wide ${
-                    counterTab === "stagger"
-                      ? "bg-cyan-300 text-cyan-950"
-                      : "border border-cyan-300/45 bg-cyan-900/20 text-cyan-100 hover:bg-cyan-800/35"
-                  }`}
+                  className={tabCls(counterTab === "stagger")}
                 >
                   STAGGER BREAKPOINTS
                 </button>
@@ -509,27 +500,27 @@ export function GarageClient({
               ) : null}
             </div>
           ) : mainTab === "systems" ? (
-            <div className="space-y-3">
-              <h3 className="text-sm font-semibold uppercase tracking-[0.2em] text-cyan-100">
+            <div className="space-y-2">
+              <h3 className="ac6-block-title">
                 SYSTEMS
               </h3>
-              <div className="grid gap-3 md:grid-cols-3">
-                <div className="rounded border border-cyan-300/35 bg-cyan-950/20 p-3 text-xs text-cyan-100/90">
-                  <p className="font-semibold uppercase tracking-wide">Battle Sim</p>
-                  <p className="mt-1 font-mono">
-                    Winner: {battlePreview?.winner ?? "—"} | Time: {battlePreview ? `${formatNumber(battlePreview.durationSec)}s` : "—"}
+              <div className="grid gap-2 md:grid-cols-3">
+                <div className="ac6-block text-[11px] text-cyan-100/90">
+                  <p className="ac6-system-card-title">BATTLE SIM</p>
+                  <p className="mt-0.5 font-mono">
+                    WINNER: {battlePreview?.winner ?? "—"} | TIME: {battlePreview ? `${formatNumber(battlePreview.durationSec)}S` : "—"}
                   </p>
                 </div>
-                <div className="rounded border border-cyan-300/35 bg-cyan-950/20 p-3 text-xs text-cyan-100/90">
-                  <p className="font-semibold uppercase tracking-wide">Optimizer</p>
-                  <p className="mt-1 font-mono">
-                    Top Build: {optimizerPreview?.ranked[0]?.build ?? "—"} | Count: {optimizerPreview?.count ?? 0}
+                <div className="ac6-block text-[11px] text-cyan-100/90">
+                  <p className="ac6-system-card-title">OPTIMIZER</p>
+                  <p className="mt-0.5 font-mono">
+                    TOP AC SET: {optimizerPreview?.ranked[0]?.build ?? "—"} | COUNT: {optimizerPreview?.count ?? 0}
                   </p>
                 </div>
-                <div className="rounded border border-cyan-300/35 bg-cyan-950/20 p-3 text-xs text-cyan-100/90">
-                  <p className="font-semibold uppercase tracking-wide">Counters</p>
-                  <p className="mt-1 font-mono">
-                    Ranked: {counterPreview?.count ?? 0} | Source: Compare Pair
+                <div className="ac6-block text-[11px] text-cyan-100/90">
+                  <p className="ac6-system-card-title">COUNTERS</p>
+                  <p className="mt-0.5 font-mono">
+                    RANKED: {counterPreview?.count ?? 0} | SOURCE: COMPARE PAIR
                   </p>
                 </div>
               </div>
@@ -544,7 +535,7 @@ export function GarageClient({
         left={
           <GarageLeftPanel>
             {mainTab === "build" ? (
-              <div className={`grid gap-4 ${compareOn ? "md:grid-cols-2 xl:grid-cols-1" : "grid-cols-1"}`}>
+              <div className={`grid gap-2 ${compareOn ? "md:grid-cols-2 xl:grid-cols-1" : "grid-cols-1"}`}>
                 <GarageSlotColumn
                   label="AC SET A"
                   idPrefix="build-a"
@@ -569,37 +560,35 @@ export function GarageClient({
                 ) : null}
               </div>
             ) : mainTab === "parts" ? (
-              <p className="rounded border border-cyan-300/30 bg-cyan-950/15 px-3 py-2 text-xs text-cyan-100/75">
-                PARTS tab mirrors the classic TABLES workflow with filterable, sortable part data.
+              <p className="ac6-note">
+                PARTS MIRRORS CLASSIC TABLES WITH SORTING AND FILTERING.
               </p>
             ) : mainTab === "counters" ? (
-              <p className="rounded border border-cyan-300/30 bg-cyan-950/15 px-3 py-2 text-xs text-cyan-100/75">
-                COUNTERS is now a hierarchical section. Start with RICOCHET parity and expand with matchup tools next.
+              <p className="ac6-note">
+                COUNTERS INCLUDES RICOCHET, MATCHUP TTK, AND STAGGER BREAKPOINTS.
               </p>
             ) : mainTab === "systems" ? (
-              <p className="rounded border border-cyan-300/30 bg-cyan-950/15 px-3 py-2 text-xs text-cyan-100/75">
-                SYSTEMS centralizes advanced features (battle simulation, optimizer, and counter ranking) in the same classic shell.
+              <p className="ac6-note">
+                SYSTEMS HOSTS BATTLE SIM, OPTIMIZER, AND COUNTER RANKING.
               </p>
             ) : (
-              <p className="rounded border border-cyan-300/30 bg-cyan-950/15 px-3 py-2 text-xs text-cyan-100/75">
-                AC VIEWER (STANDARD + 3D) is now the center-pane baseline for build iteration.
+              <p className="ac6-note">
+                AC VIEWER SUPPORTS STANDARD AND 3D MODES.
               </p>
             )}
           </GarageLeftPanel>
         }
         center={
           <GarageCenterPanel>
-            <>
+            <div className="ac6-stack">
             {mainTab !== "build" ? (
-              <p className="rounded border border-cyan-300/35 bg-cyan-950/20 px-3 py-2 text-xs text-cyan-100/80">
-                Use top navigation to switch Build, Parts, Counters, and Viewer workflows.
-              </p>
+              <p className="ac6-note">USE TOP TABS TO SWITCH ASSEMBLY, PARTS, COUNTERS, VIEWER, AND SYSTEMS.</p>
             ) : null}
             {mainTab === "build" ? (
               <>
-            <div className="rounded border border-cyan-300/35 bg-cyan-950/20 p-3">
-              <div className="mb-2 flex items-center justify-between">
-                <h3 className="text-sm font-semibold tracking-wide text-cyan-100">AC VIEWER</h3>
+            <div className="ac6-block">
+              <div className="ac6-strip mb-1 flex items-center justify-between">
+                <h3 className="ac6-block-title leading-none">AC VIEWER</h3>
                 <div className="flex gap-2">
                   <button
                     type="button"
@@ -608,13 +597,9 @@ export function GarageClient({
                       playClick();
                       setViewerMode("standard");
                     }}
-                    className={`rounded px-2.5 py-1 text-[11px] font-semibold uppercase tracking-wide ${
-                      viewerMode === "standard"
-                        ? "bg-cyan-300 text-cyan-950"
-                        : "border border-cyan-300/45 bg-cyan-900/20 text-cyan-100"
-                    }`}
+                    className={tabCls(viewerMode === "standard")}
                   >
-                    Standard
+                    STANDARD
                   </button>
                   <button
                     type="button"
@@ -623,11 +608,7 @@ export function GarageClient({
                       playClick();
                       setViewerMode("3d");
                     }}
-                    className={`rounded px-2.5 py-1 text-[11px] font-semibold uppercase tracking-wide ${
-                      viewerMode === "3d"
-                        ? "bg-cyan-300 text-cyan-950"
-                        : "border border-cyan-300/45 bg-cyan-900/20 text-cyan-100"
-                    }`}
+                    className={tabCls(viewerMode === "3d")}
                   >
                     3D
                   </button>
@@ -646,24 +627,28 @@ export function GarageClient({
               )}
             </div>
             {!assemblyA && (
-              <p className="rounded border border-amber-300/45 bg-amber-950/30 px-3 py-2 text-sm text-amber-200">
-                Invalid build A (missing part ID).
+              <p className="ac6-alert">
+                INVALID AC SET A (MISSING PART ID).
               </p>
             )}
 
             {assemblyA && !analysisA && (
-              <p className="rounded border border-red-300/45 bg-red-950/30 px-3 py-2 text-sm text-red-200">
-                Analysis failed for build A.
+              <p className="ac6-alert">
+                ANALYSIS FAILED FOR AC SET A.
               </p>
             )}
 
             {m4A ? (
-              <div className="rounded border border-cyan-300/35 bg-cyan-950/20 p-4">
-                <h3 className="text-sm font-semibold tracking-wide text-cyan-100">Engagement Sim</h3>
-                <p className="mt-1 text-xs text-cyan-200/70">Single-distance preview for both builds.</p>
-                <label className="mt-3 block text-sm">
-                  <span className="mb-2 block text-xs font-medium uppercase tracking-wide text-cyan-200/80">
-                    Engagement distance ({engagementM} m)
+              <div className="ac6-block p-2">
+                <div className="ac6-strip mb-1">
+                  <h3 className="ac6-block-title leading-none">ENGAGEMENT SIM</h3>
+                </div>
+                <p className="mt-0.5 text-[10px] uppercase tracking-[0.05em] text-cyan-200/70">
+                  SINGLE-DISTANCE PREVIEW FOR AC SET A/B.
+                </p>
+                <label className="mt-1.5 block text-[11px]">
+                  <span className="ac6-chart-section-title mb-1 block">
+                    ENGAGEMENT DISTANCE ({engagementM} M)
                   </span>
                   <input
                     type="range"
@@ -674,24 +659,24 @@ export function GarageClient({
                     className="w-full accent-cyan-300"
                   />
                 </label>
-                <dl className="mt-4 grid gap-2 sm:grid-cols-2 lg:grid-cols-4">
+                <dl className="ac6-stat-grid mt-1.5 grid gap-1 sm:grid-cols-2 lg:grid-cols-4">
                   <div>
-                    <dt className="text-[11px] text-cyan-200/70">AC SET A — FCS assist</dt>
-                    <dd className="font-mono text-sm">{formatNumber(m4A.fcsAssist)}</dd>
+                    <dt className="text-cyan-200/70">AC SET A — FCS ASSIST</dt>
+                    <dd className="font-mono font-medium text-cyan-50">{formatNumber(m4A.fcsAssist)}</dd>
                   </div>
                   <div>
-                    <dt className="text-[11px] text-cyan-200/70">AC SET A — eff. DPS</dt>
-                    <dd className="font-mono text-sm">{formatNumber(m4A.effectiveDpsEstimate)}</dd>
+                    <dt className="text-cyan-200/70">AC SET A — EFF DPS</dt>
+                    <dd className="font-mono font-medium text-cyan-50">{formatNumber(m4A.effectiveDpsEstimate)}</dd>
                   </div>
                   {m4B ? (
                     <>
                       <div>
-                        <dt className="text-[11px] text-cyan-200/70">AC SET B — FCS assist</dt>
-                        <dd className="font-mono text-sm">{formatNumber(m4B.fcsAssist)}</dd>
+                        <dt className="text-cyan-200/70">AC SET B — FCS ASSIST</dt>
+                        <dd className="font-mono font-medium text-cyan-50">{formatNumber(m4B.fcsAssist)}</dd>
                       </div>
                       <div>
-                        <dt className="text-[11px] text-cyan-200/70">AC SET B — eff. DPS</dt>
-                        <dd className="font-mono text-sm">{formatNumber(m4B.effectiveDpsEstimate)}</dd>
+                        <dt className="text-cyan-200/70">AC SET B — EFF DPS</dt>
+                        <dd className="font-mono font-medium text-cyan-50">{formatNumber(m4B.effectiveDpsEstimate)}</dd>
                       </div>
                     </>
                   ) : null}
@@ -706,34 +691,36 @@ export function GarageClient({
               />
             ) : null}
             {battlePreview ? (
-              <div className="rounded border border-cyan-300/35 bg-cyan-950/20 p-3 text-xs text-cyan-100/90">
-                <p className="font-semibold uppercase tracking-wide text-cyan-100">
-                  System Preview
-                </p>
-                <p className="mt-1">
-                  Battle sim winner:{" "}
-                  <span className="font-mono">{battlePreview.winner ?? "Draw"}</span>{" "}
-                  in{" "}
+              <div className="ac6-block text-xs text-cyan-100/90">
+                <div className="ac6-strip mb-1">
+                  <p className="font-semibold uppercase tracking-wide text-cyan-100">
+                    SYSTEM PREVIEW
+                  </p>
+                </div>
+                <p className="mt-0.5">
+                  BATTLE SIM WINNER:{" "}
+                  <span className="font-mono">{battlePreview.winner ?? "DRAW"}</span>{" "}
+                  IN{" "}
                   <span className="font-mono">
-                    {formatNumber(battlePreview.durationSec)}s
+                    {formatNumber(battlePreview.durationSec)}S
                   </span>
                 </p>
-                <p className="mt-1">
-                  Optimizer top build:{" "}
+                <p className="mt-0.5">
+                  OPTIMIZER TOP AC SET:{" "}
                   <span className="font-mono">
                     {optimizerPreview?.ranked[0]?.build ?? "-"}
                   </span>
                 </p>
-                <p className="mt-1">
-                  Counter candidate count:{" "}
+                <p className="mt-0.5">
+                  COUNTER CANDIDATE COUNT:{" "}
                   <span className="font-mono">{counterPreview?.count ?? 0}</span>
                 </p>
               </div>
             ) : null}
 
             {analysisA ? (
-              <div className={`grid gap-4 ${compareOn && analysisB ? "2xl:grid-cols-2" : "grid-cols-1"}`}>
-                <div className="rounded border border-cyan-300/35 bg-cyan-950/20 p-4">
+              <div className={`grid gap-2 ${compareOn && analysisB ? "2xl:grid-cols-2" : "grid-cols-1"}`}>
+                <div className="ac6-block p-2">
                   <GarageAnalysisBlock
                     title="AC SET A"
                     analysis={analysisA}
@@ -741,7 +728,7 @@ export function GarageClient({
                   />
                 </div>
                 {compareOn && analysisB ? (
-                  <div className="rounded border border-cyan-300/35 bg-cyan-950/20 p-4">
+                  <div className="ac6-block p-2">
                     <GarageAnalysisBlock
                       title="AC SET B"
                       analysis={analysisB}
@@ -753,29 +740,29 @@ export function GarageClient({
             ) : null}
               </>
             ) : null}
-            </>
+            </div>
           </GarageCenterPanel>
         }
         right={
           <GarageRightPanel>
             {mainTab === "parts" ? (
-              <p className="rounded border border-cyan-300/35 bg-cyan-950/20 px-3 py-2 text-xs text-cyan-100/85">
-                More TABLES parity (column drag/filter presets) can be layered into PARTS next.
+              <p className="ac6-note">
+                PARTS SUPPORTS CLASSIC-STYLE COLUMNS, SORT, FILTERS, AND PRESETS.
               </p>
             ) : mainTab === "counters" ? (
-              <p className="rounded border border-cyan-300/35 bg-cyan-950/20 px-3 py-2 text-xs text-cyan-100/85">
-                Next COUNTERS subtabs can include stagger breakpoints, TTK, and matchup export.
+              <p className="ac6-note">
+                COUNTERS PROVIDES MATCHUP AND BREAKPOINT ANALYSIS VIEWS.
               </p>
             ) : mainTab === "viewer" ? (
-              <p className="rounded border border-cyan-300/35 bg-cyan-950/20 px-3 py-2 text-xs text-cyan-100/85">
-                Viewer controls: drag to rotate. This phase uses live slot geometry and color coding from selected parts.
+              <p className="ac6-note">
+                DRAG TO ROTATE THE AC MODEL; SLOT ASSEMBLY UPDATES FROM SELECTED PARTS.
               </p>
             ) : mainTab === "systems" ? (
-              <p className="rounded border border-cyan-300/35 bg-cyan-950/20 px-3 py-2 text-xs text-cyan-100/85">
-                SYSTEMS tab is the reserved extension surface for upcoming optimizer pipelines and simulation workflows.
+              <p className="ac6-note">
+                SYSTEMS IS THE EXTENSION SURFACE FOR ADVANCED SIMULATION WORKFLOWS.
               </p>
             ) : analysisA ? (
-              <div className="space-y-4">
+              <div className="space-y-2">
                 <GarageLegacyStatGroupsSection
                   analysis={analysisA}
                   title="AC SPECS (BUILD A)"
@@ -788,9 +775,7 @@ export function GarageClient({
                 ) : null}
               </div>
             ) : (
-              <p className="rounded border border-cyan-300/35 bg-cyan-950/20 px-3 py-2 text-xs text-cyan-100/80">
-                Select a valid assembly to view detailed stat groups.
-              </p>
+              <p className="ac6-note">SELECT A VALID ASSEMBLY TO VIEW DETAILED STAT GROUPS.</p>
             )}
           </GarageRightPanel>
         }

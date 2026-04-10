@@ -5,26 +5,32 @@ import { UserThemeControls } from "@/components/UserThemeControls";
 
 export function SiteNav() {
   return (
-    <header className="border-b border-cyan-300/30 bg-[#071420]/85 backdrop-blur">
-      <nav className="mx-auto flex max-w-6xl items-center justify-between gap-6 px-6 py-4">
+    <header
+      className="border-b-2"
+      style={{
+        borderColor: "var(--ui-border)",
+        background: "linear-gradient(180deg, var(--ui-panel-top), var(--ui-panel-bottom))",
+      }}
+    >
+      <nav className="mx-auto flex max-w-[1600px] items-center justify-between gap-4 px-3 py-2">
         <Link
           href="/"
           className="text-lg transition-opacity hover:opacity-80"
         >
           <MasterofArenaMark />
         </Link>
-        <div className="flex gap-6 text-sm font-medium">
+        <div className="flex gap-4 text-[12px] font-medium" style={{ color: "var(--ui-text-dim)" }}>
           <Link
             href="/"
-            className="uppercase tracking-wide text-cyan-200/75 transition-colors hover:text-cyan-100"
+            className="uppercase tracking-[0.04em] transition-opacity hover:opacity-90"
           >
-            Home
+            HOME
           </Link>
           <Link
             href="/garage"
-            className="uppercase tracking-wide text-cyan-200/75 transition-colors hover:text-cyan-100"
+            className="uppercase tracking-[0.04em] transition-opacity hover:opacity-90"
           >
-            Garage
+            GARAGE
           </Link>
         </div>
         <UserThemeControls />

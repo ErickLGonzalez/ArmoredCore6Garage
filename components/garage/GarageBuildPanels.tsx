@@ -22,24 +22,24 @@ import {
 import type { CanonicalPart } from "@/lib/schema";
 
 const SUMMARY_METRICS: { key: keyof BuildAnalysis; label: string }[] = [
-  { key: "totalWeight", label: "Total weight" },
-  { key: "totalEnLoad", label: "Total EN load" },
+  { key: "totalWeight", label: "TOTAL WEIGHT" },
+  { key: "totalEnLoad", label: "TOTAL EN LOAD" },
   { key: "totalAp", label: "AP" },
-  { key: "totalDef", label: "Mean frame DEF" },
-  { key: "totalStability", label: "Attitude stability" },
-  { key: "groundedBoostSpeed", label: "Grounded boost speed" },
-  { key: "qbReload", label: "QB reload time" },
-  { key: "enSupplyEfficiency", label: "EN supply efficiency" },
-  { key: "dps", label: "Σ Damage/s (all units)" },
-  { key: "burstDps", label: "Σ burst DPS (incl. reload)" },
-  { key: "impactPerSecond", label: "Σ Impact/s" },
-  { key: "accumulativeImpactPerSecond", label: "Σ Acc. impact/s" },
+  { key: "totalDef", label: "MEAN FRAME DEF" },
+  { key: "totalStability", label: "ATTITUDE STABILITY" },
+  { key: "groundedBoostSpeed", label: "BOOST SPEED (GROUND)" },
+  { key: "qbReload", label: "QB RELOAD TIME" },
+  { key: "enSupplyEfficiency", label: "EN SUPPLY EFFICIENCY" },
+  { key: "dps", label: "SIGMA DAMAGE/S (ALL UNITS)" },
+  { key: "burstDps", label: "SIGMA BURST DPS (W/ RELOAD)" },
+  { key: "impactPerSecond", label: "SIGMA IMPACT/S" },
+  { key: "accumulativeImpactPerSecond", label: "SIGMA ACC IMPACT/S" },
 ];
 
 const SLOT_GROUPS: { label: string; slots: RequiredSlot[] }[] = [
-  { label: "Weapons", slots: ["rightArm", "leftArm", "rightBack", "leftBack"] },
-  { label: "Frame", slots: ["head", "core", "arms", "legs"] },
-  { label: "Internals", slots: ["booster", "fcs", "generator"] },
+  { label: "WEAPONS", slots: ["rightArm", "leftArm", "rightBack", "leftBack"] },
+  { label: "FRAME", slots: ["head", "core", "arms", "legs"] },
+  { label: "INTERNALS", slots: ["booster", "fcs", "generator"] },
 ];
 
 function formatNumber(n: number): string {
@@ -100,16 +100,16 @@ export function GarageSlotColumn({
   );
 
   return (
-    <div className="space-y-3">
-      <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-cyan-200/80">
+    <div className="space-y-2">
+      <p className="text-[11px] font-semibold uppercase tracking-[0.08em] text-cyan-200/80">
         {label}
       </p>
       {SLOT_GROUPS.map((group) => (
         <div
           key={group.label}
-          className="space-y-2"
+          className="space-y-1.5"
         >
-          <p className="text-[10px] uppercase tracking-[0.18em] text-cyan-200/60">
+          <p className="text-[10px] uppercase tracking-[0.06em] text-cyan-200/60">
             {group.label}
           </p>
           {group.slots.map((slot) => {
@@ -119,14 +119,14 @@ export function GarageSlotColumn({
               <label
                 key={slot}
                 htmlFor={sid}
-                className="block text-sm"
+                className="block text-[12px]"
               >
-                <span className="mb-1 block text-xs font-medium uppercase tracking-wide text-cyan-100/85">
+                <span className="mb-0.5 block text-[11px] font-medium uppercase tracking-[0.04em] text-cyan-100/85">
                   {SLOT_LABELS[slot]}
                 </span>
                 <select
                   id={sid}
-                  className="w-full rounded border border-cyan-300/40 bg-[#081724] px-2 py-1.5 text-xs text-cyan-50 outline-none focus:border-cyan-200 focus:ring-2 focus:ring-cyan-400/20"
+                  className="ac6-slot-select w-full border-2 px-1.5 py-[2px] text-[11px] outline-none"
                   value={ids[slot]}
                   onMouseEnter={onHover}
                   onChange={(e) => {
@@ -150,14 +150,14 @@ export function GarageSlotColumn({
       ))}
       <label
         htmlFor={`${idPrefix}-expansion`}
-        className="block text-sm"
+        className="block text-[12px]"
       >
-        <span className="mb-1 block text-xs font-medium uppercase tracking-wide text-cyan-100/85">
+        <span className="mb-0.5 block text-[11px] font-medium uppercase tracking-[0.04em] text-cyan-100/85">
           {EXPANSION_SLOT_LABEL}
         </span>
         <select
           id={`${idPrefix}-expansion`}
-          className="w-full rounded border border-cyan-300/40 bg-[#081724] px-2 py-1.5 text-xs text-cyan-50 outline-none focus:border-cyan-200 focus:ring-2 focus:ring-cyan-400/20"
+          className="ac6-slot-select w-full border-2 px-1.5 py-[2px] text-[11px] outline-none focus:border-cyan-200 focus:ring-2 focus:ring-cyan-400/20"
           value={ids.expansionId}
           onMouseEnter={onHover}
           onChange={(e) => {
@@ -207,13 +207,13 @@ export function GarageAnalysisBlock({
     [4, 5, 6].every((i) => Number.isFinite(aimPrimary[i]!));
 
   return (
-    <div className="space-y-6 text-cyan-50">
-      <h3 className="text-sm font-semibold tracking-wide text-cyan-100">
+    <div className="space-y-2.5 text-cyan-50">
+      <h3 className="ac6-block-title">
         {title}
       </h3>
       {aimOk ? (
         <div>
-          <p className="mb-2 text-xs font-medium uppercase tracking-wide text-cyan-200/70">
+          <p className="ac6-chart-section-title">
             AIM ASSIST
           </p>
           <AimAssistPlot
@@ -225,7 +225,7 @@ export function GarageAnalysisBlock({
       ) : null}
       {recPrimary && recPrimary.length > 0 ? (
         <div>
-          <p className="mb-2 text-xs font-medium uppercase tracking-wide text-cyan-200/70">
+          <p className="ac6-chart-section-title">
             RECOIL
           </p>
           <RecoilPlot
@@ -237,7 +237,7 @@ export function GarageAnalysisBlock({
       ) : null}
       {enPrimary ? (
         <div>
-          <p className="mb-2 text-xs font-medium uppercase tracking-wide text-cyan-200/70">
+          <p className="ac6-chart-section-title">
             ENERGY
           </p>
           <EnergyRecoveryPlot
@@ -251,7 +251,7 @@ export function GarageAnalysisBlock({
         <p className="mb-2 text-xs font-medium uppercase tracking-wide text-cyan-200/70">
           AC SPECS
         </p>
-        <dl className="grid gap-2 sm:grid-cols-2">
+        <dl className="ac6-stat-grid grid gap-1.5 sm:grid-cols-2">
           {SUMMARY_METRICS.map(({ key, label }) => {
             const v = analysis[key];
             const display =
@@ -265,13 +265,13 @@ export function GarageAnalysisBlock({
                 delta = `${d > 0 ? "+" : ""}${formatNumber(d)}`;
                 deltaClass = d > 0 ? "text-emerald-300" : "text-rose-300";
               } else {
-                delta = "±0";
+                delta = "+/-0";
               }
             }
             return (
               <div key={key}>
-                <dt className="text-xs text-cyan-200/70">{label}</dt>
-                <dd className="font-mono text-sm font-medium text-cyan-50">
+                <dt className="text-cyan-200/70">{label}</dt>
+                <dd className="font-mono font-medium text-cyan-50">
                   {display}
                   {delta ? (
                     <span className={`ml-1 text-[11px] ${deltaClass}`}>
@@ -304,26 +304,26 @@ export function GarageLegacyStatGroupsSection({
       "LIMITS",
     ][i] ?? `GROUP ${i + 1}`;
   return (
-    <div className="rounded border border-cyan-300/35 bg-cyan-950/20 p-4">
-      <h3 className="text-sm font-semibold tracking-wide text-cyan-100">
+    <div className="ac6-block p-2">
+      <h3 className="ac6-block-title">
         {title}
       </h3>
-      <p className="mt-1 text-xs text-cyan-200/70">
-        Range, recoil, and EN recovery plot rows omitted (see charts above).
+      <p className="mt-0.5 text-[10px] uppercase tracking-[0.05em] text-cyan-200/70">
+        RANGE, RECOIL, AND EN RECOVERY PLOT ROWS OMITTED (SEE CHARTS ABOVE).
       </p>
-      <div className="mt-4 space-y-3">
+      <div className="mt-2 space-y-1.5">
         {analysis.groups.map((group, gi) => (
           <details
             key={gi}
-            className="group rounded border border-cyan-300/25"
+            className="group ac6-details-block"
           >
-            <summary className="cursor-pointer select-none px-3 py-2 text-sm font-medium text-cyan-100 hover:bg-cyan-800/20">
+            <summary className="cursor-pointer select-none px-2 py-1 text-[12px] font-medium text-cyan-100 hover:bg-cyan-800/20">
               {groupTitle(gi)}{" "}
               <span className="font-normal text-cyan-200/70">
-                ({group.filter((r) => !skipCollapsibleRow(r)).length} stats)
+                ({group.filter((r) => !skipCollapsibleRow(r)).length} STATS)
               </span>
             </summary>
-            <div className="border-t border-cyan-300/20">
+            <div>
               <table className="w-full text-left text-xs">
                 <tbody>
                   {group
@@ -331,12 +331,11 @@ export function GarageLegacyStatGroupsSection({
                     .map((row) => (
                       <tr
                         key={row.name}
-                        className="border-b border-cyan-300/10 last:border-0"
                       >
-                        <th className="w-[40%] px-3 py-1.5 font-medium text-cyan-100">
+                        <th className="w-[40%] px-2 py-1 font-medium text-cyan-100">
                           {row.name}
                         </th>
-                        <td className="break-all px-3 py-1.5 font-mono text-cyan-50/90">
+                        <td className="break-all px-2 py-1 font-mono text-cyan-50/90">
                           {formatStatValue(row.value)}
                         </td>
                       </tr>
@@ -368,14 +367,16 @@ export function GarageBuildDiffPreview({
     b: byId.get(buildB[slot])?.identity.name ?? String(buildB[slot]),
   }));
   return (
-    <div className="rounded border border-cyan-300/35 bg-cyan-950/20 p-3">
-      <p className="text-xs font-semibold uppercase tracking-wide text-cyan-100">
-        Diff Preview (A vs B)
-      </p>
+    <div className="ac6-block p-2">
+      <div className="ac6-strip mb-1">
+        <p className="ac6-block-title leading-none">
+          AC SET DIFF (A VS B)
+        </p>
+      </div>
       {diffs.length === 0 ? (
-        <p className="mt-2 text-xs text-cyan-200/70">No slot differences.</p>
+        <p className="mt-1 text-[10px] uppercase tracking-[0.05em] text-cyan-200/70">NO SLOT DIFFERENCES.</p>
       ) : (
-        <ul className="mt-2 space-y-1 text-xs text-cyan-100/90">
+        <ul className="mt-1 space-y-0.5 text-[11px] text-cyan-100/90">
           {diffs.map((d) => (
             <li key={d.slot} className="font-mono">
               <span className="text-cyan-200/70">{d.slot}: </span>

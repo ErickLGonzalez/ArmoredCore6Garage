@@ -26,53 +26,22 @@ body {
 }
 
 :root {
-  --ui-bg-top: #071420;
-  --ui-bg-bottom: #050d16;
-  --ui-panel-top: #071822;
-  --ui-panel-bottom: #050d16;
-  --ui-border: rgba(92, 196, 208, 0.42);
-  --ui-border-strong: rgba(172, 220, 232, 0.85);
-  --ui-text: #d9ffff;
-  --ui-text-dim: rgba(184, 235, 246, 0.78);
-  --ui-tab-top: #092532;
-  --ui-tab-bottom: #071521;
-  --ui-tab-active-top: #aee3f2;
-  --ui-tab-active-bottom: #75c2d7;
-  --ui-tab-active-text: #082133;
-}
-
-html[data-ui-theme="BLACK"] {
-  --ui-bg-top: #0b0b0b; --ui-bg-bottom: #060606; --ui-panel-top: #121212; --ui-panel-bottom: #090909; --ui-border: rgba(150,150,150,0.35); --ui-text: #ececec; --ui-text-dim: rgba(212,212,212,0.75);
-}
-html[data-ui-theme="WHITE"] {
-  --ui-bg-top: #f4f6f7; --ui-bg-bottom: #e8edf0; --ui-panel-top: #ffffff; --ui-panel-bottom: #edf2f5; --ui-border: rgba(66,101,120,0.45); --ui-text: #17232d; --ui-text-dim: rgba(35,58,74,0.75); --ui-tab-top: #d8e6ef; --ui-tab-bottom: #c3d9e5; --ui-tab-active-top: #2b5872; --ui-tab-active-bottom: #4a7a97; --ui-tab-active-text: #f7fcff;
-}
-html[data-ui-theme="DRACULA"] {
-  --ui-bg-top: #282a36; --ui-bg-bottom: #1f2029; --ui-panel-top: #313442; --ui-panel-bottom: #232530; --ui-border: rgba(189,147,249,0.42); --ui-text: #f8f8f2; --ui-text-dim: rgba(248,248,242,0.75); --ui-tab-top: #44475a; --ui-tab-bottom: #353746; --ui-tab-active-top: #ff79c6; --ui-tab-active-bottom: #bd93f9; --ui-tab-active-text: #1d1128;
-}
-html[data-ui-theme="TOKYONIGHT"] {
-  --ui-bg-top: #1a1b26; --ui-bg-bottom: #15161e; --ui-panel-top: #1f2335; --ui-panel-bottom: #151827; --ui-border: rgba(122,162,247,0.45); --ui-text: #c0caf5; --ui-text-dim: rgba(169,177,214,0.78); --ui-tab-top: #24283b; --ui-tab-bottom: #1c1f30; --ui-tab-active-top: #7aa2f7; --ui-tab-active-bottom: #9ece6a; --ui-tab-active-text: #11131f;
-}
-html[data-ui-theme="SOLARIZED_DARK"] {
-  --ui-bg-top: #002b36; --ui-bg-bottom: #001f27; --ui-panel-top: #073642; --ui-panel-bottom: #002a34; --ui-border: rgba(38,139,210,0.45); --ui-text: #93a1a1; --ui-text-dim: rgba(131,148,150,0.8); --ui-tab-top: #0a404f; --ui-tab-bottom: #04303c; --ui-tab-active-top: #268bd2; --ui-tab-active-bottom: #2aa198; --ui-tab-active-text: #00151b;
-}
-html[data-ui-theme="ONE_DARK"] {
-  --ui-bg-top: #282c34; --ui-bg-bottom: #1f232a; --ui-panel-top: #2f3440; --ui-panel-bottom: #232833; --ui-border: rgba(97,175,239,0.45); --ui-text: #abb2bf; --ui-text-dim: rgba(171,178,191,0.78); --ui-tab-top: #3a404d; --ui-tab-bottom: #2d323d; --ui-tab-active-top: #61afef; --ui-tab-active-bottom: #98c379; --ui-tab-active-text: #101317;
-}
-html[data-ui-theme="GRUVBOX_DARK"] {
-  --ui-bg-top: #282828; --ui-bg-bottom: #1d2021; --ui-panel-top: #3c3836; --ui-panel-bottom: #2b2b2b; --ui-border: rgba(215,153,33,0.45); --ui-text: #ebdbb2; --ui-text-dim: rgba(213,196,161,0.8); --ui-tab-top: #504945; --ui-tab-bottom: #3c3836; --ui-tab-active-top: #fabd2f; --ui-tab-active-bottom: #fe8019; --ui-tab-active-text: #2a1c00;
-}
-html[data-ui-theme="GRUVBOX_LIGHT"] {
-  --ui-bg-top: #fbf1c7; --ui-bg-bottom: #f2e5bc; --ui-panel-top: #f9f5d7; --ui-panel-bottom: #ebdbb2; --ui-border: rgba(69,133,136,0.45); --ui-text: #3c3836; --ui-text-dim: rgba(80,73,69,0.78); --ui-tab-top: #ebdbb2; --ui-tab-bottom: #d5c4a1; --ui-tab-active-top: #458588; --ui-tab-active-bottom: #689d6a; --ui-tab-active-text: #f7f3e4;
-}
-html[data-ui-theme="FROSTY"] {
-  --ui-bg-top: #0b1d2b; --ui-bg-bottom: #08151f; --ui-panel-top: #12283a; --ui-panel-bottom: #0b1e2b; --ui-border: rgba(136,192,208,0.45); --ui-text: #d8dee9; --ui-text-dim: rgba(216,222,233,0.78); --ui-tab-top: #1c3348; --ui-tab-bottom: #13283a; --ui-tab-active-top: #88c0d0; --ui-tab-active-bottom: #81a1c1; --ui-tab-active-text: #0d1a25;
-}
-html[data-ui-theme^="CATPPUCCIN_"] {
-  --ui-bg-top: #1e1e2e; --ui-bg-bottom: #181825; --ui-panel-top: #313244; --ui-panel-bottom: #1f2030; --ui-border: rgba(137,180,250,0.45); --ui-text: #cdd6f4; --ui-text-dim: rgba(186,194,222,0.78); --ui-tab-top: #45475a; --ui-tab-bottom: #313244; --ui-tab-active-top: #89b4fa; --ui-tab-active-bottom: #94e2d5; --ui-tab-active-text: #121520;
-}
-html[data-ui-theme^="ROSE_PINE"] {
-  --ui-bg-top: #191724; --ui-bg-bottom: #111019; --ui-panel-top: #26233a; --ui-panel-bottom: #1b1a2a; --ui-border: rgba(196,167,231,0.45); --ui-text: #e0def4; --ui-text-dim: rgba(224,222,244,0.78); --ui-tab-top: #403d52; --ui-tab-bottom: #2f2b40; --ui-tab-active-top: #c4a7e7; --ui-tab-active-bottom: #9ccfd8; --ui-tab-active-text: #1d1726;
+  --ui-bg-top: #2f4052;
+  --ui-bg-bottom: #1b2734;
+  --ui-panel-top: #566b84;
+  --ui-panel-bottom: #435468;
+  --ui-border: #0d141e;
+  --ui-border-strong: #0d141e;
+  --ui-text: #ffffff;
+  --ui-text-dim: #d6e6ef;
+  --ui-tab-top: #5e748f;
+  --ui-tab-bottom: #4a5d74;
+  --ui-tab-active-top: #97adb8;
+  --ui-tab-active-bottom: #7f97a7;
+  --ui-tab-active-text: #ffffff;
+  --ui-accent-danger: #ef4444;
+  --ui-accent-compare: #f59e0b;
+  --ui-accent-positive: #86efac;
 }
 
 /* Visually hidden until keyboard focus (garage skip link). */
@@ -107,6 +76,15 @@ html[data-ui-theme^="ROSE_PINE"] {
 .ac6-garage {
   position: relative;
   color: var(--ui-text);
+  font-family: "Agency FB", "Arial Narrow", Arial, sans-serif;
+  font-size: 14px;
+  line-height: 1.02;
+  letter-spacing: 0.02em;
+}
+
+/* Classic shell uses hard corners throughout interior garage UI. */
+.ac6-garage :where(.rounded, .rounded-sm, .rounded-md, .rounded-lg, .rounded-xl) {
+  border-radius: 0 !important;
 }
 
 .ac6-garage::before {
@@ -115,10 +93,7 @@ html[data-ui-theme^="ROSE_PINE"] {
   inset: 0;
   pointer-events: none;
   z-index: -1;
-  background:
-    radial-gradient(circle at 20% 10%, color-mix(in srgb, var(--ui-border) 38%, transparent), transparent 42%),
-    radial-gradient(circle at 80% 20%, color-mix(in srgb, var(--ui-border) 22%, transparent), transparent 45%),
-    linear-gradient(180deg, var(--ui-bg-top) 0%, var(--ui-bg-bottom) 100%);
+  background: linear-gradient(180deg, var(--ui-bg-top) 0%, var(--ui-bg-bottom) 100%);
 }
 
 .ac6-garage::after {
@@ -127,49 +102,136 @@ html[data-ui-theme^="ROSE_PINE"] {
   inset: 0;
   pointer-events: none;
   z-index: -1;
-  background: repeating-linear-gradient(
-    to bottom,
-    rgba(145, 255, 255, 0.02) 0,
-    rgba(145, 255, 255, 0.02) 1px,
-    transparent 1px,
-    transparent 3px
-  );
+  background: none;
 }
 
 .ac6-garage-header {
-  border-color: var(--ui-border);
-  background: linear-gradient(180deg, color-mix(in srgb, var(--ui-panel-top) 85%, transparent), color-mix(in srgb, var(--ui-panel-bottom) 88%, transparent));
-  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--ui-border) 35%, transparent), 0 0 24px color-mix(in srgb, var(--ui-border) 22%, transparent);
+  border: 2px solid var(--ui-border);
+  background: linear-gradient(180deg, var(--ui-panel-top), var(--ui-panel-bottom));
+  box-shadow: inset 0 1px 0 color-mix(in srgb, white 20%, transparent);
 }
 
 .ac6-panel {
-  border-color: var(--ui-border);
-  background:
-    linear-gradient(180deg, color-mix(in srgb, var(--ui-panel-top) 92%, transparent) 0%, color-mix(in srgb, var(--ui-panel-bottom) 94%, transparent) 100%);
-  box-shadow:
-    inset 0 0 0 1px color-mix(in srgb, var(--ui-border) 24%, transparent),
-    inset 0 1px 0 color-mix(in srgb, var(--ui-text) 10%, transparent),
-    0 0 20px color-mix(in srgb, var(--ui-border) 20%, transparent);
+  border: 2px solid var(--ui-border);
+  background: linear-gradient(180deg, var(--ui-panel-top), var(--ui-panel-bottom));
+  box-shadow: inset 0 1px 0 color-mix(in srgb, white 16%, transparent);
+  font-size: 12px;
+  line-height: 1.02;
 }
 
 .ac6-panel-title {
-  font-size: 0.66rem;
+  display: inline-block;
+  border: 2px solid var(--ui-border);
+  background: color-mix(in srgb, var(--ui-panel-bottom) 92%, black);
+  padding: 0.12rem 0.35rem;
+  font-size: 0.74rem;
   font-weight: 700;
-  letter-spacing: 0.24em;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ui-text);
+}
+
+.ac6-block {
+  border: 2px solid var(--ui-border);
+  background: linear-gradient(180deg, var(--ui-panel-top), var(--ui-panel-bottom));
+  box-shadow: inset 0 1px 0 color-mix(in srgb, white 12%, transparent);
+  padding: 0.35rem;
+}
+
+.ac6-stack {
+  display: grid;
+  gap: 0.35rem;
+}
+
+.ac6-strip {
+  border: 2px solid var(--ui-border);
+  background: color-mix(in srgb, var(--ui-panel-bottom) 90%, black);
+  padding: 0.12rem 0.35rem;
+}
+
+.ac6-block-title {
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--ui-text);
+}
+
+.ac6-note {
+  border: 2px solid var(--ui-border);
+  background: linear-gradient(180deg, var(--ui-panel-top), var(--ui-panel-bottom));
+  padding: 0.35rem 0.5rem;
+  font-size: 11px;
+  letter-spacing: 0.06em;
   text-transform: uppercase;
   color: var(--ui-text-dim);
 }
 
+.ac6-alert {
+  border: 1px solid color-mix(in srgb, var(--ui-accent-danger) 78%, transparent);
+  background: color-mix(in srgb, var(--ui-accent-danger) 18%, transparent);
+  padding: 0.45rem 0.6rem;
+  font-size: 11px;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: color-mix(in srgb, var(--ui-accent-danger) 72%, white);
+}
+
+.ac6-table-wrap {
+  position: relative;
+  border: 2px solid var(--ui-border);
+  background: var(--ui-panel-bottom);
+}
+
+.ac6-table-headband {
+  background: linear-gradient(180deg, var(--ui-panel-top), var(--ui-panel-bottom));
+  box-shadow: inset 0 -1px 0 color-mix(in srgb, black 40%, transparent);
+}
+
+.ac6-table-group-row {
+  border-bottom: 2px solid color-mix(in srgb, var(--ui-border) 92%, transparent);
+}
+
+.ac6-table-col-header {
+  border-bottom: 2px solid color-mix(in srgb, var(--ui-border) 78%, transparent);
+}
+
+.ac6-table-row {
+  border-top: 1px solid color-mix(in srgb, var(--ui-border) 70%, transparent);
+}
+
+.ac6-table-row-even {
+  background: color-mix(in srgb, var(--ui-panel-top) 66%, transparent);
+}
+
+.ac6-table-row-odd {
+  background: color-mix(in srgb, var(--ui-panel-bottom) 80%, transparent);
+}
+
+.ac6-sticky-name {
+  background: color-mix(in srgb, var(--ui-panel-top) 74%, transparent);
+  box-shadow: inset -1px 0 0 color-mix(in srgb, var(--ui-border) 55%, transparent);
+}
+
+.ac6-filter-pop {
+  border: 2px solid var(--ui-border);
+  background: linear-gradient(180deg, var(--ui-panel-top), var(--ui-panel-bottom));
+  box-shadow: 0 8px 20px color-mix(in srgb, black 45%, transparent);
+}
+
 .classic-tab {
-  border: 1px solid var(--ui-border);
+  border: 2px solid var(--ui-border);
   background: linear-gradient(180deg, var(--ui-tab-top), var(--ui-tab-bottom));
   color: var(--ui-text);
   border-radius: 0;
-  padding: 0.36rem 0.72rem;
-  font-size: 0.68rem;
-  letter-spacing: 0.16em;
+  padding: 0.16rem 0.44rem;
+  font-size: 0.72rem;
+  letter-spacing: 0.06em;
   text-transform: uppercase;
   font-weight: 700;
+  line-height: 1;
+  text-align: center;
+  min-height: 20px;
 }
 
 .classic-tab:hover {
@@ -177,8 +239,363 @@ html[data-ui-theme^="ROSE_PINE"] {
 }
 
 .classic-tab-active {
-  border-color: var(--ui-border-strong);
+  border-color: var(--ui-border);
   background: linear-gradient(180deg, var(--ui-tab-active-top), var(--ui-tab-active-bottom));
   color: var(--ui-tab-active-text);
-  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--ui-text) 32%, transparent);
+  box-shadow: inset 0 1px 0 color-mix(in srgb, white 22%, transparent);
+}
+
+/* Dense main tab strip (legacy-style segmented row). */
+.ac6-header-tab-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.2rem;
+}
+
+.ac6-header-util-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.2rem;
+  margin-left: 0.25rem;
+  padding-left: 0.35rem;
+  border-left: 2px solid var(--ui-border);
+}
+
+/* Assembly slot dropdowns: follow active theme (not fixed hex). */
+.ac6-garage .ac6-slot-select {
+  background: color-mix(in srgb, var(--ui-panel-bottom) 88%, black) !important;
+  border-color: var(--ui-border) !important;
+  color: var(--ui-text) !important;
+  min-height: 19px;
+}
+
+.ac6-garage .ac6-slot-select:focus-visible {
+  outline: 2px solid #cceaf8;
+  outline-offset: 2px;
+}
+
+/* Inset fields (search, presets, counter inputs): legacy steel, theme-aware. */
+.ac6-garage .ac6-inset-field {
+  border: 2px solid var(--ui-border) !important;
+  background: color-mix(in srgb, var(--ui-panel-bottom) 88%, black) !important;
+  color: var(--ui-text) !important;
+}
+
+.ac6-garage .ac6-inset-field:focus-visible {
+  outline: 2px solid #cceaf8;
+  outline-offset: 2px;
+}
+
+/* Subtle inner panel frame (column visibility, etc.). */
+.ac6-garage .ac6-inner-frame {
+  border: 2px solid var(--ui-border);
+  background: color-mix(in srgb, var(--ui-panel-bottom) 90%, black);
+  padding: 0.35rem;
+}
+
+/* Parts table: thead / popover surfaces track theme (no fixed #0b2032). */
+.ac6-garage .ac6-table-thead {
+  background: color-mix(in srgb, var(--ui-panel-bottom) 94%, black);
+}
+
+.ac6-garage .ac6-chart-surface {
+  display: block;
+  border: 2px solid var(--ui-border);
+  background: color-mix(in srgb, var(--ui-panel-bottom) 92%, black);
+}
+
+/* Sticky name column: zebra matches row tokens. */
+.ac6-garage .ac6-table-name-sticky {
+  position: sticky;
+  left: 0;
+  z-index: 1;
+  box-shadow: inset -1px 0 0 color-mix(in srgb, var(--ui-border) 55%, transparent);
+}
+
+.ac6-garage .ac6-table-row-even .ac6-table-name-sticky {
+  background: color-mix(in srgb, var(--ui-panel-top) 66%, transparent);
+}
+
+.ac6-garage .ac6-table-row-odd .ac6-table-name-sticky {
+  background: color-mix(in srgb, var(--ui-panel-bottom) 80%, transparent);
+}
+
+.ac6-garage thead .ac6-table-name-sticky {
+  z-index: 40;
+  background: color-mix(in srgb, var(--ui-panel-bottom) 94%, black);
+}
+
+/* PARTS slot strip: active = classic tab active; inactive = inset steel. */
+.ac6-garage button.ac6-parts-slot-btn {
+  border: 2px solid var(--ui-border) !important;
+  background: color-mix(in srgb, var(--ui-panel-bottom) 88%, black) !important;
+  color: var(--ui-text) !important;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-weight: 700;
+  font-size: 11px;
+  line-height: 1;
+  min-height: 20px;
+}
+
+.ac6-garage button.ac6-parts-slot-btn:hover {
+  filter: brightness(1.06);
+}
+
+.ac6-garage button.ac6-parts-slot-btn-active {
+  border-color: var(--ui-border) !important;
+  background: linear-gradient(180deg, var(--ui-tab-active-top), var(--ui-tab-active-bottom)) !important;
+  color: var(--ui-tab-active-text) !important;
+  box-shadow: inset 0 1px 0 color-mix(in srgb, white 22%, transparent);
+}
+
+.ac6-garage button.ac6-filter-chip-active {
+  border-color: var(--ui-border) !important;
+  background: linear-gradient(180deg, var(--ui-tab-active-top), var(--ui-tab-active-bottom)) !important;
+  color: var(--ui-tab-active-text) !important;
+}
+
+.ac6-garage button.ac6-filter-chip-off {
+  border: 2px solid var(--ui-border) !important;
+  background: color-mix(in srgb, var(--ui-panel-bottom) 88%, black) !important;
+  color: var(--ui-text-dim) !important;
+  text-transform: uppercase;
+  font-weight: 700;
+  min-height: 18px;
+}
+
+.ac6-garage .ac6-details-block {
+  border: 2px solid var(--ui-border);
+}
+
+.ac6-garage .ac6-details-block > summary + div {
+  border-top: 2px solid color-mix(in srgb, var(--ui-border) 65%, transparent);
+}
+
+.ac6-garage .ac6-details-block tbody tr {
+  border-bottom: 1px solid color-mix(in srgb, var(--ui-border) 35%, transparent);
+}
+
+.ac6-garage .ac6-details-block tbody tr:last-child {
+  border-bottom: none;
+}
+
+/* Plot / subsection titles (classic dense caps). */
+.ac6-garage .ac6-chart-section-title {
+  margin-bottom: 0.3rem;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--ui-text-dim);
+}
+
+.ac6-garage .ac6-system-card-title {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--ui-text);
+}
+
+/* Standard AC viewer: slot row surface tied to theme. */
+.ac6-slot-preview-row {
+  border: 2px solid var(--ui-border);
+  background: color-mix(in srgb, var(--ui-panel-bottom) 92%, black);
+}
+
+/* Classic-style AC silhouette: backs + head top, arms/core mid, frame arms, legs, internals bar. */
+.ac6-ac-composite {
+  display: grid;
+  grid-template-columns: repeat(9, minmax(0, 1fr));
+  grid-template-rows: minmax(56px, auto) minmax(72px, auto) minmax(52px, auto) minmax(56px, auto) minmax(48px, auto);
+  gap: 0.25rem;
+  min-height: 280px;
+  padding: 0.35rem;
+  border: 2px solid var(--ui-border);
+  background: color-mix(in srgb, var(--ui-panel-bottom) 94%, black);
+  box-shadow: inset 0 1px 0 color-mix(in srgb, white 8%, transparent);
+  grid-template-areas:
+    "rback rback head head head head head lback lback"
+    "rarm rarm core core core core core larm larm"
+    ". . arms arms arms arms arms . ."
+    ". . legs legs legs legs legs . ."
+    "boost boost fcs fcs gen gen exp exp exp";
+}
+
+.ac6-ac-slot-cell {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 0.1rem;
+  min-width: 0;
+  padding: 0.2rem 0.15rem;
+  border: 2px solid var(--ui-border);
+  background: color-mix(in srgb, var(--ui-panel-top) 55%, var(--ui-panel-bottom));
+  text-align: center;
+}
+
+.ac6-ac-slot-cell img {
+  flex-shrink: 0;
+}
+
+.ac6-garage :where(code) {
+  font-size: 10px;
+  line-height: 1;
+}
+
+.ac6-garage :where(input, select, button) {
+  min-height: 20px;
+  line-height: 1;
+  font-family: inherit;
+}
+
+.ac6-garage :where(input, select, textarea) {
+  letter-spacing: 0.02em;
+}
+
+/* Unify non-tab control chrome to classic panel language. */
+.ac6-garage :where(button):not(.classic-tab) {
+  border: 2px solid var(--ui-border);
+  background: #546982;
+  color: var(--ui-text);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  font-weight: 700;
+  padding: 0.14rem 0.4rem;
+}
+
+.ac6-garage :where(button):not(.classic-tab):hover {
+  background: #97adb8;
+  color: #fff;
+}
+
+.ac6-garage :where(select, input:not([type="range"])) {
+  border: 2px solid var(--ui-border);
+  background: #546982;
+  color: var(--ui-text);
+  text-align: center;
+}
+
+.ac6-garage :where(th, td, dt, dd, p, label, li) {
+  line-height: 1.02;
+}
+
+.ac6-stat-grid dt {
+  font-size: 11px;
+  letter-spacing: 0.02em;
+}
+
+.ac6-stat-grid dd {
+  font-size: 13px;
+  line-height: 1.04;
+  letter-spacing: 0.01em;
+}
+
+.ac6-table-sort {
+  border: 0 !important;
+  background: transparent !important;
+  padding: 0 !important;
+  min-height: 0 !important;
+  line-height: 1 !important;
+  font-size: 11px;
+  letter-spacing: 0.03em;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: var(--ui-text);
+}
+
+.ac6-table-sort:hover {
+  color: color-mix(in srgb, white 84%, var(--ui-text));
+}
+
+.ac6-garage ::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+.ac6-garage ::-webkit-scrollbar-track {
+  background: #435468;
+}
+
+.ac6-garage ::-webkit-scrollbar-thumb {
+  background: #97adb8;
+}
+
+.ac6-garage ::-webkit-scrollbar-thumb:hover {
+  background: #cceaf8;
+}
+
+/* Theme bridge: map legacy cyan utility classes to active theme tokens. */
+[class*="text-cyan-"] {
+  color: var(--ui-text) !important;
+}
+[class*="text-red-"] {
+  color: var(--ui-accent-danger) !important;
+}
+[class*="text-rose-"] {
+  color: var(--ui-accent-compare) !important;
+}
+[class*="text-emerald-"] {
+  color: var(--ui-accent-positive) !important;
+}
+[class*="text-cyan-200"],
+[class*="text-cyan-300"] {
+  color: var(--ui-text-dim) !important;
+}
+[class*="border-cyan-"] {
+  border-color: color-mix(in srgb, var(--ui-border) 90%, transparent) !important;
+}
+[class*="border-red-"],
+[class*="border-rose-"] {
+  border-color: color-mix(in srgb, var(--ui-accent-danger) 80%, transparent) !important;
+}
+[class*="bg-cyan-"] {
+  background-color: color-mix(in srgb, var(--ui-panel-bottom) 82%, transparent) !important;
+}
+[class*="bg-red-"],
+[class*="bg-rose-"] {
+  background-color: color-mix(in srgb, var(--ui-accent-danger) 22%, transparent) !important;
+}
+[class*="hover:bg-cyan-"]:hover {
+  background-color: color-mix(in srgb, var(--ui-panel-top) 88%, transparent) !important;
+}
+[class*="fill-cyan-"] {
+  fill: var(--ui-text-dim) !important;
+}
+[class*="fill-red-"],
+[class*="fill-rose-"] {
+  fill: var(--ui-accent-danger) !important;
+}
+[class*="stroke-cyan-"] {
+  stroke: var(--ui-tab-active-top) !important;
+}
+[class*="stroke-red-"] {
+  stroke: var(--ui-accent-danger) !important;
+}
+[class*="stroke-rose-"] {
+  stroke: var(--ui-accent-compare) !important;
+}
+[class*="stroke-zinc-"] {
+  stroke: color-mix(in srgb, var(--ui-text-dim) 75%, transparent) !important;
+}
+[class*="fill-zinc-"] {
+  fill: color-mix(in srgb, var(--ui-text-dim) 78%, transparent) !important;
+}
+[class*="accent-cyan-"] {
+  accent-color: var(--ui-tab-active-top) !important;
+}
+
+/* Theme bridge for fixed hex dark utility classes used in legacy-like panels. */
+[class*="bg-[#081724]"],
+[class*="bg-[#0b2032]"],
+[class*="bg-[#0f2132]"],
+[class*="bg-[#0f2233]"] {
+  background-color: color-mix(in srgb, var(--ui-panel-bottom) 92%, black) !important;
+}
+[class*="bg-black"] {
+  background-color: color-mix(in srgb, var(--ui-panel-bottom) 95%, black) !important;
 }

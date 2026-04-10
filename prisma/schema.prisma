@@ -21,13 +21,17 @@ enum UiTheme {
   CATPPUCCIN_MOCHA
   DEFAULT
   DRACULA
+  FIRE
+  FOREST
   FROSTY
   GRUVBOX_DARK
   GRUVBOX_LIGHT
   ONE_DARK
+  OCEAN
   ROSE_PINE
   ROSE_PINE_DAWN
   ROSE_PINE_MOON
+  ROSE_STONE
   SOLARIZED_DARK
   TOKYONIGHT
   WHITE
@@ -35,7 +39,8 @@ enum UiTheme {
 
 model User {
   id          String           @id @default(cuid())
-  email       String           @unique
+  username    String           @unique
+  email       String?          @unique
   displayName String?
   passwordHash String?
   theme       UiTheme          @default(TOKYONIGHT)

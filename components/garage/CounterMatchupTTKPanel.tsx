@@ -35,34 +35,38 @@ export function CounterMatchupTTKPanel({ analysisA, analysisB }: Props) {
   }, [analysisA, analysisB, damageMitigationPct]);
 
   return (
-    <div className="space-y-3 rounded border border-cyan-300/35 bg-cyan-950/20 p-3">
-      <h3 className="text-sm font-semibold tracking-wide text-cyan-100">
+    <div className="ac6-block space-y-2 p-2">
+      <h3 className="ac6-block-title">
         COUNTERS · MATCHUP TTK
       </h3>
-      <label className="block text-xs text-cyan-200/80">
-        Damage mitigation ({damageMitigationPct}%)
+      <label className="block text-[11px]">
+        <span className="ac6-chart-section-title mb-1 block">
+          DAMAGE MITIGATION ({damageMitigationPct}%)
+        </span>
         <input
           type="range"
           min={0}
           max={90}
           value={damageMitigationPct}
           onChange={(e) => setDamageMitigationPct(Number(e.target.value))}
-          className="mt-1 w-full accent-cyan-300"
+          className="w-full accent-cyan-300"
         />
       </label>
       {!rows ? (
-        <p className="text-xs text-cyan-200/75">Enable compare and keep both builds valid to preview matchup TTK.</p>
+        <p className="text-[10px] uppercase tracking-[0.05em] text-cyan-200/75">
+          ENABLE COMPARE AND KEEP BOTH AC SETS VALID.
+        </p>
       ) : (
-        <div className="grid gap-2 text-xs text-cyan-100/90 sm:grid-cols-2">
-          <div className="rounded border border-cyan-300/20 bg-[#0f2132] p-2">
-            <p className="font-semibold">A → B</p>
-            <p className="font-mono">effective DPS: {fmt(rows.aDpsEff)}</p>
-            <p className="font-mono">TTK: {fmt(rows.aToB)} s</p>
+        <div className="grid gap-1.5 text-[11px] text-cyan-100/90 sm:grid-cols-2">
+          <div className="ac6-inner-frame">
+            <p className="ac6-system-card-title">A → B</p>
+            <p className="font-mono">EFFECTIVE DPS: {fmt(rows.aDpsEff)}</p>
+            <p className="font-mono">TTK: {fmt(rows.aToB)} S</p>
           </div>
-          <div className="rounded border border-cyan-300/20 bg-[#0f2132] p-2">
-            <p className="font-semibold">B → A</p>
-            <p className="font-mono">effective DPS: {fmt(rows.bDpsEff)}</p>
-            <p className="font-mono">TTK: {fmt(rows.bToA)} s</p>
+          <div className="ac6-inner-frame">
+            <p className="ac6-system-card-title">B → A</p>
+            <p className="font-mono">EFFECTIVE DPS: {fmt(rows.bDpsEff)}</p>
+            <p className="font-mono">TTK: {fmt(rows.bToA)} S</p>
           </div>
         </div>
       )}

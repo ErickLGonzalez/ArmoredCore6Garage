@@ -30,23 +30,25 @@ export function CounterStaggerBreakpointsPanel({ analysisA, analysisB }: Props) 
   }, [analysisA, analysisB]);
 
   return (
-    <div className="space-y-3 rounded border border-cyan-300/35 bg-cyan-950/20 p-3">
-      <h3 className="text-sm font-semibold tracking-wide text-cyan-100">
+    <div className="ac6-block space-y-2 p-2">
+      <h3 className="ac6-block-title">
         COUNTERS · STAGGER BREAKPOINTS
       </h3>
       {!data ? (
-        <p className="text-xs text-cyan-200/75">Enable compare and keep both builds valid to preview stagger breakpoints.</p>
+        <p className="text-[10px] uppercase tracking-[0.05em] text-cyan-200/75">
+          ENABLE COMPARE AND KEEP BOTH AC SETS VALID.
+        </p>
       ) : (
-        <div className="grid gap-2 text-xs text-cyan-100/90 sm:grid-cols-2">
-          <div className="rounded border border-cyan-300/20 bg-[#0f2132] p-2">
-            <p className="font-semibold">A pressure on B</p>
-            <p className="font-mono">Need IPS (4s): {fmt(data.aNeedIps)}</p>
-            <p className="font-mono">Predicted break: {fmt(data.aBreakSec)} s</p>
+        <div className="grid gap-1.5 text-[11px] text-cyan-100/90 sm:grid-cols-2">
+          <div className="ac6-inner-frame">
+            <p className="ac6-system-card-title">A PRESSURE ON B</p>
+            <p className="font-mono">NEED IPS (4S): {fmt(data.aNeedIps)}</p>
+            <p className="font-mono">PREDICTED BREAK: {fmt(data.aBreakSec)} S</p>
           </div>
-          <div className="rounded border border-cyan-300/20 bg-[#0f2132] p-2">
-            <p className="font-semibold">B pressure on A</p>
-            <p className="font-mono">Need IPS (4s): {fmt(data.bNeedIps)}</p>
-            <p className="font-mono">Predicted break: {fmt(data.bBreakSec)} s</p>
+          <div className="ac6-inner-frame">
+            <p className="ac6-system-card-title">B PRESSURE ON A</p>
+            <p className="font-mono">NEED IPS (4S): {fmt(data.bNeedIps)}</p>
+            <p className="font-mono">PREDICTED BREAK: {fmt(data.bBreakSec)} S</p>
           </div>
         </div>
       )}

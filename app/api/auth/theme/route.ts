@@ -11,10 +11,16 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
   const body = ThemeUpdateSchema.parse(await req.json());
-  await prisma.user.update({
-    where: { id: user.id },
-    data: { theme: body.theme },
-  });
+  if (!user.id.startsWith("dev-")) {
+    try {
+      await prisma.user.update({
+        where: { id: user.id },
+        data: { theme: body.theme },
+      });
+    } catch {
+      return NextResponse.json({ error: "Theme service unavailable" }, { status: 503 });
+    }
+  }
   const res = NextResponse.json({ ok: true, theme: body.theme });
   res.cookies.set(THEME_COOKIE, body.theme, {
     httpOnly: false,

@@ -127,9 +127,11 @@ function GltfPart({
 function SlotAssembler({
   slots,
   modelMap,
+  floorColor,
 }: {
   slots: SlotPlacement[];
   modelMap: Map<string, string>;
+  floorColor: string;
 }) {
   return (
     <group>
@@ -139,7 +141,7 @@ function SlotAssembler({
       >
         <circleGeometry args={[2.3, 48]} />
         <meshStandardMaterial
-          color={new Color("#0f2d45")}
+          color={new Color(floorColor)}
           roughness={0.88}
           metalness={0.05}
         />
@@ -189,6 +191,7 @@ export function MechViewerCanvas({ partsById, build }: Props) {
   );
 
   const [modelMap, setModelMap] = useState<Map<string, string>>(new Map());
+  const [floorColor, setFloorColor] = useState("#0f2d45");
 
   useEffect(() => {
     let cancelled = false;
@@ -221,14 +224,30 @@ export function MechViewerCanvas({ partsById, build }: Props) {
     };
   }, [slots, partsById]);
 
+  useEffect(() => {
+    const update = () => {
+      const v = getComputedStyle(document.documentElement)
+        .getPropertyValue("--ui-panel-top")
+        .trim();
+      if (v) setFloorColor(v);
+    };
+    update();
+    const observer = new MutationObserver(update);
+    observer.observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ["style", "data-ui-theme"],
+    });
+    return () => observer.disconnect();
+  }, []);
+
   const loadedCount = modelMap.size;
   return (
-    <div className="space-y-2 rounded border border-cyan-300/35 bg-cyan-950/20 p-3">
-      <h3 className="text-sm font-semibold tracking-wide text-cyan-100">3D Viewer</h3>
-      <p className="text-[11px] text-cyan-200/75">
-        GLTF slot assembler active ({loadedCount}/8 slot models found). Missing slots fall back to debug geometry.
+    <div className="ac6-block space-y-2 p-2">
+      <h3 className="ac6-block-title">AC VIEWER · 3D</h3>
+      <p className="text-[10px] uppercase tracking-[0.05em] text-cyan-200/75">
+        GLTF SLOT ASSEMBLER ACTIVE ({loadedCount}/8 SLOT MODELS FOUND). MISSING SLOTS FALL BACK TO DEBUG GEOMETRY.
       </p>
-      <div className="h-[460px] w-full overflow-hidden rounded border border-cyan-300/20 bg-[#0b2032]">
+      <div className="ac6-chart-surface h-[460px] w-full overflow-hidden">
         <Canvas camera={{ position: [2.3, 1.7, 2.6], fov: 42 }}>
           <ambientLight intensity={0.42} />
           <directionalLight
@@ -243,6 +262,7 @@ export function MechViewerCanvas({ partsById, build }: Props) {
             <SlotAssembler
               slots={slots}
               modelMap={modelMap}
+              floorColor={floorColor}
             />
             <Environment preset="city" />
           </Suspense>

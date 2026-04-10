@@ -11,7 +11,7 @@ import { GarageClient } from "./garage-client";
 export const dynamic = "force-dynamic";
 
 export const metadata = {
-  title: "Garage",
+  title: "GARAGE",
 };
 
 type GaragePageProps = {
@@ -25,9 +25,9 @@ export default async function GaragePage({ searchParams }: GaragePageProps) {
   if (!existsSync(mergedPath)) {
     return (
       <div className="mx-auto max-w-2xl px-6 py-16">
-        <h1 className="text-2xl font-semibold">Garage</h1>
+        <h1 className="text-2xl font-semibold uppercase tracking-[0.16em]">GARAGE</h1>
         <p className="mt-4 text-zinc-600 dark:text-zinc-400">
-          No merged parts file found. Generate it from the repo root:
+          NO MERGED PARTS FILE FOUND. GENERATE IT FROM THE REPO ROOT:
         </p>
         <pre className="mt-4 overflow-x-auto rounded-lg bg-zinc-100 p-4 text-sm dark:bg-zinc-900">
           npm run data:merge
@@ -42,11 +42,11 @@ export default async function GaragePage({ searchParams }: GaragePageProps) {
   if (!parsed.success) {
     return (
       <div className="mx-auto max-w-2xl px-6 py-16">
-        <h1 className="text-2xl font-semibold">Garage</h1>
+        <h1 className="text-2xl font-semibold uppercase tracking-[0.16em]">GARAGE</h1>
         <p className="mt-4 text-red-600 dark:text-red-400">
-          Invalid{" "}
+          INVALID{" "}
           <code className="rounded bg-zinc-200 px-1 dark:bg-zinc-800">parts.merged.json</code>
-          . Re-run{" "}
+          . RE-RUN{" "}
           <code className="rounded bg-zinc-200 px-1 dark:bg-zinc-800">npm run data:merge</code>.
         </p>
       </div>
@@ -57,10 +57,10 @@ export default async function GaragePage({ searchParams }: GaragePageProps) {
   if (!defaults) {
     return (
       <div className="mx-auto max-w-2xl px-6 py-16">
-        <h1 className="text-2xl font-semibold">Garage</h1>
+        <h1 className="text-2xl font-semibold uppercase tracking-[0.16em]">GARAGE</h1>
         <p className="mt-4 text-zinc-600 dark:text-zinc-400">
-          The default starter build could not be resolved from this dataset (missing
-          expected part names). Check{" "}
+          THE DEFAULT STARTER BUILD COULD NOT BE RESOLVED FROM THIS DATASET (MISSING
+          EXPECTED PART NAMES). CHECK{" "}
           <code className="rounded bg-zinc-200 px-1 dark:bg-zinc-800">data:merge</code> output.
         </p>
       </div>
@@ -71,7 +71,7 @@ export default async function GaragePage({ searchParams }: GaragePageProps) {
     <Suspense
       fallback={
         <div className="mx-auto max-w-6xl px-6 py-16 text-center text-zinc-500">
-          Loading garage…
+          LOADING GARAGE...
         </div>
       }
     >
