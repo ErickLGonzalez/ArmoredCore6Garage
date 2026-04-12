@@ -32,7 +32,9 @@ Open [http://localhost:3000](http://localhost:3000) — garage preview at [/gara
 
 | Script               | Description                              |
 | -------------------- | ---------------------------------------- |
-| `npm run dev`        | App Router dev (Turbopack)               |
+| `npm run dev`        | Free port 3000, then App Router dev (same as `dev:restart`) |
+| `npm run dev:restart`| Same as `dev`                            |
+| `npm run dev:server` | Next only (no port kill) — used internally |
 | `npm run build`      | Production build                         |
 | `npm run start`      | Run production server                    |
 | `npm run lint`       | ESLint                                   |

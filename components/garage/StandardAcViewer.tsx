@@ -71,13 +71,13 @@ function CompositeSlot({
       <img
         src={slot.icon}
         alt={slot.label}
-        className="h-9 w-9 object-contain opacity-95 sm:h-10 sm:w-10"
+        className="ac6-ac-slot-icon"
       />
-      <div className="ac6-chart-hint w-full uppercase leading-none tracking-[0.06em]">
+      <div className="ac6-ac-slot-type-label">
         {slot.label}
       </div>
       <div
-        className="line-clamp-2 w-full max-w-full break-words text-[9px] font-medium leading-tight text-cyan-50"
+        className="ac6-ac-slot-part-name"
         title={name}
       >
         {name}
@@ -88,45 +88,20 @@ function CompositeSlot({
 
 export function StandardAcViewer({ build, partsById }: Props) {
   return (
-    <div className="ac6-block space-y-2 p-2">
-      <h3 className="ac6-block-title">AC VIEWER · STANDARD</h3>
-
-      <p className="ac6-chart-hint uppercase tracking-[0.06em] md:hidden">
-        COMPOSITE LAYOUT ON WIDER VIEWPORTS.
-      </p>
-
-      <div className="ac6-ac-composite hidden md:grid" aria-label="AC composite silhouette">
-        {SLOT_VIEWS.map((slot) => (
-          <CompositeSlot
-            key={slot.key}
-            slot={slot}
-            name={partNameFor(slot.key, build, partsById)}
-          />
-        ))}
-      </div>
-
-      <div className="grid grid-cols-1 gap-1.5 sm:grid-cols-2 md:hidden">
-        {SLOT_VIEWS.map((slot) => {
-          const name = partNameFor(slot.key, build, partsById);
-          return (
-            <div
+    <div className="ac6-ac-viewer">
+      <div className="ac6-ac-composite-scroll">
+        <div
+          className="ac6-ac-composite"
+          aria-label="AC composite silhouette"
+        >
+          {SLOT_VIEWS.map((slot) => (
+            <CompositeSlot
               key={slot.key}
-              className="ac6-slot-preview-row flex items-center gap-2 px-2 py-1"
-            >
-              <img
-                src={slot.icon}
-                alt={slot.label}
-                className="h-10 w-10 shrink-0 object-contain opacity-95"
-              />
-              <div className="min-w-0">
-                <div className="ac6-chart-hint uppercase tracking-[0.15em]">
-                  {slot.label}
-                </div>
-                <div className="truncate text-xs font-medium text-cyan-50">{name}</div>
-              </div>
-            </div>
-          );
-        })}
+              slot={slot}
+              name={partNameFor(slot.key, build, partsById)}
+            />
+          ))}
+        </div>
       </div>
     </div>
   );

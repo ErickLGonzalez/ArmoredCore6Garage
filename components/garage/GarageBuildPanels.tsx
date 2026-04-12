@@ -1,8 +1,9 @@
 "use client";
 
-import type { Dispatch, SetStateAction } from "react";
-import { useCallback } from "react";
+import type { Dispatch, ReactNode, SetStateAction } from "react";
+import { useCallback, useEffect, useState } from "react";
 
+import { GarageAssemblyPartPicker } from "@/components/garage/GarageAssemblyPartPicker";
 import { PartThumbnail } from "@/components/garage/PartThumbnail";
 import { GarageEChartsDashboard } from "@/components/garage/GarageEChartsDashboard";
 import { REQUIRED_ASSEMBLY_SLOTS, type BuildAnalysis } from "@/lib/calc";
@@ -57,11 +58,122 @@ function formatStatValue(v: unknown): string {
   }
 }
 
-function skipCollapsibleRow(row: LegacyStatRow): boolean {
+function isPlotRowType(row: LegacyStatRow): boolean {
   return (
     row.type === "RangePlot" ||
     row.type === "RecoilPlot" ||
     row.type === "EnergyPlot"
+  );
+}
+
+function rowByName(group: LegacyStatRow[] | undefined, name: string): LegacyStatRow | undefined {
+  return group?.find((r) => r.name === name);
+}
+
+type NormalizeMode = "off" | "weight" | "en";
+
+const SS_SPECS_NORMALIZE = "moa-garage-specs-normalize";
+const SS_SPECS_MODIFIED = "moa-garage-specs-modified-preview";
+
+/** Rows excluded from AC-wide normalize (classic leaves weight / EN-load rows unchanged). */
+const NORMALIZE_EXCLUDE = new Set(["TotalWeight", "TotalENLoad"]);
+
+/** Numerator stat name → denominator row in same group (classic proportion rows). */
+const STAT_PROPORTION_LIMIT: Partial<Record<string, string>> = {
+  TotalArmsLoad: "ArmsLoadLimit",
+  TotalLoad: "LoadLimit",
+  TotalENLoad: "ENOutput",
+};
+
+function transformStatDisplay(
+  v: unknown,
+  mode: NormalizeMode,
+  totalWeight: number,
+  totalEnLoad: number,
+  rowName: string,
+): unknown {
+  if (mode === "off" || NORMALIZE_EXCLUDE.has(rowName)) return v;
+  const n = statNumeric(v);
+  if (n == null) return v;
+  if (mode === "weight" && totalWeight > 0) return (n / totalWeight) * 1000;
+  if (mode === "en" && totalEnLoad > 0) return (n / totalEnLoad) * 100;
+  return v;
+}
+
+function statNumeric(v: unknown): number | null {
+  if (typeof v === "number" && Number.isFinite(v)) return v;
+  if (typeof v === "string" && v.trim() !== "") {
+    const n = Number(v);
+    return Number.isFinite(n) ? n : null;
+  }
+  return null;
+}
+
+function SpecsValueWithBar({
+  group,
+  row,
+  alignEnd,
+  normalizeMode = "off",
+  totalWeight,
+  totalEnLoad,
+}: {
+  group: LegacyStatRow[];
+  row: LegacyStatRow;
+  alignEnd?: boolean;
+  normalizeMode?: NormalizeMode;
+  totalWeight: number;
+  totalEnLoad: number;
+}): ReactNode {
+  const limitName = STAT_PROPORTION_LIMIT[row.name];
+  const limitRow = limitName ? rowByName(group, limitName) : undefined;
+  const limit = limitRow ? statNumeric(limitRow.value) : null;
+  const val = statNumeric(row.value);
+  const showBar =
+    limit != null && limit > 0 && val != null && Number.isFinite(val) && val >= 0;
+  const pct = showBar ? Math.min(100, (val / limit) * 100) : 0;
+  const overload =
+    showBar && row.name === "TotalENLoad" && val > limit;
+  const displayVal = transformStatDisplay(
+    row.value,
+    normalizeMode,
+    totalWeight,
+    totalEnLoad,
+    row.name,
+  );
+  return (
+    <div
+      className={`ac6-specs-value-stack${alignEnd ? " ac6-specs-value-stack--end" : ""}`}
+    >
+      <span className="ac6-specs-value-num">{formatStatValue(displayVal)}</span>
+      {showBar ? (
+        <div
+          className={`ac6-specs-prop-track${overload ? " ac6-specs-prop-track--overload" : ""}`}
+          title={`${formatNumber(val)} / ${formatNumber(limit)}`}
+        >
+          <div
+            className={`ac6-specs-prop-fill${overload ? " ac6-specs-prop-fill--overload" : ""}`}
+            style={{ width: `${pct}%` }}
+          />
+        </div>
+      ) : null}
+    </div>
+  );
+}
+
+function formatDeltaCell(a: unknown, b: unknown): ReactNode {
+  const na = statNumeric(a);
+  const nb = statNumeric(b);
+  if (na == null || nb == null) return "—";
+  const d = na - nb;
+  if (!Number.isFinite(d) || Math.abs(d) < 1e-9) {
+    return <span className="ac6-specs-delta-neutral">0</span>;
+  }
+  const cls = d > 0 ? "ac6-specs-delta-pos" : "ac6-specs-delta-neg";
+  return (
+    <span className={cls}>
+      {d > 0 ? "+" : ""}
+      {formatNumber(d)}
+    </span>
   );
 }
 
@@ -86,6 +198,10 @@ export function GarageSlotColumn({
   onInteract,
   onHover,
 }: SlotColumnProps) {
+  const [picker, setPicker] = useState<
+    { mode: "slot"; slot: RequiredSlot } | { mode: "expansion" } | null
+  >(null);
+
   const setSlot = useCallback(
     (slot: RequiredSlot, id: number) => {
       setIds((prev) => ({ ...prev, [slot]: id }));
@@ -93,20 +209,25 @@ export function GarageSlotColumn({
     [setIds],
   );
 
+  const closePicker = useCallback(() => {
+    setPicker(null);
+  }, []);
+
   return (
-    <div className="ac6-stack">
-      <div className="ac6-strip">
+    <>
+    <div className="ac6-stack ac6-assembly-column">
+      <div className="ac6-strip ac6-assembly-set-strip">
         <p className="ac6-block-title leading-none">{label}</p>
       </div>
       {SLOT_GROUPS.map((group) => (
         <div
           key={group.label}
-          className="ac6-block p-2"
+          className="ac6-assembly-group"
         >
-          <div className="ac6-strip mb-1.5">
+          <div className="ac6-strip ac6-assembly-group-strip">
             <p className="ac6-chart-section-title m-0">{group.label}</p>
           </div>
-          <div className="ac6-stack">
+          <div className="ac6-assembly-slot-grid">
             {group.slots.map((slot) => {
               const opts = optionsBySlot.get(slot) ?? [];
               const sid = `${idPrefix}-${slot}`;
@@ -115,12 +236,24 @@ export function GarageSlotColumn({
               return (
                 <div
                   key={slot}
-                  className="ac6-assembly-slot-row"
+                  className="ac6-assembly-slot-tile"
                 >
-                  <PartThumbnail
-                    partName={selectedName}
-                    size="sm"
-                  />
+                  <button
+                    type="button"
+                    className="ac6-assembly-slot-thumb-btn"
+                    aria-label={`Open part list for ${SLOT_LABELS[slot]}`}
+                    onClick={() => {
+                      onInteract?.();
+                      setPicker({ mode: "slot", slot });
+                    }}
+                  >
+                    <div className="ac6-assembly-slot-thumb">
+                      <PartThumbnail
+                        partName={selectedName}
+                        size="sm"
+                      />
+                    </div>
+                  </button>
                   <label
                     htmlFor={sid}
                     className="ac6-assembly-slot-label min-w-0"
@@ -129,7 +262,7 @@ export function GarageSlotColumn({
                   </label>
                   <select
                     id={sid}
-                    className="ac6-slot-select min-w-0 max-w-full border-2 px-1 py-[1px] text-[11px] outline-none"
+                    className="ac6-slot-select min-w-0 max-w-full border-2 outline-none"
                     value={ids[slot]}
                     onMouseEnter={onHover}
                     onChange={(e) => {
@@ -152,45 +285,96 @@ export function GarageSlotColumn({
           </div>
         </div>
       ))}
-      <div className="ac6-block p-2">
-        <div className="ac6-strip mb-1.5">
+      <div className="ac6-assembly-group">
+        <div className="ac6-strip ac6-assembly-group-strip">
           <p className="ac6-chart-section-title m-0">EXPANSION</p>
         </div>
-        <div className="ac6-assembly-slot-row">
-          <PartThumbnail
-            partName={
-              expansionOptions.find((p) => p.identity.id === ids.expansionId)?.identity.name ?? ""
-            }
-            size="sm"
-          />
-          <label
-            htmlFor={`${idPrefix}-expansion`}
-            className="ac6-assembly-slot-label min-w-0"
-          >
-            {EXPANSION_SLOT_LABEL}
-          </label>
-          <select
-            id={`${idPrefix}-expansion`}
-            className="ac6-slot-select min-w-0 max-w-full border-2 px-1 py-[1px] text-[11px] outline-none"
-            value={ids.expansionId}
-            onMouseEnter={onHover}
-            onChange={(e) => {
-              onInteract?.();
-              setIds((prev) => ({ ...prev, expansionId: Number(e.target.value) }));
-            }}
-          >
-            {expansionOptions.map((p) => (
-              <option
-                key={p.identity.id}
-                value={p.identity.id}
-              >
-                {p.identity.name}
-              </option>
-            ))}
-          </select>
+        <div className="ac6-assembly-slot-grid ac6-assembly-slot-grid--single">
+          <div className="ac6-assembly-slot-tile">
+            <button
+              type="button"
+              className="ac6-assembly-slot-thumb-btn"
+              aria-label="Open part list for expansion"
+              onClick={() => {
+                onInteract?.();
+                setPicker({ mode: "expansion" });
+              }}
+            >
+              <div className="ac6-assembly-slot-thumb">
+                <PartThumbnail
+                  partName={
+                    expansionOptions.find((p) => p.identity.id === ids.expansionId)?.identity.name ??
+                    ""
+                  }
+                  size="sm"
+                />
+              </div>
+            </button>
+            <label
+              htmlFor={`${idPrefix}-expansion`}
+              className="ac6-assembly-slot-label min-w-0"
+            >
+              {EXPANSION_SLOT_LABEL}
+            </label>
+            <select
+              id={`${idPrefix}-expansion`}
+              className="ac6-slot-select min-w-0 max-w-full border-2 outline-none"
+              value={ids.expansionId}
+              onMouseEnter={onHover}
+              onChange={(e) => {
+                onInteract?.();
+                setIds((prev) => ({ ...prev, expansionId: Number(e.target.value) }));
+              }}
+            >
+              {expansionOptions.map((p) => (
+                <option
+                  key={p.identity.id}
+                  value={p.identity.id}
+                >
+                  {p.identity.name}
+                </option>
+              ))}
+            </select>
+          </div>
         </div>
       </div>
     </div>
+    <GarageAssemblyPartPicker
+      open={picker !== null}
+      title={
+        picker?.mode === "expansion"
+          ? EXPANSION_SLOT_LABEL
+          : picker
+            ? SLOT_LABELS[picker.slot]
+            : ""
+      }
+      options={
+        picker?.mode === "expansion"
+          ? expansionOptions
+          : picker
+            ? (optionsBySlot.get(picker.slot) ?? [])
+            : []
+      }
+      selectedId={
+        picker?.mode === "expansion"
+          ? ids.expansionId
+          : picker
+            ? ids[picker.slot]
+            : 0
+      }
+      onPick={(id) => {
+        onInteract?.();
+        const p = picker;
+        if (!p) return;
+        if (p.mode === "expansion") {
+          setIds((prev) => ({ ...prev, expansionId: id }));
+        } else {
+          setSlot(p.slot, id);
+        }
+      }}
+      onClose={closePicker}
+    />
+    </>
   );
 }
 
@@ -256,10 +440,50 @@ export function GarageAnalysisBlock({
 export function GarageLegacyStatGroupsSection({
   analysis,
   title,
+  compareAnalysis = null,
 }: {
   analysis: BuildAnalysis;
   title: string;
+  compareAnalysis?: BuildAnalysis | null;
 }) {
+  const [normalizeMode, setNormalizeMode] = useState<NormalizeMode>("off");
+  const [modifiedPreview, setModifiedPreview] = useState(false);
+
+  useEffect(() => {
+    try {
+      const n = sessionStorage.getItem(SS_SPECS_NORMALIZE);
+      if (n === "off" || n === "weight" || n === "en") {
+        setNormalizeMode(n);
+      }
+      setModifiedPreview(sessionStorage.getItem(SS_SPECS_MODIFIED) === "1");
+    } catch {
+      /* private mode / SSR */
+    }
+  }, []);
+
+  const setNormalizeModePersist = useCallback((mode: NormalizeMode) => {
+    setNormalizeMode(mode);
+    try {
+      sessionStorage.setItem(SS_SPECS_NORMALIZE, mode);
+    } catch {
+      /* ignore */
+    }
+  }, []);
+
+  const setModifiedPreviewPersist = useCallback((on: boolean) => {
+    setModifiedPreview(on);
+    try {
+      sessionStorage.setItem(SS_SPECS_MODIFIED, on ? "1" : "0");
+    } catch {
+      /* ignore */
+    }
+  }, []);
+
+  const twA = analysis.totalWeight;
+  const telA = analysis.totalEnLoad;
+  const twB = compareAnalysis?.totalWeight ?? 0;
+  const telB = compareAnalysis?.totalEnLoad ?? 0;
+
   const groupTitle = (i: number) =>
     [
       "DURABILITY",
@@ -269,48 +493,179 @@ export function GarageLegacyStatGroupsSection({
       "LIMITS",
     ][i] ?? `GROUP ${i + 1}`;
   return (
-    <div className="ac6-block p-2">
+    <div className="ac6-specs-panel">
       <h3 className="ac6-block-title">
         {title}
       </h3>
-      <p className="ac6-chart-hint mt-0.5 uppercase tracking-[0.05em]">
-        RANGE / RECOIL / ENERGY PLOTS RENDER IN THE ECHARTS BLOCK IN THE ANALYSIS
-        COLUMN.
-      </p>
-      <div className="mt-2 space-y-1.5">
-        {analysis.groups.map((group, gi) => (
-          <details
-            key={gi}
-            className="group ac6-details-block"
+      <div
+        className="ac6-specs-toolbar"
+        role="region"
+        aria-label="AC spec display options (classic layout)"
+      >
+        <div className="ac6-specs-toolbar-cluster">
+          <label
+            className="ac6-specs-toolbar-control ac6-specs-toolbar-control--interactive"
+            title="Classic cross-part modifiers (arms / generator / FCS) are not recomputed in this build yet. Toggle shows where the banner will sit."
           >
-            <summary>
-              {groupTitle(gi)}{" "}
-              <span className="font-normal text-cyan-200/70">
-                ({group.filter((r) => !skipCollapsibleRow(r)).length} STATS)
-              </span>
-            </summary>
-            <div>
-              <table className="w-full text-left text-xs">
-                <tbody>
-                  {group
-                    .filter((row) => !skipCollapsibleRow(row))
-                    .map((row) => (
-                      <tr
-                        key={row.name}
-                      >
-                        <th className="w-[40%] px-2 py-1 font-medium text-cyan-100">
-                          {row.name}
+            <input
+              type="checkbox"
+              checked={modifiedPreview}
+              onChange={(e) => setModifiedPreviewPersist(e.target.checked)}
+              className="ac6-specs-toolbar-checkbox"
+            />
+            <span className="ac6-specs-toolbar-label-text">SHOW MODIFIED UNIT SPECS</span>
+          </label>
+        </div>
+        <div className="ac6-specs-toolbar-cluster">
+          <label
+            className="ac6-specs-toolbar-control ac6-specs-toolbar-control--interactive"
+            title="AC-wide display scale: ÷ total AC weight × 1000, or ÷ total EN load × 100 (classic normalize shape; not per-part inspector)."
+          >
+            <span className="ac6-specs-toolbar-prefix">NORMALIZE SPECS:</span>
+            <select
+              value={normalizeMode}
+              onChange={(e) => setNormalizeModePersist(e.target.value as NormalizeMode)}
+              className="ac6-specs-toolbar-select ac6-slot-select"
+            >
+              <option value="off">OFF</option>
+              <option value="weight">PER 1000 WT</option>
+              <option value="en">PER 100 EN</option>
+            </select>
+          </label>
+        </div>
+      </div>
+      {modifiedPreview ? (
+        <p className="ac6-specs-modified-banner">
+          MODIFIED UNIT SPECS: PIPELINE NOT PORTED — VALUES ARE STILL STATIC ASSEMBLY TOTALS.
+        </p>
+      ) : null}
+      <p className="ac6-specs-toolbar-footnote">
+        Normalize rescales numeric table cells only (Δ stays raw). Bars use raw load vs limit. Total weight /
+        EN load rows are excluded from normalize. Toolbar choices persist for this tab (session).
+      </p>
+      <div className="ac6-specs-groups mt-1.5 space-y-1.5">
+        {analysis.groups.map((group, gi) => {
+          const groupB = compareAnalysis?.groups[gi];
+          const nStats = group.length;
+          return (
+            <details
+              key={gi}
+              className="group ac6-details-block"
+            >
+              <summary>
+                <span className="ac6-details-summary-label">
+                  {groupTitle(gi)}
+                </span>
+                <span className="ac6-details-summary-meta">
+                  ({nStats} STATS)
+                </span>
+              </summary>
+              <div className="ac6-details-table-wrap">
+                <table
+                  className={`ac6-specs-table w-full text-left${compareAnalysis ? " ac6-specs-table--compare" : ""}`}
+                >
+                  {compareAnalysis ? (
+                    <thead>
+                      <tr>
+                        <th scope="col">STAT</th>
+                        <th
+                          scope="col"
+                          className="ac6-specs-compare-build"
+                        >
+                          BUILD A
                         </th>
-                        <td className="break-all px-2 py-1 font-mono text-cyan-50/90">
-                          {formatStatValue(row.value)}
-                        </td>
+                        <th
+                          scope="col"
+                          className="ac6-specs-compare-build"
+                        >
+                          BUILD B
+                        </th>
+                        <th
+                          scope="col"
+                          className="ac6-specs-delta-head"
+                        >
+                          Δ
+                        </th>
                       </tr>
-                    ))}
-                </tbody>
-              </table>
-            </div>
-          </details>
-        ))}
+                    </thead>
+                  ) : null}
+                  <tbody>
+                    {group.map((rowA) => {
+                      const rowB = rowByName(groupB, rowA.name);
+                      if (isPlotRowType(rowA)) {
+                        return (
+                          <tr key={rowA.name}>
+                            <th scope="row">{rowA.name}</th>
+                            {compareAnalysis ? (
+                              <td
+                                colSpan={3}
+                                className="ac6-specs-plot-note"
+                              >
+                                RANGE / RECOIL / EN CURVES — SEE ECHARTS IN ANALYSIS
+                                COLUMN
+                              </td>
+                            ) : (
+                              <td className="ac6-specs-plot-note">
+                                RANGE / RECOIL / EN CURVES — SEE ECHARTS IN ANALYSIS
+                                COLUMN
+                              </td>
+                            )}
+                          </tr>
+                        );
+                      }
+                      return (
+                        <tr key={rowA.name}>
+                          <th scope="row">{rowA.name}</th>
+                          {compareAnalysis ? (
+                            <>
+                              <td className="ac6-specs-value-cell">
+                                <SpecsValueWithBar
+                                  group={group}
+                                  row={rowA}
+                                  alignEnd
+                                  normalizeMode={normalizeMode}
+                                  totalWeight={twA}
+                                  totalEnLoad={telA}
+                                />
+                              </td>
+                              <td className="ac6-specs-value-cell">
+                                {rowB ? (
+                                  <SpecsValueWithBar
+                                    group={groupB ?? []}
+                                    row={rowB}
+                                    alignEnd
+                                    normalizeMode={normalizeMode}
+                                    totalWeight={twB}
+                                    totalEnLoad={telB}
+                                  />
+                                ) : (
+                                  "—"
+                                )}
+                              </td>
+                              <td className="ac6-specs-delta-cell">
+                                {rowB ? formatDeltaCell(rowA.value, rowB.value) : "—"}
+                              </td>
+                            </>
+                          ) : (
+                            <td>
+                              <SpecsValueWithBar
+                                group={group}
+                                row={rowA}
+                                normalizeMode={normalizeMode}
+                                totalWeight={twA}
+                                totalEnLoad={telA}
+                              />
+                            </td>
+                          )}
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              </div>
+            </details>
+          );
+        })}
       </div>
     </div>
   );

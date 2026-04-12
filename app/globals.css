@@ -340,6 +340,12 @@ body {
   padding: 0.35rem;
 }
 
+/* Left assembly column: tighter inset (classic garage density). */
+.ac6-garage .ac6-inner-frame--assembly {
+  padding: 0.2rem;
+  gap: 0.3rem;
+}
+
 /* Parts table: thead / popover surfaces track theme (no fixed #0b2032). */
 .ac6-garage .ac6-table-thead {
   background: color-mix(in srgb, var(--ui-panel-bottom) 94%, black);
@@ -411,42 +417,430 @@ body {
   min-height: 18px;
 }
 
+/* AC SPECS: collapsible group headers (Vite `lg` strip — full-width bar, 1px frame, caret). */
 .ac6-garage .ac6-details-block {
-  border: 2px solid var(--ui-border);
+  border: none;
 }
 
 .ac6-garage .ac6-details-block > summary {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  width: 99%;
+  margin: 0.2rem auto;
+  padding: 0.45rem 0.4rem;
   list-style: none;
   cursor: pointer;
   user-select: none;
-  border: 2px solid var(--ui-border);
-  background: color-mix(in srgb, var(--ui-panel-bottom) 90%, black);
-  padding: 0.2rem 0.45rem;
-  font-size: 12px;
+  border: 1px solid color-mix(in srgb, var(--ui-tab-active-bottom) 50%, var(--ui-border));
+  background: color-mix(in srgb, var(--ui-tab-active-top) 18%, var(--ui-panel-bottom));
+  font-size: 11px;
   font-weight: 700;
-  letter-spacing: 0.06em;
+  letter-spacing: 0.07em;
   text-transform: uppercase;
   color: var(--ui-text);
+}
+
+.ac6-garage .ac6-details-block[open] > summary {
+  background: color-mix(in srgb, var(--ui-tab-active-top) 32%, var(--ui-panel-bottom));
 }
 
 .ac6-garage .ac6-details-block > summary::-webkit-details-marker {
   display: none;
 }
 
-.ac6-garage .ac6-details-block > summary:hover {
-  filter: brightness(1.06);
+.ac6-garage .ac6-details-block > summary::before {
+  content: "";
+  flex-shrink: 0;
+  width: 0;
+  height: 0;
+  margin-right: 0.1rem;
+  border-top: 5px solid transparent;
+  border-bottom: 5px solid transparent;
+  border-left: 7px solid color-mix(in srgb, var(--ui-text) 82%, transparent);
 }
 
-.ac6-garage .ac6-details-block > summary + div {
-  border-top: 2px solid color-mix(in srgb, var(--ui-border) 65%, transparent);
-}
-
-.ac6-garage .ac6-details-block tbody tr {
-  border-bottom: 1px solid color-mix(in srgb, var(--ui-border) 35%, transparent);
-}
-
-.ac6-garage .ac6-details-block tbody tr:last-child {
+.ac6-garage .ac6-details-block[open] > summary::before {
+  margin-top: 2px;
+  border-top: 7px solid color-mix(in srgb, var(--ui-text) 82%, transparent);
+  border-left: 5px solid transparent;
+  border-right: 5px solid transparent;
   border-bottom: none;
+}
+
+.ac6-garage .ac6-details-block > summary:hover {
+  filter: brightness(1.08);
+}
+
+.ac6-garage .ac6-details-summary-label {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.ac6-garage .ac6-details-summary-meta {
+  flex-shrink: 0;
+  font-weight: 400;
+  font-size: 10px;
+  letter-spacing: 0.05em;
+  color: var(--ui-text-dim);
+}
+
+.ac6-garage .ac6-details-table-wrap {
+  border: 1px solid color-mix(in srgb, var(--ui-border) 80%, transparent);
+  border-top: none;
+  background: color-mix(in srgb, var(--ui-panel-bottom) 94%, black);
+}
+
+.ac6-garage .ac6-specs-table {
+  font-size: 11px;
+  border-collapse: collapse;
+}
+
+.ac6-garage .ac6-specs-table th {
+  width: 42%;
+  padding: 0.2rem 0.45rem;
+  font-weight: 700;
+  text-align: left;
+  vertical-align: top;
+  color: var(--ui-text-dim);
+  border-bottom: 1px solid color-mix(in srgb, var(--ui-border) 40%, transparent);
+}
+
+.ac6-garage .ac6-specs-table td {
+  padding: 0.2rem 0.45rem;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  line-height: 1.25;
+  color: color-mix(in srgb, var(--ui-text) 92%, transparent);
+  border-bottom: 1px solid color-mix(in srgb, var(--ui-border) 40%, transparent);
+  word-break: break-word;
+}
+
+.ac6-garage .ac6-specs-table tbody tr:nth-child(even) {
+  background: color-mix(in srgb, var(--ui-panel-top) 35%, transparent);
+}
+
+.ac6-garage .ac6-specs-table tbody tr:last-child th,
+.ac6-garage .ac6-specs-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.ac6-garage .ac6-specs-panel {
+  border: 2px solid var(--ui-border);
+  background: linear-gradient(180deg, var(--ui-panel-top), var(--ui-panel-bottom));
+  box-shadow: inset 0 1px 0 color-mix(in srgb, white 10%, transparent);
+  padding: 0.35rem 0.4rem 0.45rem;
+}
+
+/* Classic AC SPECS utility strip (modified + normalize — chrome first, logic later). */
+.ac6-garage .ac6-specs-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.45rem 1rem;
+  margin-top: 0.35rem;
+  padding: 0.3rem 0.4rem;
+  border: 2px solid var(--ui-border);
+  background: color-mix(in srgb, var(--ui-panel-bottom) 88%, black);
+  box-shadow: inset 0 1px 0 color-mix(in srgb, white 5%, transparent);
+}
+
+.ac6-garage .ac6-specs-toolbar-cluster {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.ac6-garage .ac6-specs-toolbar-control {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  margin: 0;
+  cursor: default;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: color-mix(in srgb, var(--ui-text-dim) 88%, transparent);
+}
+
+.ac6-garage .ac6-specs-toolbar-control--interactive {
+  cursor: pointer;
+  color: var(--ui-text-dim);
+}
+
+.ac6-garage .ac6-specs-toolbar-checkbox {
+  width: 13px;
+  height: 13px;
+  flex-shrink: 0;
+  accent-color: color-mix(in srgb, var(--ui-tab-active-top) 70%, gray);
+}
+
+.ac6-garage .ac6-specs-toolbar-label-text {
+  position: relative;
+  top: 0.5px;
+}
+
+.ac6-garage .ac6-specs-toolbar-prefix {
+  flex-shrink: 0;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: color-mix(in srgb, var(--ui-text-dim) 88%, transparent);
+}
+
+.ac6-garage .ac6-specs-toolbar-select {
+  min-width: 7.5rem;
+  min-height: 20px;
+  font-size: 10px !important;
+  letter-spacing: 0.04em !important;
+  text-transform: uppercase !important;
+  cursor: pointer;
+}
+
+.ac6-garage .ac6-specs-modified-banner {
+  margin: 0.35rem 0 0;
+  padding: 0.3rem 0.4rem;
+  border: 1px solid color-mix(in srgb, var(--ui-accent-compare) 55%, var(--ui-border));
+  background: color-mix(in srgb, var(--ui-accent-compare) 12%, var(--ui-panel-bottom));
+  font-size: 9px;
+  font-weight: 700;
+  line-height: 1.25;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: color-mix(in srgb, var(--ui-accent-compare) 95%, white);
+}
+
+.ac6-garage .ac6-specs-toolbar-footnote {
+  margin: 0.25rem 0 0;
+  font-size: 9px;
+  line-height: 1.25;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: color-mix(in srgb, var(--ui-text-dim) 72%, transparent);
+}
+
+.ac6-garage .ac6-specs-groups .ac6-details-block:last-child {
+  margin-bottom: 0;
+}
+
+.ac6-garage .ac6-specs-table--compare thead th {
+  width: 30%;
+  padding: 0.2rem 0.35rem;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  text-align: right;
+  color: var(--ui-text-dim);
+  border-bottom: 1px solid color-mix(in srgb, var(--ui-border) 55%, transparent);
+  background: color-mix(in srgb, var(--ui-panel-bottom) 88%, black);
+}
+
+.ac6-garage .ac6-specs-table--compare thead th:first-child {
+  width: 34%;
+  text-align: left;
+}
+
+.ac6-garage .ac6-specs-table--compare thead th.ac6-specs-delta-head {
+  width: 18%;
+  text-align: right;
+}
+
+.ac6-garage .ac6-specs-table--compare thead th.ac6-specs-compare-build {
+  width: 24%;
+}
+
+.ac6-garage .ac6-specs-table--compare tbody th {
+  width: 34%;
+}
+
+.ac6-garage .ac6-specs-value-cell {
+  width: 24%;
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+.ac6-garage .ac6-specs-delta-cell {
+  width: 18%;
+  text-align: right;
+  font-size: 10px;
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+  vertical-align: top;
+}
+
+.ac6-garage .ac6-specs-delta-pos {
+  color: color-mix(in srgb, var(--ui-accent-positive) 92%, white);
+}
+
+.ac6-garage .ac6-specs-delta-neg {
+  color: color-mix(in srgb, var(--ui-accent-danger) 88%, white);
+}
+
+.ac6-garage .ac6-specs-delta-neutral {
+  color: color-mix(in srgb, var(--ui-text-dim) 85%, transparent);
+}
+
+.ac6-garage .ac6-specs-value-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 0.12rem;
+  align-items: flex-start;
+}
+
+.ac6-garage .ac6-specs-value-stack--end {
+  align-items: flex-end;
+}
+
+.ac6-garage .ac6-specs-value-num {
+  line-height: 1.2;
+}
+
+.ac6-garage .ac6-specs-prop-track {
+  width: 100%;
+  max-width: 6.5rem;
+  height: 5px;
+  border: 1px solid color-mix(in srgb, var(--ui-border) 80%, transparent);
+  background: color-mix(in srgb, black 35%, var(--ui-panel-bottom));
+}
+
+.ac6-garage .ac6-specs-value-stack--end .ac6-specs-prop-track {
+  align-self: flex-end;
+}
+
+.ac6-garage .ac6-specs-prop-fill {
+  height: 100%;
+  min-width: 0;
+  background: linear-gradient(
+    90deg,
+    color-mix(in srgb, var(--ui-tab-active-top) 75%, transparent),
+    color-mix(in srgb, var(--ui-tab-active-bottom) 85%, transparent)
+  );
+}
+
+.ac6-garage .ac6-specs-prop-track--overload {
+  border-color: color-mix(in srgb, var(--ui-accent-danger) 45%, var(--ui-border));
+}
+
+.ac6-garage .ac6-specs-prop-fill--overload {
+  background: linear-gradient(
+    90deg,
+    color-mix(in srgb, var(--ui-accent-danger) 70%, transparent),
+    color-mix(in srgb, var(--ui-accent-compare) 55%, transparent)
+  );
+}
+
+.ac6-garage .ac6-specs-plot-note {
+  font-size: 9px;
+  font-weight: 600;
+  line-height: 1.2;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: color-mix(in srgb, var(--ui-text-dim) 92%, transparent);
+}
+
+/* Classic-style part list (image + click) — modal picker. */
+.ac6-garage .ac6-assembly-picker-dialog {
+  max-width: min(22rem, 94vw);
+  width: 100%;
+  padding: 0;
+  border: 2px solid var(--ui-border);
+  background: linear-gradient(180deg, var(--ui-panel-top), var(--ui-panel-bottom));
+  color: var(--ui-text);
+}
+
+.ac6-garage .ac6-assembly-picker-dialog::backdrop {
+  background: color-mix(in srgb, black 58%, transparent);
+}
+
+.ac6-garage .ac6-assembly-picker-inner {
+  padding: 0.35rem;
+}
+
+.ac6-garage .ac6-assembly-picker-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  margin-bottom: 0.35rem;
+  padding: 0.12rem 0.35rem;
+}
+
+.ac6-garage .ac6-assembly-picker-close {
+  border: 2px solid var(--ui-border);
+  padding: 0.1rem 0.45rem;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--ui-text);
+  background: color-mix(in srgb, var(--ui-panel-bottom) 88%, black);
+  cursor: pointer;
+}
+
+.ac6-garage .ac6-assembly-picker-search {
+  display: block;
+  margin-bottom: 0.35rem;
+}
+
+.ac6-garage .ac6-assembly-picker-list {
+  margin: 0;
+  max-height: min(52vh, 22rem);
+  list-style: none;
+  overflow-y: auto;
+  padding: 0;
+  border: 1px solid color-mix(in srgb, var(--ui-border) 80%, transparent);
+  background: color-mix(in srgb, black 25%, var(--ui-panel-bottom));
+}
+
+.ac6-garage .ac6-assembly-picker-row {
+  display: flex;
+  width: 100%;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.2rem 0.35rem;
+  border: none;
+  border-bottom: 1px solid color-mix(in srgb, var(--ui-border) 45%, transparent);
+  background: transparent;
+  text-align: left;
+  color: var(--ui-text);
+  cursor: pointer;
+}
+
+.ac6-garage .ac6-assembly-picker-row:hover {
+  background: color-mix(in srgb, var(--ui-tab-active-top) 14%, var(--ui-panel-bottom));
+}
+
+.ac6-garage .ac6-assembly-picker-row.is-active {
+  background: color-mix(in srgb, var(--ui-tab-active-top) 28%, var(--ui-panel-bottom));
+}
+
+.ac6-garage .ac6-assembly-picker-name {
+  flex: 1 1 auto;
+  min-width: 0;
+  font-size: 10px;
+  font-weight: 600;
+  line-height: 1.2;
+  word-break: break-word;
+}
+
+.ac6-garage .ac6-assembly-slot-thumb-btn {
+  display: block;
+  width: 100%;
+  padding: 0;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  color: inherit;
+}
+
+.ac6-garage .ac6-assembly-slot-thumb-btn:focus-visible {
+  outline: 2px solid #cceaf8;
+  outline-offset: 1px;
 }
 
 /* Plot / subsection titles (classic dense caps). */
@@ -479,16 +873,122 @@ body {
   background: color-mix(in srgb, var(--ui-panel-bottom) 92%, black);
 }
 
-/* Assembly: icon + label rail + picker (classic garage density). */
-.ac6-garage .ac6-assembly-slot-row {
-  display: grid;
-  grid-template-columns: auto minmax(0, 5.5rem) minmax(0, 1fr);
-  gap: 0.35rem;
-  align-items: center;
-  padding: 0.2rem 0.25rem;
+/* Left assembly column: stacked groups with minimal gap (classic shell). */
+.ac6-garage .ac6-assembly-column.ac6-stack {
+  gap: 0.22rem;
+}
+
+.ac6-garage .ac6-assembly-set-strip {
+  padding: 0.1rem 0.3rem;
+}
+
+.ac6-garage .ac6-assembly-group {
   border: 2px solid var(--ui-border);
-  background: color-mix(in srgb, var(--ui-panel-bottom) 92%, black);
-  box-shadow: inset 0 1px 0 color-mix(in srgb, white 6%, transparent);
+  background: color-mix(in srgb, var(--ui-panel-bottom) 93%, black);
+  box-shadow: inset 0 1px 0 color-mix(in srgb, white 5%, transparent);
+  padding: 0.12rem 0.1rem 0.18rem;
+}
+
+.ac6-garage .ac6-assembly-group-strip {
+  margin-bottom: 0.1rem;
+  padding: 0.06rem 0.25rem;
+}
+
+/* Row of slots: shared trough + vertical dividers (classic horizontal band). */
+.ac6-garage .ac6-assembly-slot-grid {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  gap: 0;
+  align-items: stretch;
+  border: 1px solid color-mix(in srgb, var(--ui-border) 88%, transparent);
+  background: color-mix(in srgb, black 32%, var(--ui-panel-bottom));
+}
+
+.ac6-garage .ac6-assembly-slot-grid--single .ac6-assembly-slot-tile {
+  flex: 1 1 100%;
+  max-width: 100%;
+  border-right: none;
+}
+
+/* Tile = legacy rL cell: width share of row, 2px top accent only (no full box). */
+.ac6-garage .ac6-assembly-slot-tile {
+  flex: 1 1 0;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 0.12rem;
+  padding: 0.12rem 0.08rem 0.18rem;
+  border: none;
+  border-top: 2px solid color-mix(in srgb, var(--ui-tab-active-top) 40%, var(--ui-border));
+  border-right: 1px solid color-mix(in srgb, var(--ui-border) 65%, transparent);
+  border-radius: 0;
+  background: color-mix(in srgb, var(--ui-panel-bottom) 86%, black);
+  box-shadow: none;
+  cursor: default;
+}
+
+.ac6-garage .ac6-assembly-slot-tile:last-child {
+  border-right: none;
+}
+
+.ac6-garage .ac6-assembly-slot-tile:hover {
+  border-top-color: color-mix(in srgb, var(--ui-tab-active-top) 78%, var(--ui-border));
+  background: color-mix(in srgb, var(--ui-panel-bottom) 80%, black);
+}
+
+.ac6-garage .ac6-assembly-slot-tile:focus-within {
+  border-top-color: var(--ui-tab-active-bottom);
+  background: color-mix(in srgb, var(--ui-panel-bottom) 78%, black);
+}
+
+.ac6-garage .ac6-assembly-slot-tile:hover .ac6-part-thumb-img,
+.ac6-garage .ac6-assembly-slot-tile:focus-within .ac6-part-thumb-img {
+  filter: brightness(1.28);
+}
+
+.ac6-garage .ac6-assembly-slot-thumb {
+  display: block;
+  width: 100%;
+  text-align: center;
+}
+
+.ac6-garage .ac6-assembly-slot-thumb > span {
+  display: block !important;
+  width: 100%;
+  max-width: 100%;
+}
+
+.ac6-garage .ac6-assembly-slot-thumb .ac6-part-thumb-img {
+  width: 100% !important;
+  height: auto !important;
+  min-height: 2.1rem;
+  max-height: 3.25rem;
+  min-width: 0 !important;
+  object-fit: contain;
+}
+
+.ac6-garage .ac6-assembly-slot-thumb .ac6-part-thumb-fallback {
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* Assembly column: centered captions + dense picker (classic narrow columns). */
+.ac6-garage .ac6-assembly-column .ac6-assembly-slot-label {
+  text-align: center;
+  font-size: 9px;
+  letter-spacing: 0.07em;
+  line-height: 1.1;
+}
+
+.ac6-garage .ac6-assembly-column .ac6-slot-select {
+  font-size: 9px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  min-height: 16px;
+  padding: 0 1px;
+  line-height: 1.1;
 }
 
 .ac6-garage .ac6-part-thumb-img {
@@ -543,6 +1043,7 @@ body {
 }
 
 .ac6-garage .ac6-assembly-slot-label {
+  display: block;
   font-size: 10px;
   font-weight: 700;
   letter-spacing: 0.06em;
@@ -580,17 +1081,30 @@ body {
   color: var(--ui-text-dim);
 }
 
+/* Standard AC viewer: outer shell lives in center `ac6-block`; inner is scroll + fixed silhouette min width. */
+.ac6-garage .ac6-ac-viewer {
+  padding-top: 0.25rem;
+}
+
+.ac6-garage .ac6-ac-composite-scroll {
+  overflow-x: auto;
+  overflow-y: visible;
+  margin: 0 -0.15rem;
+  padding: 0 0.15rem 0.2rem;
+}
+
 /* Classic-style AC silhouette: backs + head top, arms/core mid, frame arms, legs, internals bar. */
-.ac6-ac-composite {
+.ac6-garage .ac6-ac-composite {
   display: grid;
   grid-template-columns: repeat(9, minmax(0, 1fr));
-  grid-template-rows: minmax(56px, auto) minmax(72px, auto) minmax(52px, auto) minmax(56px, auto) minmax(48px, auto);
-  gap: 0.25rem;
-  min-height: 280px;
-  padding: 0.35rem;
+  grid-template-rows: minmax(52px, auto) minmax(68px, auto) minmax(48px, auto) minmax(52px, auto) minmax(44px, auto);
+  gap: 0.2rem;
+  min-width: 31rem;
+  min-height: 260px;
+  padding: 0.3rem;
   border: 2px solid var(--ui-border);
-  background: color-mix(in srgb, var(--ui-panel-bottom) 94%, black);
-  box-shadow: inset 0 1px 0 color-mix(in srgb, white 8%, transparent);
+  background: color-mix(in srgb, black 22%, var(--ui-panel-bottom));
+  box-shadow: inset 0 1px 0 color-mix(in srgb, white 6%, transparent);
   grid-template-areas:
     "rback rback head head head head head lback lback"
     "rarm rarm core core core core core larm larm"
@@ -599,21 +1113,58 @@ body {
     "boost boost fcs fcs gen gen exp exp exp";
 }
 
-.ac6-ac-slot-cell {
+.ac6-garage .ac6-ac-slot-cell {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: flex-start;
-  gap: 0.1rem;
+  gap: 0.08rem;
   min-width: 0;
-  padding: 0.2rem 0.15rem;
-  border: 2px solid var(--ui-border);
-  background: color-mix(in srgb, var(--ui-panel-top) 55%, var(--ui-panel-bottom));
+  padding: 0.15rem 0.1rem 0.2rem;
+  border: 1px solid color-mix(in srgb, var(--ui-border) 85%, transparent);
+  border-top: 2px solid color-mix(in srgb, var(--ui-tab-active-top) 45%, var(--ui-border));
+  border-radius: 0;
+  background: color-mix(in srgb, var(--ui-panel-top) 42%, var(--ui-panel-bottom));
   text-align: center;
 }
 
-.ac6-ac-slot-cell img {
+.ac6-garage .ac6-ac-slot-icon {
+  height: 2.25rem;
+  width: 2.25rem;
   flex-shrink: 0;
+  object-fit: contain;
+  opacity: 0.96;
+}
+
+@media (min-width: 768px) {
+  .ac6-garage .ac6-ac-slot-icon {
+    height: 2.5rem;
+    width: 2.5rem;
+  }
+}
+
+.ac6-garage .ac6-ac-slot-type-label {
+  width: 100%;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  line-height: 1.05;
+  text-transform: uppercase;
+  color: color-mix(in srgb, var(--ui-text-dim) 88%, transparent);
+}
+
+.ac6-garage .ac6-ac-slot-part-name {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  width: 100%;
+  max-width: 100%;
+  overflow: hidden;
+  word-break: break-word;
+  font-size: 9px;
+  font-weight: 600;
+  line-height: 1.15;
+  color: var(--ui-text);
 }
 
 .ac6-garage :where(code) {

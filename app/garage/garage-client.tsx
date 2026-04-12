@@ -550,7 +550,7 @@ export function GarageClient({
           <GarageLeftPanel>
             {mainTab === "build" ? (
               <div
-                className={`ac6-inner-frame min-w-0 p-1.5 grid gap-2 ${compareOn ? "md:grid-cols-2 xl:grid-cols-1" : "grid-cols-1"}`}
+                className={`ac6-inner-frame ac6-inner-frame--assembly min-w-0 grid gap-2 ${compareOn ? "md:grid-cols-2 xl:grid-cols-1" : "grid-cols-1"}`}
               >
                 <GarageSlotColumn
                   label="AC SET A"
@@ -833,18 +833,13 @@ export function GarageClient({
                 SYSTEMS IS THE EXTENSION SURFACE FOR ADVANCED SIMULATION WORKFLOWS.
               </p>
             ) : analysisA ? (
-              <div className="space-y-2">
-                <GarageLegacyStatGroupsSection
-                  analysis={analysisA}
-                  title="AC SPECS (BUILD A)"
-                />
-                {compareOn && analysisB ? (
-                  <GarageLegacyStatGroupsSection
-                    analysis={analysisB}
-                    title="AC SPECS (BUILD B)"
-                  />
-                ) : null}
-              </div>
+              <GarageLegacyStatGroupsSection
+                analysis={analysisA}
+                compareAnalysis={compareOn && analysisB ? analysisB : null}
+                title={
+                  compareOn && analysisB ? "AC SPECS · A VS B" : "AC SPECS (BUILD A)"
+                }
+              />
             ) : (
               <p className="ac6-note">SELECT A VALID ASSEMBLY TO VIEW DETAILED STAT GROUPS.</p>
             )}
