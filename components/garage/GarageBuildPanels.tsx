@@ -70,9 +70,10 @@ function rowByName(group: LegacyStatRow[] | undefined, name: string): LegacyStat
   return group?.find((r) => r.name === name);
 }
 
-type NormalizeMode = "off" | "weight" | "en";
+export type GarageSpecsNormalizeMode = "off" | "weight" | "en";
 
-const SS_SPECS_NORMALIZE = "moa-garage-specs-normalize";
+/** Session key for NORMALIZE SPECS select (shared with garage-client). */
+export const MOA_GARAGE_SPECS_NORMALIZE_SESSION_KEY = "moa-garage-specs-normalize";
 /** Session key for SHOW MODIFIED UNIT SPECS (shared with garage-client for chart sync). */
 export const MOA_GARAGE_SPECS_MODIFIED_SESSION_KEY =
   "moa-garage-specs-modified-preview";
@@ -89,7 +90,7 @@ const STAT_PROPORTION_LIMIT: Partial<Record<string, string>> = {
 
 function transformStatDisplay(
   v: unknown,
-  mode: NormalizeMode,
+  mode: GarageSpecsNormalizeMode,
   totalWeight: number,
   totalEnLoad: number,
   rowName: string,
@@ -122,7 +123,7 @@ function SpecsValueWithBar({
   group: LegacyStatRow[];
   row: LegacyStatRow;
   alignEnd?: boolean;
-  normalizeMode?: NormalizeMode;
+  normalizeMode?: GarageSpecsNormalizeMode;
   totalWeight: number;
   totalEnLoad: number;
 }): ReactNode {
@@ -447,6 +448,8 @@ export function GarageLegacyStatGroupsSection({
   compareAnalysisModified = null,
   modifiedUnitSpecs: modifiedUnitSpecsProp,
   onModifiedUnitSpecsChange,
+  normalizeMode: normalizeModeProp,
+  onNormalizeModeChange,
 }: {
   analysis: BuildAnalysis;
   /** When "modified unit specs" is on, prefer this analysis (from `analyzeBuild(..., { modifiedUnitStats: true })`). */
@@ -457,21 +460,35 @@ export function GarageLegacyStatGroupsSection({
   /** When set with `onModifiedUnitSpecsChange`, the modified-specs toggle is controlled (e.g. garage-client). */
   modifiedUnitSpecs?: boolean;
   onModifiedUnitSpecsChange?: (on: boolean) => void;
+  /** When set with `onNormalizeModeChange`, normalize is controlled (e.g. garage-client). */
+  normalizeMode?: GarageSpecsNormalizeMode;
+  onNormalizeModeChange?: (mode: GarageSpecsNormalizeMode) => void;
 }) {
-  const [normalizeMode, setNormalizeMode] = useState<NormalizeMode>("off");
+  const [internalNormalizeMode, setInternalNormalizeMode] =
+    useState<GarageSpecsNormalizeMode>("off");
   const [internalModifiedPreview, setInternalModifiedPreview] = useState(false);
+  const normalizeControlled =
+    typeof onNormalizeModeChange === "function" &&
+    (normalizeModeProp === "off" ||
+      normalizeModeProp === "weight" ||
+      normalizeModeProp === "en");
   const modifiedControlled =
     typeof onModifiedUnitSpecsChange === "function" &&
     typeof modifiedUnitSpecsProp === "boolean";
+  const normalizeMode = normalizeControlled
+    ? normalizeModeProp!
+    : internalNormalizeMode;
   const modifiedPreview = modifiedControlled
     ? modifiedUnitSpecsProp
     : internalModifiedPreview;
 
   useEffect(() => {
     try {
-      const n = sessionStorage.getItem(SS_SPECS_NORMALIZE);
-      if (n === "off" || n === "weight" || n === "en") {
-        setNormalizeMode(n);
+      if (!normalizeControlled) {
+        const n = sessionStorage.getItem(MOA_GARAGE_SPECS_NORMALIZE_SESSION_KEY);
+        if (n === "off" || n === "weight" || n === "en") {
+          setInternalNormalizeMode(n);
+        }
       }
       if (!modifiedControlled) {
         setInternalModifiedPreview(
@@ -481,16 +498,23 @@ export function GarageLegacyStatGroupsSection({
     } catch {
       /* private mode / SSR */
     }
-  }, [modifiedControlled]);
+  }, [normalizeControlled, modifiedControlled]);
 
-  const setNormalizeModePersist = useCallback((mode: NormalizeMode) => {
-    setNormalizeMode(mode);
-    try {
-      sessionStorage.setItem(SS_SPECS_NORMALIZE, mode);
-    } catch {
-      /* ignore */
-    }
-  }, []);
+  const setNormalizeModePersist = useCallback(
+    (mode: GarageSpecsNormalizeMode) => {
+      if (normalizeControlled) {
+        onNormalizeModeChange?.(mode);
+        return;
+      }
+      setInternalNormalizeMode(mode);
+      try {
+        sessionStorage.setItem(MOA_GARAGE_SPECS_NORMALIZE_SESSION_KEY, mode);
+      } catch {
+        /* ignore */
+      }
+    },
+    [normalizeControlled, onNormalizeModeChange],
+  );
 
   const setModifiedPreviewPersist = useCallback(
     (on: boolean) => {
@@ -563,7 +587,9 @@ export function GarageLegacyStatGroupsSection({
             <span className="ac6-specs-toolbar-prefix">NORMALIZE SPECS:</span>
             <select
               value={normalizeMode}
-              onChange={(e) => setNormalizeModePersist(e.target.value as NormalizeMode)}
+              onChange={(e) =>
+                setNormalizeModePersist(e.target.value as GarageSpecsNormalizeMode)
+              }
               className="ac6-specs-toolbar-select ac6-slot-select"
             >
               <option value="off">OFF</option>

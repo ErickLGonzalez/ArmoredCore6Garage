@@ -13,6 +13,8 @@ import {
   GarageLegacyStatGroupsSection,
   GarageSlotColumn,
   MOA_GARAGE_SPECS_MODIFIED_SESSION_KEY,
+  MOA_GARAGE_SPECS_NORMALIZE_SESSION_KEY,
+  type GarageSpecsNormalizeMode,
 } from "@/components/garage/GarageBuildPanels";
 import { MechViewerCanvas } from "@/components/garage/MechViewerCanvas";
 import { GarageCenterPanel } from "@/components/garage/layout/GarageCenterPanel";
@@ -208,16 +210,34 @@ export function GarageClient({
   }, [assemblyB, compareOn]);
 
   const [showModifiedUnitSpecs, setShowModifiedUnitSpecs] = useState(false);
+  const [specsNormalizeMode, setSpecsNormalizeMode] =
+    useState<GarageSpecsNormalizeMode>("off");
 
   useEffect(() => {
     try {
       setShowModifiedUnitSpecs(
         sessionStorage.getItem(MOA_GARAGE_SPECS_MODIFIED_SESSION_KEY) === "1",
       );
+      const n = sessionStorage.getItem(MOA_GARAGE_SPECS_NORMALIZE_SESSION_KEY);
+      if (n === "off" || n === "weight" || n === "en") {
+        setSpecsNormalizeMode(n);
+      }
     } catch {
       /* private mode */
     }
   }, []);
+
+  const setSpecsNormalizeModePersist = useCallback(
+    (mode: GarageSpecsNormalizeMode) => {
+      setSpecsNormalizeMode(mode);
+      try {
+        sessionStorage.setItem(MOA_GARAGE_SPECS_NORMALIZE_SESSION_KEY, mode);
+      } catch {
+        /* ignore */
+      }
+    },
+    [],
+  );
 
   const setShowModifiedUnitSpecsPersist = useCallback((on: boolean) => {
     setShowModifiedUnitSpecs(on);
@@ -910,6 +930,8 @@ export function GarageClient({
                 }
                 modifiedUnitSpecs={showModifiedUnitSpecs}
                 onModifiedUnitSpecsChange={setShowModifiedUnitSpecsPersist}
+                normalizeMode={specsNormalizeMode}
+                onNormalizeModeChange={setSpecsNormalizeModePersist}
                 title={
                   compareOn && analysisB ? "AC SPECS · A VS B" : "AC SPECS (BUILD A)"
                 }
