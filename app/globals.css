@@ -551,12 +551,6 @@ body {
   font-family: Aldrich-Custom, "Inter Variable", Inter, sans-serif;
 }
 
-/* Legacy iframe: full-width panel under strip (no double chrome border). */
-.ac6-garage .ac6-classic-iframe {
-  display: block;
-  min-height: min(60vh, 520px);
-}
-
 .ac6-garage .ac6-assembly-slot-label {
   font-size: 10px;
   font-weight: 700;
@@ -646,8 +640,11 @@ body {
   letter-spacing: 0.02em;
 }
 
-/* Unify non-tab control chrome to classic panel language. */
-.ac6-garage :where(button):not(.classic-tab) {
+/* Unify non-tab control chrome to classic panel language (bundle global button). */
+.ac6-garage
+  :where(button):not(.classic-tab):not(.ac6-btn):not(.ac6-parts-slot-btn):not(
+    .ac6-parts-slot-btn-active
+  ):not(.ac6-filter-chip-off):not(.ac6-filter-chip-active):not(.ac6-table-sort) {
   border: 2px solid var(--ui-border);
   background: #546982;
   color: var(--ui-text);
@@ -657,9 +654,25 @@ body {
   padding: 0.14rem 0.4rem;
 }
 
-.ac6-garage :where(button):not(.classic-tab):hover {
+.ac6-garage
+  :where(button):not(.classic-tab):not(.ac6-btn):not(.ac6-parts-slot-btn):not(
+    .ac6-parts-slot-btn-active
+  ):not(.ac6-filter-chip-off):not(.ac6-filter-chip-active):not(.ac6-table-sort):hover {
   background: #97adb8;
   color: #fff;
+}
+
+.ac6-garage
+  :where(button):not(.classic-tab):not(.ac6-btn):not(.ac6-parts-slot-btn):not(
+    .ac6-parts-slot-btn-active
+  ):not(.ac6-filter-chip-off):not(.ac6-filter-chip-active):not(.ac6-table-sort):active {
+  background: #cceaf8;
+  color: var(--ui-text);
+}
+
+.ac6-garage dialog::backdrop {
+  -webkit-backdrop-filter: brightness(40%);
+  backdrop-filter: brightness(40%);
 }
 
 .ac6-garage :where(select, input:not([type="range"])) {

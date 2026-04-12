@@ -1,7 +1,6 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import Link from "next/link";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 
 import { CounterRicochetPanel } from "@/components/garage/CounterRicochetPanel";
@@ -329,11 +328,7 @@ export function GarageClient({
       </a>
       <GarageShell
         title="GARAGE"
-        subtitle={
-          <>
-            AC BUILD SIMULATOR // CLASSIC LAYOUT
-          </>
-        }
+        subtitle={<>AC VI BUILD LAB // STATS, PARTS, AND ASSEMBLY TOOLS</>}
         actions={
           <>
             <div className="ac6-header-tab-row">
@@ -427,14 +422,6 @@ export function GarageClient({
             >
               RESET AC
             </button>
-            <Link
-              href="/garage/classic"
-              onMouseEnter={playHover}
-              onClick={playClick}
-              className={utilityMiniCls}
-            >
-              LEGACY MODE
-            </Link>
             <button
               type="button"
               onMouseEnter={playHover}
