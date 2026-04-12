@@ -76,10 +76,12 @@ body {
 .ac6-garage {
   position: relative;
   color: var(--ui-text);
-  font-family: "Agency FB", "Arial Narrow", Arial, sans-serif;
+  font-family: "Agency FB", "Bahnschrift SemiCondensed", "Arial Narrow", Arial, sans-serif;
   font-size: 14px;
   line-height: 1.02;
   letter-spacing: 0.02em;
+  font-synthesis: weight;
+  font-stretch: semi-condensed;
 }
 
 /* Classic shell uses hard corners throughout interior garage UI. */
@@ -109,6 +111,13 @@ body {
   border: 2px solid var(--ui-border);
   background: linear-gradient(180deg, var(--ui-panel-top), var(--ui-panel-bottom));
   box-shadow: inset 0 1px 0 color-mix(in srgb, white 20%, transparent);
+}
+
+/* Full-width tab deck under title (classic shell: primary tabs + util strip). */
+.ac6-garage-header-tabdeck {
+  border-top: 2px solid var(--ui-border);
+  background: color-mix(in srgb, var(--ui-panel-bottom) 88%, black);
+  box-shadow: inset 0 1px 0 color-mix(in srgb, white 10%, transparent);
 }
 
 .ac6-panel {
@@ -370,6 +379,28 @@ body {
   border: 2px solid var(--ui-border);
 }
 
+.ac6-garage .ac6-details-block > summary {
+  list-style: none;
+  cursor: pointer;
+  user-select: none;
+  border: 2px solid var(--ui-border);
+  background: color-mix(in srgb, var(--ui-panel-bottom) 90%, black);
+  padding: 0.2rem 0.45rem;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--ui-text);
+}
+
+.ac6-garage .ac6-details-block > summary::-webkit-details-marker {
+  display: none;
+}
+
+.ac6-garage .ac6-details-block > summary:hover {
+  filter: brightness(1.06);
+}
+
 .ac6-garage .ac6-details-block > summary + div {
   border-top: 2px solid color-mix(in srgb, var(--ui-border) 65%, transparent);
 }
@@ -404,6 +435,56 @@ body {
 .ac6-slot-preview-row {
   border: 2px solid var(--ui-border);
   background: color-mix(in srgb, var(--ui-panel-bottom) 92%, black);
+}
+
+/* Assembly: each slot row = label rail + full-width picker (classic garage density). */
+.ac6-garage .ac6-assembly-slot-row {
+  display: grid;
+  grid-template-columns: minmax(0, 6.25rem) minmax(0, 1fr);
+  gap: 0.35rem;
+  align-items: center;
+  padding: 0.2rem 0.25rem;
+  border: 2px solid var(--ui-border);
+  background: color-mix(in srgb, var(--ui-panel-bottom) 92%, black);
+  box-shadow: inset 0 1px 0 color-mix(in srgb, white 6%, transparent);
+}
+
+.ac6-garage .ac6-assembly-slot-label {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--ui-text-dim);
+  line-height: 1.05;
+  hyphens: auto;
+  overflow-wrap: anywhere;
+}
+
+/* Parts: toolbar labels (classic caption style). */
+.ac6-garage .ac6-parts-field-label {
+  display: block;
+  margin-bottom: 0.15rem;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ui-text-dim);
+}
+
+.ac6-garage .ac6-parts-toolbar-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 0.45rem 0.65rem;
+}
+
+.ac6-garage .ac6-parts-toolbar-row .ac6-parts-count {
+  margin-left: auto;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--ui-text-dim);
 }
 
 /* Classic-style AC silhouette: backs + head top, arms/core mid, frame arms, legs, internals bar. */

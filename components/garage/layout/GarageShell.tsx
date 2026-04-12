@@ -27,19 +27,21 @@ export function GarageShell({
       className="ac6-garage mx-auto max-w-[1600px] px-1.5 py-1.5 md:px-2 md:py-2"
       tabIndex={-1}
     >
-      <div className="ac6-garage-header mb-1 px-1.5 py-1">
-        <div className="flex flex-wrap items-end justify-between gap-1">
-          <div>
-            <p className="text-[10px] font-semibold uppercase tracking-[0.08em] text-cyan-300/80">
-              MASTEROFARENA // GARAGE
-            </p>
-            <h1 className="mt-0.5 text-[20px] font-semibold tracking-[0.06em] text-cyan-100">
-              {title}
-            </h1>
-            <p className="mt-0.5 max-w-3xl text-[10px] uppercase tracking-[0.04em] text-cyan-200/70">{subtitle}</p>
-          </div>
-          <div className="flex flex-wrap items-center gap-0.5 leading-none">{actions}</div>
+      <div className="ac6-garage-header mb-1">
+        <div className="px-1.5 py-1">
+          <p className="text-[10px] font-semibold uppercase tracking-[0.08em] text-cyan-300/80">
+            MASTEROFARENA // GARAGE
+          </p>
+          <h1 className="mt-0.5 text-[20px] font-semibold tracking-[0.06em] text-cyan-100">
+            {title}
+          </h1>
+          <p className="mt-0.5 max-w-3xl text-[10px] uppercase tracking-[0.04em] text-cyan-200/70">
+            {subtitle}
+          </p>
         </div>
+        {actions ? (
+          <div className="ac6-garage-header-tabdeck px-1.5 py-1">{actions}</div>
+        ) : null}
       </div>
 
       {layout === "one" ? (

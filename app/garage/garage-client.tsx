@@ -556,7 +556,9 @@ export function GarageClient({
         left={
           <GarageLeftPanel>
             {mainTab === "build" ? (
-              <div className={`grid gap-2 ${compareOn ? "md:grid-cols-2 xl:grid-cols-1" : "grid-cols-1"}`}>
+              <div
+                className={`ac6-inner-frame min-w-0 p-1.5 grid gap-2 ${compareOn ? "md:grid-cols-2 xl:grid-cols-1" : "grid-cols-1"}`}
+              >
                 <GarageSlotColumn
                   label="AC SET A"
                   idPrefix="build-a"
@@ -581,9 +583,15 @@ export function GarageClient({
                 ) : null}
               </div>
             ) : mainTab === "parts" ? (
-              <p className="ac6-note">
-                PARTS MIRRORS CLASSIC TABLES WITH SORTING AND FILTERING.
-              </p>
+              <div className="ac6-stack">
+                <div className="ac6-strip">
+                  <p className="ac6-block-title leading-none">PART DATABASE</p>
+                </div>
+                <p className="ac6-note">
+                  SLOT FILTER, COLUMN GROUPS, AND SORT ORDER MATCH THE CLASSIC PARTS
+                  WORKFLOW. USE THE CENTER PANEL FOR THE FULL TABLE.
+                </p>
+              </div>
             ) : mainTab === "counters" ? (
               <p className="ac6-note">
                 COUNTERS INCLUDES RICOCHET, MATCHUP TTK, STAGGER BREAKPOINTS, AND
@@ -768,9 +776,15 @@ export function GarageClient({
         right={
           <GarageRightPanel>
             {mainTab === "parts" ? (
-              <p className="ac6-note">
-                PARTS SUPPORTS CLASSIC-STYLE COLUMNS, SORT, FILTERS, AND PRESETS.
-              </p>
+              <div className="ac6-stack">
+                <div className="ac6-strip">
+                  <p className="ac6-block-title leading-none">PART DATABASE</p>
+                </div>
+                <p className="ac6-note">
+                  COLUMN GROUP ROWS, STICKY NAME, AND PER-COLUMN FILTERS FOLLOW THE
+                  CLASSIC PARTS TABLE LAYOUT.
+                </p>
+              </div>
             ) : mainTab === "counters" ? (
               <p className="ac6-note">
                 COUNTERS PROVIDES MATCHUP AND BREAKPOINT ANALYSIS VIEWS.

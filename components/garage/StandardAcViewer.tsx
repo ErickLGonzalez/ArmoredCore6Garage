@@ -1,5 +1,6 @@
 "use client";
 
+import { garageUiAsset } from "@/lib/garage/garage-ui-assets";
 import type { GarageBuildIds } from "@/lib/garage/default-assembly";
 import type { CanonicalPart } from "@/lib/schema";
 
@@ -15,18 +16,18 @@ type SlotView = {
 };
 
 const SLOT_VIEWS: SlotView[] = [
-  { key: "head", label: "HEAD", icon: "/assets/head-DNUrigrV.png" },
-  { key: "core", label: "CORE", icon: "/assets/core-B8zPPW4_.png" },
-  { key: "arms", label: "ARMS", icon: "/assets/arms-DqA1k8qI.png" },
-  { key: "legs", label: "LEGS", icon: "/assets/legs-BJMIf3mC.png" },
-  { key: "rightArm", label: "R-ARM", icon: "/assets/rightArm-DHkM81Mo.png" },
-  { key: "leftArm", label: "L-ARM", icon: "/assets/leftArm-BzIzkCFS.png" },
-  { key: "rightBack", label: "R-BACK", icon: "/assets/rightBack-C92IaCpT.png" },
-  { key: "leftBack", label: "L-BACK", icon: "/assets/leftBack-DIMm5nm3.png" },
-  { key: "booster", label: "BOOSTER", icon: "/assets/booster-yO0tdh-V.png" },
-  { key: "fcs", label: "FCS", icon: "/assets/fcs-Dlc38BId.png" },
-  { key: "generator", label: "GENERATOR", icon: "/assets/generator-gkpT6ntG.png" },
-  { key: "expansionId", label: "EXPANSION", icon: "/assets/expansion-BuLbm5gH.png" },
+  { key: "head", label: "HEAD", icon: garageUiAsset("head-DNUrigrV.png") },
+  { key: "core", label: "CORE", icon: garageUiAsset("core-B8zPPW4_.png") },
+  { key: "arms", label: "ARMS", icon: garageUiAsset("arms-DqA1k8qI.png") },
+  { key: "legs", label: "LEGS", icon: garageUiAsset("legs-BJMIf3mC.png") },
+  { key: "rightArm", label: "R-ARM", icon: garageUiAsset("rightArm-DHkM81Mo.png") },
+  { key: "leftArm", label: "L-ARM", icon: garageUiAsset("leftArm-BzIzkCFS.png") },
+  { key: "rightBack", label: "R-BACK", icon: garageUiAsset("rightBack-C92IaCpT.png") },
+  { key: "leftBack", label: "L-BACK", icon: garageUiAsset("leftBack-DIMm5nm3.png") },
+  { key: "booster", label: "BOOSTER", icon: garageUiAsset("booster-yO0tdh-V.png") },
+  { key: "fcs", label: "FCS", icon: garageUiAsset("fcs-Dlc38BId.png") },
+  { key: "generator", label: "GENERATOR", icon: garageUiAsset("generator-gkpT6ntG.png") },
+  { key: "expansionId", label: "EXPANSION", icon: garageUiAsset("expansion-BuLbm5gH.png") },
 ];
 
 /** Matches `grid-template-areas` in `app/globals.css` (`.ac6-ac-composite`). */

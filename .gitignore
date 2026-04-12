@@ -45,3 +45,6 @@ next-env.d.ts
 
 # Pack duplicate (folder is source of truth)
 /weapons_test_cursor_pack.zip
+
+# Generated from garage-ui-assets/ (see scripts/sync-garage-ui-assets.mjs)
+/public/garage-ui/

@@ -9,7 +9,8 @@
     "lint": "next lint",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
-    "postinstall": "prisma generate",
+    "postinstall": "prisma generate && node scripts/sync-garage-ui-assets.mjs",
+    "assets:garage-ui": "node scripts/sync-garage-ui-assets.mjs",
     "db:generate": "prisma generate",
     "db:migrate": "prisma migrate dev",
     "db:push": "prisma db push",
@@ -19,7 +20,8 @@
     "data:validate": "tsx scripts/validate-parts.ts",
     "data:generate:energy-models": "tsx scripts/generate-energy-models.ts",
     "test": "vitest run",
-    "test:watch": "vitest"
+    "test:watch": "vitest",
+    "git:sync": "node scripts/git-sync-remote.mjs"
   },
   "dependencies": {
     "@prisma/client": "^5.22.0",

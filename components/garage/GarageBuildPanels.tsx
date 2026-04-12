@@ -93,81 +93,90 @@ export function GarageSlotColumn({
   );
 
   return (
-    <div className="space-y-2">
-      <p className="text-[11px] font-semibold uppercase tracking-[0.08em] text-cyan-200/80">
-        {label}
-      </p>
+    <div className="ac6-stack">
+      <div className="ac6-strip">
+        <p className="ac6-block-title leading-none">{label}</p>
+      </div>
       {SLOT_GROUPS.map((group) => (
         <div
           key={group.label}
-          className="space-y-1.5"
+          className="ac6-block p-2"
         >
-          <p className="text-[10px] uppercase tracking-[0.06em] text-cyan-200/60">
-            {group.label}
-          </p>
-          {group.slots.map((slot) => {
-            const opts = optionsBySlot.get(slot) ?? [];
-            const sid = `${idPrefix}-${slot}`;
-            return (
-              <label
-                key={slot}
-                htmlFor={sid}
-                className="block text-[12px]"
-              >
-                <span className="mb-0.5 block text-[11px] font-medium uppercase tracking-[0.04em] text-cyan-100/85">
-                  {SLOT_LABELS[slot]}
-                </span>
-                <select
-                  id={sid}
-                  className="ac6-slot-select w-full border-2 px-1.5 py-[2px] text-[11px] outline-none"
-                  value={ids[slot]}
-                  onMouseEnter={onHover}
-                  onChange={(e) => {
-                    onInteract?.();
-                    setSlot(slot, Number(e.target.value));
-                  }}
+          <div className="ac6-strip mb-1.5">
+            <p className="ac6-chart-section-title m-0">{group.label}</p>
+          </div>
+          <div className="ac6-stack">
+            {group.slots.map((slot) => {
+              const opts = optionsBySlot.get(slot) ?? [];
+              const sid = `${idPrefix}-${slot}`;
+              return (
+                <div
+                  key={slot}
+                  className="ac6-assembly-slot-row"
                 >
-                  {opts.map((p) => (
-                    <option
-                      key={p.identity.id}
-                      value={p.identity.id}
-                    >
-                      {p.identity.name}
-                    </option>
-                  ))}
-                </select>
-              </label>
-            );
-          })}
+                  <label
+                    htmlFor={sid}
+                    className="ac6-assembly-slot-label min-w-0"
+                  >
+                    {SLOT_LABELS[slot]}
+                  </label>
+                  <select
+                    id={sid}
+                    className="ac6-slot-select min-w-0 max-w-full border-2 px-1 py-[1px] text-[11px] outline-none"
+                    value={ids[slot]}
+                    onMouseEnter={onHover}
+                    onChange={(e) => {
+                      onInteract?.();
+                      setSlot(slot, Number(e.target.value));
+                    }}
+                  >
+                    {opts.map((p) => (
+                      <option
+                        key={p.identity.id}
+                        value={p.identity.id}
+                      >
+                        {p.identity.name}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              );
+            })}
+          </div>
         </div>
       ))}
-      <label
-        htmlFor={`${idPrefix}-expansion`}
-        className="block text-[12px]"
-      >
-        <span className="mb-0.5 block text-[11px] font-medium uppercase tracking-[0.04em] text-cyan-100/85">
-          {EXPANSION_SLOT_LABEL}
-        </span>
-        <select
-          id={`${idPrefix}-expansion`}
-          className="ac6-slot-select w-full border-2 px-1.5 py-[2px] text-[11px] outline-none focus:border-cyan-200 focus:ring-2 focus:ring-cyan-400/20"
-          value={ids.expansionId}
-          onMouseEnter={onHover}
-          onChange={(e) => {
-            onInteract?.();
-            setIds((prev) => ({ ...prev, expansionId: Number(e.target.value) }));
-          }}
-        >
-          {expansionOptions.map((p) => (
-            <option
-              key={p.identity.id}
-              value={p.identity.id}
-            >
-              {p.identity.name}
-            </option>
-          ))}
-        </select>
-      </label>
+      <div className="ac6-block p-2">
+        <div className="ac6-strip mb-1.5">
+          <p className="ac6-chart-section-title m-0">EXPANSION</p>
+        </div>
+        <div className="ac6-assembly-slot-row">
+          <label
+            htmlFor={`${idPrefix}-expansion`}
+            className="ac6-assembly-slot-label min-w-0"
+          >
+            {EXPANSION_SLOT_LABEL}
+          </label>
+          <select
+            id={`${idPrefix}-expansion`}
+            className="ac6-slot-select min-w-0 max-w-full border-2 px-1 py-[1px] text-[11px] outline-none"
+            value={ids.expansionId}
+            onMouseEnter={onHover}
+            onChange={(e) => {
+              onInteract?.();
+              setIds((prev) => ({ ...prev, expansionId: Number(e.target.value) }));
+            }}
+          >
+            {expansionOptions.map((p) => (
+              <option
+                key={p.identity.id}
+                value={p.identity.id}
+              >
+                {p.identity.name}
+              </option>
+            ))}
+          </select>
+        </div>
+      </div>
     </div>
   );
 }
@@ -191,9 +200,9 @@ export function GarageAnalysisBlock({
         compareAnalysis={compareAnalysis}
       />
       <div>
-        <p className="mb-2 text-xs font-medium uppercase tracking-wide text-cyan-200/70">
-          AC SPECS
-        </p>
+        <div className="ac6-strip mb-2">
+          <p className="ac6-chart-section-title m-0">AC SPECS</p>
+        </div>
         <dl className="ac6-stat-grid grid gap-1.5 sm:grid-cols-2">
           {SUMMARY_METRICS.map(({ key, label }) => {
             const v = analysis[key];
@@ -261,7 +270,7 @@ export function GarageLegacyStatGroupsSection({
             key={gi}
             className="group ac6-details-block"
           >
-            <summary className="cursor-pointer select-none px-2 py-1 text-[12px] font-medium text-cyan-100 hover:bg-cyan-800/20">
+            <summary>
               {groupTitle(gi)}{" "}
               <span className="font-normal text-cyan-200/70">
                 ({group.filter((r) => !skipCollapsibleRow(r)).length} STATS)

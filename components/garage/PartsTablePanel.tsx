@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 
+import { garageUiAsset } from "@/lib/garage/garage-ui-assets";
 import type { CanonicalPart } from "@/lib/schema";
 import { useGarageStore } from "@/src/lib/store/garage-store";
 
@@ -39,23 +40,24 @@ type Preset = {
 
 const PRESET_KEY = "masterofarena.parts.presets.v1";
 const MUL_CHAR = "\u00d7";
-const SORT_ASC_ICON = "/assets/sort_ascending-CKKvPke2.png";
-const SORT_DESC_ICON = "/assets/sort_descending-R6blHvQV.png";
+
+const SORT_ASC_ICON = garageUiAsset("sort_ascending-CKKvPke2.png");
+const SORT_DESC_ICON = garageUiAsset("sort_descending-R6blHvQV.png");
 
 const SLOT_OPTIONS: { key: SlotKey; label: string; icon?: string }[] = [
   { key: "all", label: "ALL" },
-  { key: "rightArm", label: "R-ARM", icon: "/assets/rightArm-DHkM81Mo.png" },
-  { key: "leftArm", label: "L-ARM", icon: "/assets/leftArm-BzIzkCFS.png" },
-  { key: "rightBack", label: "R-BACK", icon: "/assets/rightBack-C92IaCpT.png" },
-  { key: "leftBack", label: "L-BACK", icon: "/assets/leftBack-DIMm5nm3.png" },
-  { key: "head", label: "HEAD", icon: "/assets/head-DNUrigrV.png" },
-  { key: "core", label: "CORE", icon: "/assets/core-B8zPPW4_.png" },
-  { key: "arms", label: "ARMS", icon: "/assets/arms-DqA1k8qI.png" },
-  { key: "legs", label: "LEGS", icon: "/assets/legs-BJMIf3mC.png" },
-  { key: "booster", label: "BOOST", icon: "/assets/booster-yO0tdh-V.png" },
-  { key: "fcs", label: "FCS", icon: "/assets/fcs-Dlc38BId.png" },
-  { key: "generator", label: "GEN", icon: "/assets/generator-gkpT6ntG.png" },
-  { key: "expansion", label: "EXP", icon: "/assets/expansion-BuLbm5gH.png" },
+  { key: "rightArm", label: "R-ARM", icon: garageUiAsset("rightArm-DHkM81Mo.png") },
+  { key: "leftArm", label: "L-ARM", icon: garageUiAsset("leftArm-BzIzkCFS.png") },
+  { key: "rightBack", label: "R-BACK", icon: garageUiAsset("rightBack-C92IaCpT.png") },
+  { key: "leftBack", label: "L-BACK", icon: garageUiAsset("leftBack-DIMm5nm3.png") },
+  { key: "head", label: "HEAD", icon: garageUiAsset("head-DNUrigrV.png") },
+  { key: "core", label: "CORE", icon: garageUiAsset("core-B8zPPW4_.png") },
+  { key: "arms", label: "ARMS", icon: garageUiAsset("arms-DqA1k8qI.png") },
+  { key: "legs", label: "LEGS", icon: garageUiAsset("legs-BJMIf3mC.png") },
+  { key: "booster", label: "BOOST", icon: garageUiAsset("booster-yO0tdh-V.png") },
+  { key: "fcs", label: "FCS", icon: garageUiAsset("fcs-Dlc38BId.png") },
+  { key: "generator", label: "GEN", icon: garageUiAsset("generator-gkpT6ntG.png") },
+  { key: "expansion", label: "EXP", icon: garageUiAsset("expansion-BuLbm5gH.png") },
 ];
 
 const DISPLAY_STRING_TABLE: Record<string, string> = {
@@ -707,26 +709,31 @@ export function PartsTablePanel({ parts }: Props) {
   };
 
   return (
-    <div className="ac6-block p-1.5">
-      <div className="mb-2">
-        <p className="mb-2 text-xs uppercase tracking-[0.16em] text-cyan-200/75">
-          PART SLOT SELECT
-        </p>
-        <div className="flex flex-wrap gap-1.5">
+    <div className="ac6-stack">
+      <div className="ac6-strip">
+        <p className="ac6-block-title leading-none">PART DATABASE</p>
+      </div>
+
+      <div className="ac6-block p-2">
+        <div className="ac6-strip mb-1.5">
+          <p className="ac6-chart-section-title m-0">PART SLOT FILTER</p>
+        </div>
+        <div className="flex flex-wrap gap-0.5">
           {SLOT_OPTIONS.map((s) => (
             <button
               key={s.key}
               type="button"
               onClick={() => setSlot(s.key)}
-              className={`ac6-parts-slot-btn flex items-center gap-1 px-1.5 py-[2px] ${
+              className={`ac6-parts-slot-btn flex items-center gap-1 px-2 py-[3px] ${
                 slot === s.key ? "ac6-parts-slot-btn-active" : ""
               }`}
             >
               {s.icon ? (
                 <img
                   src={s.icon}
-                  alt={s.label}
+                  alt=""
                   className="h-4 w-4 object-contain"
+                  aria-hidden
                 />
               ) : null}
               {s.label}
@@ -735,87 +742,105 @@ export function PartsTablePanel({ parts }: Props) {
         </div>
       </div>
 
-      <div className="mb-2 flex flex-wrap items-end gap-1.5">
-        <label className="text-xs text-cyan-200/80">
-          SEARCH
-          <input
-            className="ac6-inset-field ml-2 px-2 py-1 text-xs"
-            value={query}
-            onChange={(e) => setQuery(e.target.value)}
-            placeholder="PART NAME / MANUFACTURER"
-          />
-        </label>
-        <label className="text-xs text-cyan-200/80">
-          PRESET
-          <select
-            className="ac6-inset-field ml-2 px-2 py-1 text-xs"
-            value={selectedPreset}
-            onChange={(e) => applyPreset(e.target.value)}
+      <div className="ac6-block p-2">
+        <div className="ac6-strip mb-1.5">
+          <p className="ac6-chart-section-title m-0">SEARCH &amp; PRESETS</p>
+        </div>
+        <div className="ac6-parts-toolbar-row">
+          <div>
+            <span className="ac6-parts-field-label">SEARCH</span>
+            <input
+              className="ac6-inset-field w-[min(100%,18rem)] px-2 py-[3px] text-[11px]"
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              placeholder="NAME / MANUFACTURER"
+              aria-label="Search parts by name or manufacturer"
+            />
+          </div>
+          <div>
+            <span className="ac6-parts-field-label">PRESET</span>
+            <select
+              className="ac6-inset-field min-w-[10rem] px-2 py-[3px] text-[11px]"
+              value={selectedPreset}
+              onChange={(e) => applyPreset(e.target.value)}
+              aria-label="Load column preset"
+            >
+              <option value="">(NONE)</option>
+              {presets.map((p) => (
+                <option key={p.name} value={p.name}>
+                  {p.name}
+                </option>
+              ))}
+            </select>
+          </div>
+          <button
+            type="button"
+            className="classic-tab px-2 py-[3px] text-[10px]"
+            onClick={savePreset}
           >
-            <option value="">(NONE)</option>
-            {presets.map((p) => (
-              <option key={p.name} value={p.name}>
-                {p.name}
-              </option>
-            ))}
-          </select>
-        </label>
-        <button
-          type="button"
-          className="px-2 py-1 text-xs"
-          onClick={savePreset}
-        >
-          SAVE PRESET
-        </button>
-        <button
-          type="button"
-          className="px-2 py-1 text-xs disabled:opacity-40"
-          disabled={!selectedPreset}
-          onClick={deletePreset}
-        >
-          DELETE PRESET
-        </button>
-        <p className="ml-auto text-xs text-cyan-200/70">{rows.length} PARTS</p>
+            SAVE PRESET
+          </button>
+          <button
+            type="button"
+            className="classic-tab px-2 py-[3px] text-[10px] disabled:opacity-40"
+            disabled={!selectedPreset}
+            onClick={deletePreset}
+          >
+            DELETE
+          </button>
+          <p className="ac6-parts-count">{rows.length} SHOWN</p>
+        </div>
       </div>
 
-      <div className="ac6-inner-frame mb-2">
-        <div className="mb-1 flex items-center justify-between gap-2">
-          <p className="text-[11px] uppercase tracking-[0.14em] text-cyan-200/75">
-            COLUMN VISIBILITY
-          </p>
-          <div className="flex gap-2">
+      <div className="ac6-block p-2">
+        <div className="mb-1.5 flex flex-wrap items-center justify-between gap-2">
+          <div className="ac6-strip flex-1 px-2 py-[3px]">
+            <p className="ac6-chart-section-title m-0">COLUMN VISIBILITY</p>
+          </div>
+          <div className="flex flex-wrap gap-0.5">
             <button
               type="button"
-              className="px-2 py-1 text-[10px]"
+              className="classic-tab px-2 py-[3px] text-[10px]"
               onClick={() => setAllCols(true)}
             >
-              SELECT ALL
+              ALL ON
             </button>
             <button
               type="button"
-              className="px-2 py-1 text-[10px]"
+              className="classic-tab px-2 py-[3px] text-[10px]"
               onClick={() => setAllCols(false)}
             >
-              DESELECT ALL
+              NAME ONLY
             </button>
           </div>
         </div>
-        <div className="flex flex-wrap gap-2">
-          {colOrder.map((key) => (
-            <label key={key} className="text-xs text-cyan-100">
-              <input
-                type="checkbox"
-                className="mr-1 align-middle"
-                checked={visibleCols.includes(key)}
-                onChange={() => toggleCol(key)}
-              />
-              {toDisplayString(key)}
-            </label>
-          ))}
+        <div className="ac6-inner-frame max-h-[9.5rem] overflow-y-auto p-1.5">
+          <div className="flex flex-wrap gap-x-2 gap-y-1">
+            {colOrder.map((key) => (
+              <label
+                key={key}
+                className="flex cursor-pointer items-center gap-1 text-[11px] text-cyan-100"
+              >
+                <input
+                  type="checkbox"
+                  className="accent-cyan-300"
+                  checked={visibleCols.includes(key)}
+                  onChange={() => toggleCol(key)}
+                />
+                <span className="font-semibold uppercase tracking-[0.04em]">
+                  {toDisplayString(key)}
+                </span>
+              </label>
+            ))}
+          </div>
         </div>
       </div>
 
-      <div className="ac6-table-wrap relative h-[800px] overflow-auto">
+      <div className="ac6-block p-0">
+        <div className="ac6-strip px-2 py-[3px]">
+          <p className="ac6-chart-section-title m-0">PART TABLE</p>
+        </div>
+        <div className="ac6-table-wrap relative h-[min(72vh,780px)] overflow-auto">
         <table className="w-full text-left text-[11px]">
           <thead className="ac6-table-headband ac6-table-thead sticky top-0 z-30">
             <tr className="ac6-table-group-row">
@@ -823,7 +848,7 @@ export function PartsTablePanel({ parts }: Props) {
                 <th
                   key={`${g.label}-${i}`}
                   colSpan={g.span}
-                  className="px-2 py-[2px] text-[10px] uppercase tracking-[0.08em] text-cyan-200/75"
+                  className="px-2 py-[3px] text-center text-[10px] font-bold uppercase tracking-[0.1em] text-cyan-200/75"
                 >
                   {g.label}
                 </th>
@@ -856,7 +881,7 @@ export function PartsTablePanel({ parts }: Props) {
                       {sortPos >= 0 ? (
                         <img
                           src={sorters[sortPos]!.dir === "asc" ? SORT_ASC_ICON : SORT_DESC_ICON}
-                          alt={sorters[sortPos]!.dir === "asc" ? "ascending" : "descending"}
+                          alt={sorters[sortPos]!.dir === "asc" ? "Ascending" : "Descending"}
                           className="h-3 w-3 invert"
                         />
                       ) : null}
@@ -897,31 +922,31 @@ export function PartsTablePanel({ parts }: Props) {
                             </label>
                           ))}
                         </div>
-                        <div className="mt-2 flex flex-wrap justify-between gap-1">
+                        <div className="mt-2 flex flex-wrap gap-0.5">
                           <button
                             type="button"
-                            className="px-2 py-1 text-[10px]"
+                            className="classic-tab px-2 py-[3px] text-[10px]"
                             onClick={() => setAllFilterOptions(k, true)}
                           >
-                            SELECT ALL
+                            ALL
                           </button>
                           <button
                             type="button"
-                            className="px-2 py-1 text-[10px]"
+                            className="classic-tab px-2 py-[3px] text-[10px]"
                             onClick={() => setAllFilterOptions(k, false)}
                           >
-                            DESELECT
+                            NONE
                           </button>
                           <button
                             type="button"
-                            className="px-2 py-1 text-[10px]"
+                            className="classic-tab px-2 py-[3px] text-[10px]"
                             onClick={() => clearFilter(k)}
                           >
                             CLEAR
                           </button>
                           <button
                             type="button"
-                            className="px-2 py-1 text-[10px]"
+                            className="classic-tab px-2 py-[3px] text-[10px]"
                             onClick={() => setOpenFilterCol(null)}
                           >
                             CLOSE
@@ -947,7 +972,11 @@ export function PartsTablePanel({ parts }: Props) {
                   return (
                     <td
                       key={k}
-                      className={`px-2 py-[2px] ${k === "Name" ? "ac6-table-name-sticky" : ""}`}
+                      className={`px-2 py-[2px] ${
+                        k === "Name"
+                          ? "ac6-table-name-sticky font-semibold uppercase tracking-[0.04em]"
+                          : "font-mono tabular-nums"
+                      }`}
                       style={{ minWidth: colWidth(k), width: colWidth(k) }}
                     >
                       {fmt(getColValue(p, k))}
@@ -958,6 +987,7 @@ export function PartsTablePanel({ parts }: Props) {
             ))}
           </tbody>
         </table>
+      </div>
       </div>
     </div>
   );
