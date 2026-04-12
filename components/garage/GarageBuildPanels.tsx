@@ -73,7 +73,9 @@ function rowByName(group: LegacyStatRow[] | undefined, name: string): LegacyStat
 type NormalizeMode = "off" | "weight" | "en";
 
 const SS_SPECS_NORMALIZE = "moa-garage-specs-normalize";
-const SS_SPECS_MODIFIED = "moa-garage-specs-modified-preview";
+/** Session key for SHOW MODIFIED UNIT SPECS (shared with garage-client for chart sync). */
+export const MOA_GARAGE_SPECS_MODIFIED_SESSION_KEY =
+  "moa-garage-specs-modified-preview";
 
 /** Rows excluded from AC-wide normalize (classic leaves weight / EN-load rows unchanged). */
 const NORMALIZE_EXCLUDE = new Set(["TotalWeight", "TotalENLoad"]);
@@ -443,6 +445,8 @@ export function GarageLegacyStatGroupsSection({
   title,
   compareAnalysis = null,
   compareAnalysisModified = null,
+  modifiedUnitSpecs: modifiedUnitSpecsProp,
+  onModifiedUnitSpecsChange,
 }: {
   analysis: BuildAnalysis;
   /** When "modified unit specs" is on, prefer this analysis (from `analyzeBuild(..., { modifiedUnitStats: true })`). */
@@ -450,9 +454,18 @@ export function GarageLegacyStatGroupsSection({
   title: string;
   compareAnalysis?: BuildAnalysis | null;
   compareAnalysisModified?: BuildAnalysis | null;
+  /** When set with `onModifiedUnitSpecsChange`, the modified-specs toggle is controlled (e.g. garage-client). */
+  modifiedUnitSpecs?: boolean;
+  onModifiedUnitSpecsChange?: (on: boolean) => void;
 }) {
   const [normalizeMode, setNormalizeMode] = useState<NormalizeMode>("off");
-  const [modifiedPreview, setModifiedPreview] = useState(false);
+  const [internalModifiedPreview, setInternalModifiedPreview] = useState(false);
+  const modifiedControlled =
+    typeof onModifiedUnitSpecsChange === "function" &&
+    typeof modifiedUnitSpecsProp === "boolean";
+  const modifiedPreview = modifiedControlled
+    ? modifiedUnitSpecsProp
+    : internalModifiedPreview;
 
   useEffect(() => {
     try {
@@ -460,11 +473,15 @@ export function GarageLegacyStatGroupsSection({
       if (n === "off" || n === "weight" || n === "en") {
         setNormalizeMode(n);
       }
-      setModifiedPreview(sessionStorage.getItem(SS_SPECS_MODIFIED) === "1");
+      if (!modifiedControlled) {
+        setInternalModifiedPreview(
+          sessionStorage.getItem(MOA_GARAGE_SPECS_MODIFIED_SESSION_KEY) === "1",
+        );
+      }
     } catch {
       /* private mode / SSR */
     }
-  }, []);
+  }, [modifiedControlled]);
 
   const setNormalizeModePersist = useCallback((mode: NormalizeMode) => {
     setNormalizeMode(mode);
@@ -475,14 +492,24 @@ export function GarageLegacyStatGroupsSection({
     }
   }, []);
 
-  const setModifiedPreviewPersist = useCallback((on: boolean) => {
-    setModifiedPreview(on);
-    try {
-      sessionStorage.setItem(SS_SPECS_MODIFIED, on ? "1" : "0");
-    } catch {
-      /* ignore */
-    }
-  }, []);
+  const setModifiedPreviewPersist = useCallback(
+    (on: boolean) => {
+      if (modifiedControlled) {
+        onModifiedUnitSpecsChange?.(on);
+        return;
+      }
+      setInternalModifiedPreview(on);
+      try {
+        sessionStorage.setItem(
+          MOA_GARAGE_SPECS_MODIFIED_SESSION_KEY,
+          on ? "1" : "0",
+        );
+      } catch {
+        /* ignore */
+      }
+    },
+    [modifiedControlled, onModifiedUnitSpecsChange],
+  );
 
   const activeAnalysis =
     modifiedPreview && analysisModified != null ? analysisModified : analysis;
@@ -553,7 +580,8 @@ export function GarageLegacyStatGroupsSection({
       ) : null}
       <p className="ac6-specs-toolbar-footnote">
         Normalize rescales numeric table cells only (Δ stays raw). Bars use raw load vs limit. Total weight /
-        EN load rows are excluded from normalize. Toolbar choices persist for this tab (session).
+        EN load rows are excluded from normalize. Toolbar choices persist for this tab (session). When modified
+        specs are on, analysis charts, M4 engagement, and system previews use the same assembly totals.
       </p>
       <div className="ac6-specs-groups mt-1.5 space-y-1.5">
         {activeAnalysis.groups.map((group, gi) => {

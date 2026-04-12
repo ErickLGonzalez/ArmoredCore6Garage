@@ -12,6 +12,7 @@ import {
   GarageBuildDiffPreview,
   GarageLegacyStatGroupsSection,
   GarageSlotColumn,
+  MOA_GARAGE_SPECS_MODIFIED_SESSION_KEY,
 } from "@/components/garage/GarageBuildPanels";
 import { MechViewerCanvas } from "@/components/garage/MechViewerCanvas";
 import { GarageCenterPanel } from "@/components/garage/layout/GarageCenterPanel";
@@ -205,80 +206,116 @@ export function GarageClient({
     }
   }, [assemblyB, compareOn]);
 
+  const [showModifiedUnitSpecs, setShowModifiedUnitSpecs] = useState(false);
+
+  useEffect(() => {
+    try {
+      setShowModifiedUnitSpecs(
+        sessionStorage.getItem(MOA_GARAGE_SPECS_MODIFIED_SESSION_KEY) === "1",
+      );
+    } catch {
+      /* private mode */
+    }
+  }, []);
+
+  const setShowModifiedUnitSpecsPersist = useCallback((on: boolean) => {
+    setShowModifiedUnitSpecs(on);
+    try {
+      sessionStorage.setItem(
+        MOA_GARAGE_SPECS_MODIFIED_SESSION_KEY,
+        on ? "1" : "0",
+      );
+    } catch {
+      /* ignore */
+    }
+  }, []);
+
+  const analysisAActive = useMemo((): BuildAnalysis | null => {
+    if (!analysisA) return null;
+    if (showModifiedUnitSpecs && analysisAModified) return analysisAModified;
+    return analysisA;
+  }, [analysisA, analysisAModified, showModifiedUnitSpecs]);
+
+  const analysisBActive = useMemo((): BuildAnalysis | null => {
+    if (!analysisB) return null;
+    if (showModifiedUnitSpecs && analysisBModified) return analysisBModified;
+    return analysisB;
+  }, [analysisB, analysisBModified, showModifiedUnitSpecs]);
+
   const m4A = useMemo(
     () =>
-      analysisA
-        ? computeFullAccuracy(analysisA, { distanceM: engagementM })
+      analysisAActive
+        ? computeFullAccuracy(analysisAActive, { distanceM: engagementM })
         : null,
-    [analysisA, engagementM],
+    [analysisAActive, engagementM],
   );
   const m4B = useMemo(
     () =>
-      analysisB && compareOn
-        ? computeFullAccuracy(analysisB, { distanceM: engagementM })
+      analysisBActive && compareOn
+        ? computeFullAccuracy(analysisBActive, { distanceM: engagementM })
         : null,
-    [analysisB, compareOn, engagementM],
+    [analysisBActive, compareOn, engagementM],
   );
   const battlePreview = useMemo(() => {
-    if (!analysisA || !analysisB || !compareOn) return null;
+    if (!analysisAActive || !analysisBActive || !compareOn) return null;
     return simulateBattle(
       {
-        ap: analysisA.totalAp,
-        dps: analysisA.dps,
-        impactPerSecond: analysisA.impactPerSecond,
-        stability: analysisA.totalStability,
+        ap: analysisAActive.totalAp,
+        dps: analysisAActive.dps,
+        impactPerSecond: analysisAActive.impactPerSecond,
+        stability: analysisAActive.totalStability,
       },
       {
-        ap: analysisB.totalAp,
-        dps: analysisB.dps,
-        impactPerSecond: analysisB.impactPerSecond,
-        stability: analysisB.totalStability,
+        ap: analysisBActive.totalAp,
+        dps: analysisBActive.dps,
+        impactPerSecond: analysisBActive.impactPerSecond,
+        stability: analysisBActive.totalStability,
       },
     );
-  }, [analysisA, analysisB, compareOn]);
+  }, [analysisAActive, analysisBActive, compareOn]);
   const optimizerPreview = useMemo(() => {
-    if (!analysisA || !analysisB || !compareOn) return null;
+    if (!analysisAActive || !analysisBActive || !compareOn) return null;
     return optimizeAdvanced(
       { goal: "balanced", limit: 2 },
       [
         {
           build: "A",
           metrics: {
-            dps: analysisA.dps,
-            stagger: analysisA.impactPerSecond,
-            mobility: analysisA.groundedBoostSpeed,
+            dps: analysisAActive.dps,
+            stagger: analysisAActive.impactPerSecond,
+            mobility: analysisAActive.groundedBoostSpeed,
           },
         },
         {
           build: "B",
           metrics: {
-            dps: analysisB.dps,
-            stagger: analysisB.impactPerSecond,
-            mobility: analysisB.groundedBoostSpeed,
+            dps: analysisBActive.dps,
+            stagger: analysisBActive.impactPerSecond,
+            mobility: analysisBActive.groundedBoostSpeed,
           },
         },
       ],
     );
-  }, [analysisA, analysisB, compareOn]);
+  }, [analysisAActive, analysisBActive, compareOn]);
   const counterPreview = useMemo(() => {
-    if (!analysisA || !analysisB || !compareOn) return null;
+    if (!analysisAActive || !analysisBActive || !compareOn) return null;
     return generateCounterBuilds(
       {
-        totalAp: analysisA.totalAp,
-        totalStability: analysisA.totalStability,
-        groundedBoostSpeed: analysisA.groundedBoostSpeed,
+        totalAp: analysisAActive.totalAp,
+        totalStability: analysisAActive.totalStability,
+        groundedBoostSpeed: analysisAActive.groundedBoostSpeed,
       },
       [
         {
           build: "B",
-          dps: analysisB.dps,
-          impactPerSecond: analysisB.impactPerSecond,
-          mobility: analysisB.groundedBoostSpeed,
+          dps: analysisBActive.dps,
+          impactPerSecond: analysisBActive.impactPerSecond,
+          mobility: analysisBActive.groundedBoostSpeed,
         },
       ],
       1,
     );
-  }, [analysisA, analysisB, compareOn]);
+  }, [analysisAActive, analysisBActive, compareOn]);
 
   const resetDefault = useCallback(() => {
     setBuildA({ ...defaultBuild });
@@ -513,23 +550,23 @@ export function GarageClient({
               ) : null}
               {counterTab === "ttk" ? (
                 <CounterMatchupTTKPanel
-                  analysisA={analysisA}
-                  analysisB={analysisB}
+                  analysisA={analysisAActive}
+                  analysisB={analysisBActive}
                 />
               ) : null}
               {counterTab === "stagger" ? (
                 <CounterStaggerBreakpointsPanel
-                  analysisA={analysisA}
-                  analysisB={analysisB}
+                  analysisA={analysisAActive}
+                  analysisB={analysisBActive}
                 />
               ) : null}
               {counterTab === "weaponsTest" ? (
                 <WeaponsTestTab
                   assembly={assemblyA}
-                  analysis={analysisA}
+                  analysis={analysisAActive}
                   compareOn={compareOn}
                   compareAssembly={compareOn ? assemblyB : null}
-                  compareAnalysis={compareOn ? analysisB : null}
+                  compareAnalysis={compareOn ? analysisBActive : null}
                 />
               ) : null}
             </div>
@@ -792,16 +829,18 @@ export function GarageClient({
                 <div className="ac6-block p-2">
                   <GarageAnalysisBlock
                     title="AC SET A"
-                    analysis={analysisA}
-                    compareAnalysis={compareOn ? analysisB : null}
+                    analysis={analysisAActive!}
+                    compareAnalysis={
+                      compareOn && analysisBActive ? analysisBActive : null
+                    }
                   />
                 </div>
                 {compareOn && analysisB ? (
                   <div className="ac6-block p-2">
                     <GarageAnalysisBlock
                       title="AC SET B"
-                      analysis={analysisB}
-                      compareAnalysis={analysisA}
+                      analysis={analysisBActive!}
+                      compareAnalysis={analysisAActive}
                     />
                   </div>
                 ) : null}
@@ -860,6 +899,8 @@ export function GarageClient({
                 compareAnalysisModified={
                   compareOn && analysisBModified ? analysisBModified : null
                 }
+                modifiedUnitSpecs={showModifiedUnitSpecs}
+                onModifiedUnitSpecsChange={setShowModifiedUnitSpecsPersist}
                 title={
                   compareOn && analysisB ? "AC SPECS · A VS B" : "AC SPECS (BUILD A)"
                 }
