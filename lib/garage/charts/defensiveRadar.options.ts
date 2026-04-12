@@ -34,12 +34,16 @@ export function buildDefensiveRadarChartOption(
     name: string;
     areaStyle?: { opacity: number; color: string };
     lineStyle?: { width: number; type?: "dashed"; color: string };
+    symbol?: string;
+    symbolSize?: number;
   }[] = [
     {
       value: p,
       name: "Build",
-      areaStyle: { opacity: 0.22, color: chartTheme.cyan },
-      lineStyle: { width: 2, color: chartTheme.cyan },
+      symbol: "circle",
+      symbolSize: 6,
+      areaStyle: { opacity: 0.24, color: chartTheme.cyan },
+      lineStyle: { width: 2.5, color: chartTheme.cyan },
     },
   ];
 
@@ -47,7 +51,9 @@ export function buildDefensiveRadarChartOption(
     data.push({
       value: c,
       name: "Compare",
-      areaStyle: { opacity: 0.12, color: chartTheme.compare },
+      symbol: "circle",
+      symbolSize: 5,
+      areaStyle: { opacity: 0.1, color: chartTheme.compare },
       lineStyle: {
         width: 2,
         type: "dashed",
@@ -57,8 +63,10 @@ export function buildDefensiveRadarChartOption(
   }
 
   return {
-    animationDuration: 220,
-    animationDurationUpdate: 180,
+    animationDuration: 680,
+    animationDurationUpdate: 380,
+    animationEasing: "cubicOut",
+    animationEasingUpdate: "quarticOut",
     tooltip: {
       ...buildTooltipAxis(),
       trigger: "item",
@@ -87,14 +95,31 @@ export function buildDefensiveRadarChartOption(
     radar: {
       center: ["50%", "48%"],
       radius: "58%",
-      axisName: { color: chartTheme.text, fontSize: 10 },
+      axisName: {
+        color: chartTheme.text,
+        fontSize: 10,
+      },
+      axisLine: {
+        lineStyle: { color: "rgba(34, 211, 238, 0.2)" },
+      },
       splitLine: { lineStyle: { color: chartTheme.grid } },
-      splitArea: { show: true, areaStyle: { color: ["rgba(255,255,255,0.02)"] } },
+      splitArea: {
+        show: true,
+        areaStyle: {
+          color: [
+            "rgba(255,255,255,0.02)",
+            "rgba(34,211,238,0.015)",
+          ],
+        },
+      },
       indicator,
     },
     series: [
       {
         type: "radar",
+        emphasis: {
+          lineStyle: { width: 3 },
+        },
         data,
       },
     ],

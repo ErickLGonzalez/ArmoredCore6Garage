@@ -12,3 +12,4 @@ export {
   findLegacyStat,
   type AcPartsMap,
 } from "./compute-all-stats";
+export { applyModifiedUnitsToLegacyMap } from "./apply-modified-unit-map";

@@ -1,11 +1,12 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 
 import type { BuildAnalysis } from "@/lib/calc";
 import { EChartBase } from "@/components/garage/charts/EChartBase";
 import { aimAssistPolylineFromRow, buildAimAssistChartOption } from "@/lib/garage/charts/aimAssistOptions";
 import { DEFAULT_RECOIL_THRESHOLDS } from "@/lib/garage/charts/dashboard-types";
+import { buildDefensiveBarsChartOption } from "@/lib/garage/charts/defensiveBars.options";
 import { buildDefensiveRadarChartOption } from "@/lib/garage/charts/defensiveRadar.options";
 import { buildEnergyRecoveryChartOption } from "@/lib/garage/charts/energyRecoveryOptions";
 import { buildMatchupHeatmapChartOption } from "@/lib/garage/charts/matchupHeatmap.options";
@@ -147,6 +148,8 @@ function invertDeltaTone(
   return tone;
 }
 
+const SS_DEFENSE_CHART_MODE = "moa-garage-defense-chart-mode";
+
 function useCompactGarageCharts(): boolean {
   const [compact, setCompact] = useState(false);
   useEffect(() => {
@@ -168,6 +171,27 @@ export function GarageEChartsDashboard({
 }) {
   const compact = useCompactGarageCharts();
   const cmp = compareAnalysis;
+  const [defenseChartMode, setDefenseChartMode] = useState<"radar" | "bars">(
+    "radar",
+  );
+
+  useEffect(() => {
+    try {
+      const v = sessionStorage.getItem(SS_DEFENSE_CHART_MODE);
+      if (v === "radar" || v === "bars") setDefenseChartMode(v);
+    } catch {
+      /* private mode */
+    }
+  }, []);
+
+  const setDefenseChartModePersist = useCallback((mode: "radar" | "bars") => {
+    setDefenseChartMode(mode);
+    try {
+      sessionStorage.setItem(SS_DEFENSE_CHART_MODE, mode);
+    } catch {
+      /* ignore */
+    }
+  }, []);
 
   const aimPrimary = getAimAssistPlotData(analysis.groups);
   const aimCompare = cmp ? getAimAssistPlotData(cmp.groups) : null;
@@ -264,6 +288,14 @@ export function GarageEChartsDashboard({
 
   const radarOption = useMemo(
     () => buildDefensiveRadarChartOption(radarPrimary, cmp ? radarCompare : null),
+    [radarPrimary, radarCompare, cmp],
+  );
+  const defensiveBarsOption = useMemo(
+    () =>
+      buildDefensiveBarsChartOption(
+        radarPrimary,
+        cmp ? radarCompare : null,
+      ),
     [radarPrimary, radarCompare, cmp],
   );
 
@@ -473,15 +505,54 @@ export function GarageEChartsDashboard({
         ) : null}
 
         <div>
-          <p className="ac6-chart-section-title">DEFENSIVE PROFILE</p>
-          <p className="ac6-chart-hint mb-1">
-            Raw stats on radar axes (max scales to the larger set when
-            comparing).
-          </p>
+          <div className="mb-1 flex items-center justify-between gap-2">
+            <div>
+              <p className="ac6-chart-section-title">DEFENSIVE PROFILE</p>
+              <p className="ac6-chart-hint">
+                Raw stats on radar axes or animated bars (max scales to the
+                larger set when comparing).
+              </p>
+            </div>
+
+            <div
+              className="inline-flex overflow-hidden border-2 border-[var(--ui-border)] bg-black/25"
+              role="group"
+              aria-label="Defensive chart layout"
+            >
+              <button
+                type="button"
+                aria-pressed={defenseChartMode === "radar"}
+                className={`px-2 py-1 text-[10px] uppercase tracking-wide outline-none focus-visible:ring-2 focus-visible:ring-cyan-400/50 ${
+                  defenseChartMode === "radar"
+                    ? "bg-cyan-400/15 text-cyan-100"
+                    : "text-cyan-200/70"
+                }`}
+                onClick={() => setDefenseChartModePersist("radar")}
+              >
+                Wheel
+              </button>
+              <button
+                type="button"
+                aria-pressed={defenseChartMode === "bars"}
+                className={`border-l-2 border-[var(--ui-border)] px-2 py-1 text-[10px] uppercase tracking-wide outline-none focus-visible:ring-2 focus-visible:ring-cyan-400/50 ${
+                  defenseChartMode === "bars"
+                    ? "bg-cyan-400/15 text-cyan-100"
+                    : "text-cyan-200/70"
+                }`}
+                onClick={() => setDefenseChartModePersist("bars")}
+              >
+                Bars
+              </button>
+            </div>
+          </div>
           <EChartBase
             className="w-full max-w-lg"
             height={280}
-            option={radarOption}
+            option={
+              defenseChartMode === "bars"
+                ? defensiveBarsOption
+                : radarOption
+            }
           />
           <InsightStrip text={defenseInsight} />
         </div>

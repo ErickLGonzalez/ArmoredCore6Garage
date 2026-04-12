@@ -439,12 +439,17 @@ export function GarageAnalysisBlock({
 
 export function GarageLegacyStatGroupsSection({
   analysis,
+  analysisModified = null,
   title,
   compareAnalysis = null,
+  compareAnalysisModified = null,
 }: {
   analysis: BuildAnalysis;
+  /** When "modified unit specs" is on, prefer this analysis (from `analyzeBuild(..., { modifiedUnitStats: true })`). */
+  analysisModified?: BuildAnalysis | null;
   title: string;
   compareAnalysis?: BuildAnalysis | null;
+  compareAnalysisModified?: BuildAnalysis | null;
 }) {
   const [normalizeMode, setNormalizeMode] = useState<NormalizeMode>("off");
   const [modifiedPreview, setModifiedPreview] = useState(false);
@@ -479,10 +484,17 @@ export function GarageLegacyStatGroupsSection({
     }
   }, []);
 
-  const twA = analysis.totalWeight;
-  const telA = analysis.totalEnLoad;
-  const twB = compareAnalysis?.totalWeight ?? 0;
-  const telB = compareAnalysis?.totalEnLoad ?? 0;
+  const activeAnalysis =
+    modifiedPreview && analysisModified != null ? analysisModified : analysis;
+  const activeCompare =
+    modifiedPreview && compareAnalysisModified != null
+      ? compareAnalysisModified
+      : compareAnalysis;
+
+  const twA = activeAnalysis.totalWeight;
+  const telA = activeAnalysis.totalEnLoad;
+  const twB = activeCompare?.totalWeight ?? 0;
+  const telB = activeCompare?.totalEnLoad ?? 0;
 
   const groupTitle = (i: number) =>
     [
@@ -505,7 +517,7 @@ export function GarageLegacyStatGroupsSection({
         <div className="ac6-specs-toolbar-cluster">
           <label
             className="ac6-specs-toolbar-control ac6-specs-toolbar-control--interactive"
-            title="Classic cross-part modifiers (arms / generator / FCS) are not recomputed in this build yet. Toggle shows where the banner will sit."
+            title="Rescale flagged units: IsMeleeSpec from arms Melee Specialization; IsEnergyFirearmSpec from generator Energy Firearm Spec (spec÷100 on attack rows; charge time ×100÷spec). FCS assists unchanged."
           >
             <input
               type="checkbox"
@@ -536,7 +548,7 @@ export function GarageLegacyStatGroupsSection({
       </div>
       {modifiedPreview ? (
         <p className="ac6-specs-modified-banner">
-          MODIFIED UNIT SPECS: PIPELINE NOT PORTED — VALUES ARE STILL STATIC ASSEMBLY TOTALS.
+          MODIFIED UNIT SPECS: melee and energy-firearm units use arms / generator specialization ratios (neutral at 100); derived DPS is recomputed. Classic parity is approximate.
         </p>
       ) : null}
       <p className="ac6-specs-toolbar-footnote">
@@ -544,8 +556,8 @@ export function GarageLegacyStatGroupsSection({
         EN load rows are excluded from normalize. Toolbar choices persist for this tab (session).
       </p>
       <div className="ac6-specs-groups mt-1.5 space-y-1.5">
-        {analysis.groups.map((group, gi) => {
-          const groupB = compareAnalysis?.groups[gi];
+        {activeAnalysis.groups.map((group, gi) => {
+          const groupB = activeCompare?.groups[gi];
           const nStats = group.length;
           return (
             <details
@@ -562,9 +574,9 @@ export function GarageLegacyStatGroupsSection({
               </summary>
               <div className="ac6-details-table-wrap">
                 <table
-                  className={`ac6-specs-table w-full text-left${compareAnalysis ? " ac6-specs-table--compare" : ""}`}
+                  className={`ac6-specs-table w-full text-left${activeCompare ? " ac6-specs-table--compare" : ""}`}
                 >
-                  {compareAnalysis ? (
+                  {activeCompare ? (
                     <thead>
                       <tr>
                         <th scope="col">STAT</th>
@@ -596,7 +608,7 @@ export function GarageLegacyStatGroupsSection({
                         return (
                           <tr key={rowA.name}>
                             <th scope="row">{rowA.name}</th>
-                            {compareAnalysis ? (
+                            {activeCompare ? (
                               <td
                                 colSpan={3}
                                 className="ac6-specs-plot-note"
@@ -616,7 +628,7 @@ export function GarageLegacyStatGroupsSection({
                       return (
                         <tr key={rowA.name}>
                           <th scope="row">{rowA.name}</th>
-                          {compareAnalysis ? (
+                          {activeCompare ? (
                             <>
                               <td className="ac6-specs-value-cell">
                                 <SpecsValueWithBar

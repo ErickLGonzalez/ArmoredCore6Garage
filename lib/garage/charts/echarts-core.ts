@@ -1,5 +1,5 @@
 import * as echarts from "echarts/core";
-import { HeatmapChart, LineChart, RadarChart } from "echarts/charts";
+import { BarChart, HeatmapChart, LineChart, RadarChart } from "echarts/charts";
 import {
   GridComponent,
   TooltipComponent,
@@ -13,6 +13,7 @@ import { CanvasRenderer } from "echarts/renderers";
 import { UniversalTransition } from "echarts/features";
 
 echarts.use([
+  BarChart,
   LineChart,
   RadarChart,
   HeatmapChart,

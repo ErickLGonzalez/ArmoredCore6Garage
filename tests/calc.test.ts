@@ -4,6 +4,8 @@ import { fileURLToPath } from "node:url";
 import { describe, expect, it } from "vitest";
 
 import { analyzeBuild } from "@/lib/calc";
+import { applyModifiedUnitsToLegacyMap } from "@/lib/calc/apply-modified-unit-map";
+import { assemblyToLegacyMap } from "@/lib/calc/assembly-map";
 import type { AssemblySlot, BuildAssembly } from "@/lib/calc/types";
 import { normalizeRawPart } from "@/lib/data/normalize-part";
 import type { CanonicalPart } from "@/lib/schema";
@@ -170,6 +172,28 @@ describe("analyzeBuild", () => {
     expect(r.totalEnLoad).toBeGreaterThan(1000);
     expect(r.totalAp).toBeGreaterThan(1000);
     expect(r.groundedBoostSpeed).toBeGreaterThan(0);
+  });
+
+  it("applyModifiedUnitsToLegacyMap scales IsMeleeSpec unit attack stats from arms melee specialization", () => {
+    const raw = readFileSync(MERGED, "utf-8");
+    const data = MergedDatasetSchema.parse(JSON.parse(raw));
+    const assembly: BuildAssembly = {};
+    for (const [slot, name, kind] of STARTER) {
+      assembly[slot] = findPart(data.parts, name, kind);
+    }
+    const lowArms = findPart(data.parts, "AC-3000 WRECKER", "Arms");
+    const hiArms = findPart(data.parts, "AA-J-123 BASHO", "Arms");
+    const mLow = applyModifiedUnitsToLegacyMap(
+      assemblyToLegacyMap({ ...assembly, arms: lowArms }),
+    );
+    const mHi = applyModifiedUnitsToLegacyMap(
+      assemblyToLegacyMap({ ...assembly, arms: hiArms }),
+    );
+    const laLow = mLow.leftArm?.AttackPower;
+    const laHi = mHi.leftArm?.AttackPower;
+    expect(typeof laLow).toBe("number");
+    expect(typeof laHi).toBe("number");
+    expect((laHi as number) / (laLow as number)).toBeGreaterThan(1.05);
   });
 
   it("starter + merged (NOTHING) expansion yields finite weight/EN and non-zero DPS", () => {

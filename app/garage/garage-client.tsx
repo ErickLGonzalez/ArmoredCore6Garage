@@ -185,6 +185,26 @@ export function GarageClient({
     }
   }, [assemblyB, compareOn]);
 
+  const analysisAModified = useMemo((): BuildAnalysis | null => {
+    if (!assemblyA) return null;
+    try {
+      return analyzeBuild(assemblyA, { modifiedUnitStats: true });
+    } catch (e) {
+      console.error(e);
+      return null;
+    }
+  }, [assemblyA]);
+
+  const analysisBModified = useMemo((): BuildAnalysis | null => {
+    if (!assemblyB || !compareOn) return null;
+    try {
+      return analyzeBuild(assemblyB, { modifiedUnitStats: true });
+    } catch (e) {
+      console.error(e);
+      return null;
+    }
+  }, [assemblyB, compareOn]);
+
   const m4A = useMemo(
     () =>
       analysisA
@@ -835,7 +855,11 @@ export function GarageClient({
             ) : analysisA ? (
               <GarageLegacyStatGroupsSection
                 analysis={analysisA}
+                analysisModified={analysisAModified}
                 compareAnalysis={compareOn && analysisB ? analysisB : null}
+                compareAnalysisModified={
+                  compareOn && analysisBModified ? analysisBModified : null
+                }
                 title={
                   compareOn && analysisB ? "AC SPECS · A VS B" : "AC SPECS (BUILD A)"
                 }

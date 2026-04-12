@@ -1,6 +1,16 @@
+import { applyModifiedUnitsToLegacyMap } from "./apply-modified-unit-map";
 import { assemblyToLegacyMap } from "./assembly-map";
 import { computeAllStats, findLegacyStat } from "./compute-all-stats";
 import type { BuildAssembly, LegacyPart, LegacyStatGroup } from "./types";
+
+export type AnalyzeBuildOptions = {
+  /**
+   * When true, rescale unit attack stats from arms melee spec and generator
+   * energy firearm spec (see `applyModifiedUnitsToLegacyMap`), then recompute
+   * derived weapon stats before `computeAllStats`.
+   */
+  modifiedUnitStats?: boolean;
+};
 
 /** Flat numeric summary for APIs; full parity lives in `groups`. */
 export type BuildAnalysis = {
@@ -39,14 +49,19 @@ function legacyNumeric(part: LegacyPart, key: string): number {
  * Legacy-parity AC analysis: same grouping as reference `computeAllStats`.
  * Weapon DPS / IPS aggregates are not summed here yet (multi-weapon policy TBD).
  */
-export function analyzeBuild(assembly: BuildAssembly): BuildAnalysis {
+export function analyzeBuild(
+  assembly: BuildAssembly,
+  options?: AnalyzeBuildOptions,
+): BuildAnalysis {
   const map = assemblyToLegacyMap(assembly);
-  const groups = computeAllStats(map);
+  const statsMap =
+    options?.modifiedUnitStats === true ? applyModifiedUnitsToLegacyMap(map) : map;
+  const groups = computeAllStats(statsMap);
 
-  const ra = map.rightArm;
-  const la = map.leftArm;
-  const rb = map.rightBack;
-  const lb = map.leftBack;
+  const ra = statsMap.rightArm;
+  const la = statsMap.leftArm;
+  const rb = statsMap.rightBack;
+  const lb = statsMap.leftBack;
 
   const dpsVals = [ra, la, rb, lb].map((u) => legacyNumeric(u, "Damage/s"));
   const burstVals = [ra, la, rb, lb].map((u) =>
