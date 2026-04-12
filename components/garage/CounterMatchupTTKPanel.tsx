@@ -53,7 +53,7 @@ export function CounterMatchupTTKPanel({ analysisA, analysisB }: Props) {
         />
       </label>
       {!rows ? (
-        <p className="text-[10px] uppercase tracking-[0.05em] text-cyan-200/75">
+        <p className="ac6-chart-hint uppercase tracking-[0.05em]">
           ENABLE COMPARE AND KEEP BOTH AC SETS VALID.
         </p>
       ) : (

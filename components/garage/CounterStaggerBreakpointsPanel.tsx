@@ -35,7 +35,7 @@ export function CounterStaggerBreakpointsPanel({ analysisA, analysisB }: Props) 
         COUNTERS · STAGGER BREAKPOINTS
       </h3>
       {!data ? (
-        <p className="text-[10px] uppercase tracking-[0.05em] text-cyan-200/75">
+        <p className="ac6-chart-hint uppercase tracking-[0.05em]">
           ENABLE COMPARE AND KEEP BOTH AC SETS VALID.
         </p>
       ) : (
