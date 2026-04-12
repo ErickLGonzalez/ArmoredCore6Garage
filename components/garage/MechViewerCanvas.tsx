@@ -244,7 +244,7 @@ export function MechViewerCanvas({ partsById, build }: Props) {
   return (
     <div className="ac6-block space-y-2 p-2">
       <h3 className="ac6-block-title">AC VIEWER · 3D</h3>
-      <p className="text-[10px] uppercase tracking-[0.05em] text-cyan-200/75">
+      <p className="ac6-chart-hint uppercase tracking-[0.05em]">
         GLTF SLOT ASSEMBLER ACTIVE ({loadedCount}/8 SLOT MODELS FOUND). MISSING SLOTS FALL BACK TO DEBUG GEOMETRY.
       </p>
       <div className="ac6-chart-surface h-[460px] w-full overflow-hidden">

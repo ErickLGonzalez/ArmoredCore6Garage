@@ -39,8 +39,10 @@ function MulSlider({
   onChange: (v: number) => void;
 }) {
   return (
-    <label className="flex flex-col gap-0.5 text-[9px] text-cyan-200/70">
-      <span className="font-semibold uppercase tracking-[0.08em]">{label}</span>
+    <label className="flex flex-col gap-0.5 text-[9px]">
+      <span className="ac6-chart-hint font-semibold uppercase tracking-[0.08em]">
+        {label}
+      </span>
       <input
         type="range"
         min={0.5}
@@ -95,8 +97,8 @@ export function WeaponsTestAdvancedPanel({
       <h4 className="ac6-block-title text-[10px]">ADVANCED (PHASE 3)</h4>
 
       <div className="space-y-1">
-        <label className="flex items-center justify-between gap-2 text-[9px] text-cyan-200/75">
-          <span className="font-semibold uppercase tracking-[0.1em]">
+        <label className="flex items-center justify-between gap-2 text-[9px]">
+          <span className="ac6-chart-hint font-semibold uppercase tracking-[0.1em]">
             Sim time scale
           </span>
           <span className="font-mono">{timeScale.toFixed(2)}×</span>
@@ -114,7 +116,7 @@ export function WeaponsTestAdvancedPanel({
       </div>
 
       <div className="space-y-1 border-t-2 border-[var(--ui-border)] pt-2">
-        <p className="text-[9px] font-semibold uppercase tracking-[0.1em] text-cyan-200/60">
+        <p className="ac6-chart-hint font-semibold uppercase tracking-[0.1em]">
           Per-family tuning
         </p>
         <div className="grid gap-2">
@@ -146,7 +148,7 @@ export function WeaponsTestAdvancedPanel({
       </div>
 
       <div className="space-y-1 border-t-2 border-[var(--ui-border)] pt-2">
-        <p className="text-[9px] font-semibold uppercase tracking-[0.1em] text-cyan-200/60">
+        <p className="ac6-chart-hint font-semibold uppercase tracking-[0.1em]">
           Replay
         </p>
         <div className="flex flex-wrap gap-1">
@@ -177,12 +179,12 @@ export function WeaponsTestAdvancedPanel({
             {playbackPlaying ? "Stop playback" : "Play clip"}
           </button>
         </div>
-        <p className="text-[8px] text-cyan-200/45">
+        <p className="ac6-chart-hint text-[8px]">
           Saved events: {savedClipCount}
           {recording ? " · recording…" : ""}
         </p>
-        <label className="flex items-center justify-between gap-2 text-[9px] text-cyan-200/75">
-          <span>Playback speed</span>
+        <label className="flex items-center justify-between gap-2 text-[9px]">
+          <span className="ac6-chart-hint">Playback speed</span>
           <span className="font-mono">{playbackSpeed.toFixed(2)}×</span>
         </label>
         <input

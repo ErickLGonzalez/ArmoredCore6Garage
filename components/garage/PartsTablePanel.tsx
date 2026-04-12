@@ -852,7 +852,7 @@ export function PartsTablePanel({ parts }: Props) {
                 <th
                   key={`${g.label}-${i}`}
                   colSpan={g.span}
-                  className="px-2 py-[3px] text-center text-[10px] font-bold uppercase tracking-[0.1em] text-cyan-200/75"
+                  className="ac6-chart-hint px-2 py-[3px] text-center font-bold uppercase tracking-[0.1em]"
                 >
                   {g.label}
                 </th>
@@ -890,7 +890,7 @@ export function PartsTablePanel({ parts }: Props) {
                         />
                       ) : null}
                       {sortPos > 0 ? (
-                        <span className="text-[10px] text-cyan-200/75">{sortPos + 1}</span>
+                        <span className="ac6-chart-hint">{sortPos + 1}</span>
                       ) : null}
                       <button
                         type="button"

@@ -33,17 +33,22 @@ export function WeaponsTestArena({
   return (
     <div className="relative grid min-h-[160px] grid-cols-1 gap-2 md:grid-cols-2">
       <div className="relative">
-        <div className="absolute left-2 top-2 z-10 text-[9px] font-semibold uppercase tracking-[0.14em] text-cyan-200/50">
+        <div className="ac6-chart-hint absolute left-2 top-2 z-10 font-semibold uppercase tracking-[0.14em]">
           Attacker
         </div>
-        <div className="relative flex min-h-[140px] items-center justify-center rounded border border-cyan-800/35 bg-cyan-950/15">
+        <div
+          className="relative flex min-h-[140px] items-center justify-center border-2 border-[var(--ui-border)]"
+          style={{
+            background: "color-mix(in srgb, var(--ui-panel-bottom) 90%, black)",
+          }}
+        >
           <ParticleScene
             key={particleSceneKey}
             events={events}
             quality={quality}
             visualTimeScale={visualTimeScale}
           />
-          <span className="relative z-[1] text-[11px] text-cyan-200/45">
+          <span className="ac6-chart-hint relative z-[1] text-[11px]">
             Muzzle / tracers (particles)
           </span>
         </div>
