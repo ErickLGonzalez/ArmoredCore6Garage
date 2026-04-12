@@ -13,7 +13,7 @@ export default function GarageClassicPage() {
             <p className="text-[10px] font-semibold uppercase tracking-[0.08em] text-cyan-300/80">
               MASTEROFARENA // GARAGE
             </p>
-            <h1 className="mt-0.5 text-[20px] font-semibold tracking-[0.06em] text-cyan-100">
+            <h1 className="font-moa-brand mt-0.5 text-[20px] font-semibold tracking-[0.06em] text-cyan-100">
               LEGACY MODE
             </h1>
             <p className="mt-0.5 text-[10px] uppercase tracking-[0.04em] text-cyan-200/70">

@@ -19,6 +19,7 @@ import { GarageCenterPanel } from "@/components/garage/layout/GarageCenterPanel"
 import { GarageLeftPanel } from "@/components/garage/layout/GarageLeftPanel";
 import { GarageRightPanel } from "@/components/garage/layout/GarageRightPanel";
 import { GarageShell } from "@/components/garage/layout/GarageShell";
+import { PartThumbnail } from "@/components/garage/PartThumbnail";
 import { PartsTablePanel } from "@/components/garage/PartsTablePanel";
 import { StandardAcViewer } from "@/components/garage/StandardAcViewer";
 import {
@@ -124,6 +125,7 @@ export function GarageClient({
     setEngagementM,
     setActiveTab,
     setCounterTab,
+    previewPartId,
   } = useGarageStore();
 
   useEffect(() => {
@@ -136,6 +138,11 @@ export function GarageClient({
 
   const buildA = storeBuildA ?? initialUrl.current.buildA;
   const buildB = storeBuildB ?? initialUrl.current.buildB;
+
+  const previewPart = useMemo(
+    () => (previewPartId != null ? byId.get(previewPartId) ?? null : null),
+    [byId, previewPartId],
+  );
 
   useEffect(() => {
     if (!initialized) return;
@@ -591,6 +598,32 @@ export function GarageClient({
                   SLOT FILTER, COLUMN GROUPS, AND SORT ORDER MATCH THE CLASSIC PARTS
                   WORKFLOW. USE THE CENTER PANEL FOR THE FULL TABLE.
                 </p>
+                {previewPart ? (
+                  <div className="ac6-block p-2">
+                    <div className="ac6-strip mb-1.5">
+                      <p className="ac6-chart-section-title m-0">ROW PREVIEW</p>
+                    </div>
+                    <div className="flex items-start gap-2">
+                      <PartThumbnail
+                        partName={previewPart.identity.name}
+                        size="md"
+                      />
+                      <div className="min-w-0">
+                        <p className="text-[11px] font-bold uppercase leading-tight tracking-[0.05em] text-cyan-100">
+                          {previewPart.identity.name}
+                        </p>
+                        <p className="mt-0.5 text-[10px] uppercase tracking-[0.08em] text-cyan-200/75">
+                          {previewPart.identity.kind}
+                          {previewPart.identity.manufacturer
+                            ? ` · ${previewPart.identity.manufacturer}`
+                            : ""}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                ) : (
+                  <p className="ac6-note">HOVER THE PART TABLE TO PREVIEW ICON AND IDENTITY HERE.</p>
+                )}
               </div>
             ) : mainTab === "counters" ? (
               <p className="ac6-note">
@@ -784,6 +817,22 @@ export function GarageClient({
                   COLUMN GROUP ROWS, STICKY NAME, AND PER-COLUMN FILTERS FOLLOW THE
                   CLASSIC PARTS TABLE LAYOUT.
                 </p>
+                {previewPart ? (
+                  <div className="ac6-block p-2">
+                    <div className="ac6-strip mb-1.5">
+                      <p className="ac6-chart-section-title m-0">SELECTED ROW</p>
+                    </div>
+                    <div className="flex flex-col items-center gap-1.5">
+                      <PartThumbnail
+                        partName={previewPart.identity.name}
+                        size="md"
+                      />
+                      <p className="w-full text-center text-[10px] font-semibold uppercase leading-tight text-cyan-100">
+                        {previewPart.identity.name}
+                      </p>
+                    </div>
+                  </div>
+                ) : null}
               </div>
             ) : mainTab === "counters" ? (
               <p className="ac6-note">

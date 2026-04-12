@@ -7,6 +7,9 @@ import { THEME_COOKIE } from "@/lib/auth/session";
 import { loadThemeTokens, tokensToCssVars } from "@/lib/themes/theme-loader";
 import { SiteNav } from "@/components/SiteNav";
 
+import "@fontsource-variable/inter/wght.css";
+import "@fontsource/jetbrains-mono/400.css";
+import "@fontsource/jetbrains-mono/600.css";
 import "./globals.css";
 
 
@@ -33,9 +36,7 @@ export default async function RootLayout({
   const themeVars = tokensToCssVars(await loadThemeTokens(theme));
   return (
     <html lang="en" data-ui-theme={theme} style={themeVars as CSSProperties}>
-      <body
-        className="min-h-screen bg-zinc-50 text-zinc-900 antialiased dark:bg-zinc-950 dark:text-zinc-50"
-      >
+      <body className="font-sans min-h-screen bg-zinc-50 text-zinc-900 antialiased dark:bg-zinc-950 dark:text-zinc-50">
         <SiteNav />
         {children}
       </body>

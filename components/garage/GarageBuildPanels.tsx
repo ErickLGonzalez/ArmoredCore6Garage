@@ -3,6 +3,7 @@
 import type { Dispatch, SetStateAction } from "react";
 import { useCallback } from "react";
 
+import { PartThumbnail } from "@/components/garage/PartThumbnail";
 import { GarageEChartsDashboard } from "@/components/garage/GarageEChartsDashboard";
 import { REQUIRED_ASSEMBLY_SLOTS, type BuildAnalysis } from "@/lib/calc";
 import type { LegacyStatRow } from "@/lib/calc/types";
@@ -109,11 +110,17 @@ export function GarageSlotColumn({
             {group.slots.map((slot) => {
               const opts = optionsBySlot.get(slot) ?? [];
               const sid = `${idPrefix}-${slot}`;
+              const selectedPart = opts.find((p) => p.identity.id === ids[slot]);
+              const selectedName = selectedPart?.identity.name ?? "";
               return (
                 <div
                   key={slot}
                   className="ac6-assembly-slot-row"
                 >
+                  <PartThumbnail
+                    partName={selectedName}
+                    size="sm"
+                  />
                   <label
                     htmlFor={sid}
                     className="ac6-assembly-slot-label min-w-0"
@@ -150,6 +157,12 @@ export function GarageSlotColumn({
           <p className="ac6-chart-section-title m-0">EXPANSION</p>
         </div>
         <div className="ac6-assembly-slot-row">
+          <PartThumbnail
+            partName={
+              expansionOptions.find((p) => p.identity.id === ids.expansionId)?.identity.name ?? ""
+            }
+            size="sm"
+          />
           <label
             htmlFor={`${idPrefix}-expansion`}
             className="ac6-assembly-slot-label min-w-0"
@@ -329,11 +342,20 @@ export function GarageBuildDiffPreview({
       {diffs.length === 0 ? (
         <p className="mt-1 text-[10px] uppercase tracking-[0.05em] text-cyan-200/70">NO SLOT DIFFERENCES.</p>
       ) : (
-        <ul className="mt-1 space-y-0.5 text-[11px] text-cyan-100/90">
+        <ul className="mt-1 space-y-1.5 text-[11px] text-cyan-100/90">
           {diffs.map((d) => (
-            <li key={d.slot} className="font-mono">
-              <span className="text-cyan-200/70">{d.slot}: </span>
-              {d.a} <span className="text-cyan-200/70">→</span> {d.b}
+            <li
+              key={d.slot}
+              className="flex flex-wrap items-center gap-1 font-mono"
+            >
+              <span className="w-full text-[10px] font-bold uppercase tracking-[0.06em] text-cyan-200/80">
+                {d.slot}
+              </span>
+              <PartThumbnail partName={d.a} />
+              <span className="max-w-[42%] truncate">{d.a}</span>
+              <span className="text-cyan-200/70">→</span>
+              <PartThumbnail partName={d.b} />
+              <span className="max-w-[42%] truncate">{d.b}</span>
             </li>
           ))}
         </ul>

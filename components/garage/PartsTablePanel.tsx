@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 
+import { ManufacturerThumbnail, PartThumbnail } from "@/components/garage/PartThumbnail";
 import { garageUiAsset } from "@/lib/garage/garage-ui-assets";
 import type { CanonicalPart } from "@/lib/schema";
 import { useGarageStore } from "@/src/lib/store/garage-store";
@@ -399,9 +400,9 @@ function fmt(v: unknown): string {
 }
 
 function colWidth(key: string): number {
-  if (key === "Name") return 260;
-  if (["WeaponType", "AttackType", "ReloadType", "LegType", "Manufacturer"].includes(key))
-    return 170;
+  if (key === "Name") return 300;
+  if (["WeaponType", "AttackType", "ReloadType", "LegType"].includes(key)) return 170;
+  if (key === "Manufacturer") return 200;
   if (["Description"].includes(key)) return 320;
   return 150;
 }
@@ -840,7 +841,10 @@ export function PartsTablePanel({ parts }: Props) {
         <div className="ac6-strip px-2 py-[3px]">
           <p className="ac6-chart-section-title m-0">PART TABLE</p>
         </div>
-        <div className="ac6-table-wrap relative h-[min(72vh,780px)] overflow-auto">
+        <div
+          className="ac6-table-wrap relative h-[min(72vh,780px)] overflow-auto"
+          onMouseLeave={() => setPreviewPartId(null)}
+        >
         <table className="w-full text-left text-[11px]">
           <thead className="ac6-table-headband ac6-table-thead sticky top-0 z-30">
             <tr className="ac6-table-group-row">
@@ -969,17 +973,48 @@ export function PartsTablePanel({ parts }: Props) {
                 onMouseEnter={() => setPreviewPartId(p.identity.id)}
               >
                 {orderedVisibleCols.map((k) => {
+                  const raw = getColValue(p, k);
+                  const text = fmt(raw);
+                  if (k === "Name") {
+                    return (
+                      <td
+                        key={k}
+                        className="ac6-table-name-sticky px-2 py-[2px]"
+                        style={{ minWidth: colWidth(k), width: colWidth(k) }}
+                      >
+                        <div className="flex items-center gap-1.5">
+                          <PartThumbnail
+                            partName={p.identity.name}
+                            size="sm"
+                          />
+                          <span className="font-semibold uppercase tracking-[0.04em]">
+                            {text}
+                          </span>
+                        </div>
+                      </td>
+                    );
+                  }
+                  if (k === "Manufacturer" && typeof raw === "string") {
+                    return (
+                      <td
+                        key={k}
+                        className="px-2 py-[2px] font-mono tabular-nums"
+                        style={{ minWidth: colWidth(k), width: colWidth(k) }}
+                      >
+                        <div className="flex items-center gap-1.5">
+                          <ManufacturerThumbnail manufacturer={raw} />
+                          <span>{text}</span>
+                        </div>
+                      </td>
+                    );
+                  }
                   return (
                     <td
                       key={k}
-                      className={`px-2 py-[2px] ${
-                        k === "Name"
-                          ? "ac6-table-name-sticky font-semibold uppercase tracking-[0.04em]"
-                          : "font-mono tabular-nums"
-                      }`}
+                      className={`px-2 py-[2px] font-mono tabular-nums`}
                       style={{ minWidth: colWidth(k), width: colWidth(k) }}
                     >
-                      {fmt(getColValue(p, k))}
+                      {text}
                     </td>
                   );
                 })}

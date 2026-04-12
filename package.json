@@ -15,7 +15,8 @@
     "db:migrate": "prisma migrate dev",
     "db:push": "prisma db push",
     "db:studio": "prisma studio",
-    "data:merge": "tsx scripts/import-parts.ts",
+    "data:merge": "tsx scripts/import-parts.ts && node scripts/generate-part-image-map.mjs",
+    "data:part-images": "node scripts/generate-part-image-map.mjs",
     "data:merge:sheet": "tsx scripts/merge-spreadsheet.ts",
     "data:validate": "tsx scripts/validate-parts.ts",
     "data:generate:energy-models": "tsx scripts/generate-energy-models.ts",
@@ -24,6 +25,8 @@
     "git:sync": "node scripts/git-sync-remote.mjs"
   },
   "dependencies": {
+    "@fontsource-variable/inter": "^5.2.8",
+    "@fontsource/jetbrains-mono": "^5.2.8",
     "@prisma/client": "^5.22.0",
     "@react-three/drei": "^10.7.7",
     "@react-three/fiber": "^9.5.0",
@@ -44,7 +47,7 @@
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "eslint": "^9",
-    "eslint-config-next": "^15.5.14",
+    "eslint-config-next": "^15.5.15",
     "eslint-config-prettier": "^10.1.8",
     "prettier": "^3.8.1",
     "prisma": "^5.22.0",
