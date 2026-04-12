@@ -74,21 +74,15 @@ body {
   }
 }
 
+/* Match legacy Vite bundle: Aldrich-Custom body, 16px / 1.2 (index-B1b1Td6s.css). */
 .ac6-garage {
   position: relative;
   color: var(--ui-text);
-  font-family:
-    "Agency FB",
-    "NHL Garage",
-    "Bahnschrift SemiCondensed",
-    "Arial Narrow",
-    Arial,
+  font-family: Aldrich-Custom, AgencyFB, NHL, "Bahnschrift SemiCondensed", "Arial Narrow", Arial,
     sans-serif;
-  font-size: 14px;
-  line-height: 1.02;
-  letter-spacing: 0.02em;
-  font-synthesis: weight;
-  font-stretch: semi-condensed;
+  font-size: 16px;
+  line-height: 1.2;
+  letter-spacing: normal;
 }
 
 /* Classic shell uses hard corners throughout interior garage UI. */
@@ -131,8 +125,8 @@ body {
   border: 2px solid var(--ui-border);
   background: linear-gradient(180deg, var(--ui-panel-top), var(--ui-panel-bottom));
   box-shadow: inset 0 1px 0 color-mix(in srgb, white 16%, transparent);
-  font-size: 12px;
-  line-height: 1.02;
+  font-size: 16px;
+  line-height: 1.2;
 }
 
 .ac6-panel-title {
@@ -259,6 +253,11 @@ body {
   background: linear-gradient(180deg, var(--ui-tab-active-top), var(--ui-tab-active-bottom));
   color: var(--ui-tab-active-text);
   box-shadow: inset 0 1px 0 color-mix(in srgb, white 22%, transparent);
+}
+
+/* Legacy bundle default anchor color (skip tab-styled links). */
+.ac6-garage a:not(.classic-tab) {
+  color: #0ff;
 }
 
 /* Dense main tab strip (legacy-style segmented row). */
@@ -472,8 +471,9 @@ body {
   color: var(--ui-text-dim);
 }
 
+/* Font-family names match the shipped Vite bundle (index-B1b1Td6s.css). */
 @font-face {
-  font-family: "Agency FB";
+  font-family: AgencyFB;
   src:
     url("/garage-ui/agencyfb-bold-webfont-Dlaflwng.woff2") format("woff2"),
     url("/garage-ui/agencyfb-bold-webfont-DU89QYAi.woff") format("woff");
@@ -483,7 +483,7 @@ body {
 }
 
 @font-face {
-  font-family: "NHL Garage";
+  font-family: NHL;
   src:
     url("/garage-ui/nhl-webfont-Qoi8Y6XC.woff2") format("woff2"),
     url("/garage-ui/nhl-webfont-BB8afmMp.woff") format("woff");
@@ -492,9 +492,8 @@ body {
   font-display: swap;
 }
 
-/* Site mark / nav wordmark (legacy bundle Aldrich cut). */
 @font-face {
-  font-family: "Aldrich MOA";
+  font-family: Aldrich-Custom;
   src:
     url("/garage-ui/aldrich-custom-webfont-BEFfUIhk.woff2") format("woff2"),
     url("/garage-ui/aldrich-custom-webfont-CZayPVAe.woff") format("woff");
@@ -504,7 +503,13 @@ body {
 }
 
 .font-moa-brand {
-  font-family: "Aldrich MOA", "Inter Variable", Inter, sans-serif;
+  font-family: Aldrich-Custom, "Inter Variable", Inter, sans-serif;
+}
+
+/* Legacy iframe: full-width panel under strip (no double chrome border). */
+.ac6-garage .ac6-classic-iframe {
+  display: block;
+  min-height: min(60vh, 520px);
 }
 
 .ac6-garage .ac6-assembly-slot-label {

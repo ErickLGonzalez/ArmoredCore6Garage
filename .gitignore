@@ -48,3 +48,4 @@ next-env.d.ts
 
 # Generated from garage-ui-assets/ (see scripts/sync-garage-ui-assets.mjs)
 /public/garage-ui/
+/public/assets/
