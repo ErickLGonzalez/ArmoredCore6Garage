@@ -60,7 +60,7 @@ function MetricCard({
           ? "text-cyan-200/70"
           : "text-cyan-200/70";
   return (
-    <div className="rounded border border-cyan-800/35 bg-cyan-950/25 px-2 py-1.5">
+    <div className="ac6-inner-frame">
       <p className="text-[9px] font-medium uppercase tracking-[0.06em] text-cyan-200/65">
         {label}
       </p>
@@ -75,9 +75,9 @@ function MetricCard({
 function InsightStrip({ text }: { text: string }) {
   if (!text.trim()) return null;
   return (
-    <p className="mt-1.5 rounded border border-cyan-800/25 bg-cyan-950/20 px-2 py-1.5 text-[11px] leading-snug text-cyan-100/88">
-      {text}
-    </p>
+    <div className="ac6-inner-frame mt-1.5">
+      <p className="text-[11px] leading-snug text-cyan-100/88">{text}</p>
+    </div>
   );
 }
 
@@ -102,10 +102,19 @@ function EnergyMetersRow({
               {Math.round(r.pct)}%
             </span>
           </div>
-          <div className="h-1.5 overflow-hidden rounded bg-cyan-950/60">
+          <div
+            className="h-1.5 overflow-hidden border-2 border-[var(--ui-border)]"
+            style={{
+              background: "color-mix(in srgb, var(--ui-panel-bottom) 90%, black)",
+            }}
+          >
             <div
-              className="h-full rounded bg-gradient-to-r from-cyan-700 to-cyan-400"
-              style={{ width: `${Math.min(100, Math.max(0, r.pct))}%` }}
+              className="h-full"
+              style={{
+                width: `${Math.min(100, Math.max(0, r.pct))}%`,
+                background:
+                  "linear-gradient(90deg, var(--ui-tab-bottom), var(--ui-tab-active-top))",
+              }}
             />
           </div>
         </div>

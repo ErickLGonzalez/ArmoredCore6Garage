@@ -90,23 +90,8 @@ body {
   border-radius: 0 !important;
 }
 
-.ac6-garage::before {
-  content: "";
-  position: fixed;
-  inset: 0;
-  pointer-events: none;
-  z-index: -1;
-  background: linear-gradient(180deg, var(--ui-bg-top) 0%, var(--ui-bg-bottom) 100%);
-}
-
-.ac6-garage::after {
-  content: "";
-  position: fixed;
-  inset: 0;
-  pointer-events: none;
-  z-index: -1;
-  background: none;
-}
+/* Page chrome lives on `app/garage/layout.tsx` (.garage-route); avoid a second
+   full-viewport fixed layer that painted behind the whole site chrome. */
 
 .ac6-garage-header {
   border: 2px solid var(--ui-border);
