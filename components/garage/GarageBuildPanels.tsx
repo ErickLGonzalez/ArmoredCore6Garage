@@ -204,7 +204,7 @@ export function GarageAnalysisBlock({
   compareAnalysis: BuildAnalysis | null;
 }) {
   return (
-    <div className="space-y-2.5 text-cyan-50">
+    <div className="space-y-2.5">
       <h3 className="ac6-block-title">
         {title}
       </h3>
@@ -273,7 +273,7 @@ export function GarageLegacyStatGroupsSection({
       <h3 className="ac6-block-title">
         {title}
       </h3>
-      <p className="mt-0.5 text-[10px] uppercase tracking-[0.05em] text-cyan-200/70">
+      <p className="ac6-chart-hint mt-0.5 uppercase tracking-[0.05em]">
         RANGE / RECOIL / ENERGY PLOTS RENDER IN THE ECHARTS BLOCK IN THE ANALYSIS
         COLUMN.
       </p>
@@ -340,7 +340,9 @@ export function GarageBuildDiffPreview({
         </p>
       </div>
       {diffs.length === 0 ? (
-        <p className="mt-1 text-[10px] uppercase tracking-[0.05em] text-cyan-200/70">NO SLOT DIFFERENCES.</p>
+        <p className="ac6-chart-hint mt-1 uppercase tracking-[0.05em]">
+          NO SLOT DIFFERENCES.
+        </p>
       ) : (
         <ul className="mt-1 space-y-1.5 text-[11px] text-cyan-100/90">
           {diffs.map((d) => (

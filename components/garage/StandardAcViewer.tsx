@@ -73,7 +73,7 @@ function CompositeSlot({
         alt={slot.label}
         className="h-9 w-9 object-contain opacity-95 sm:h-10 sm:w-10"
       />
-      <div className="w-full text-[8px] uppercase leading-none tracking-[0.06em] text-cyan-200/80">
+      <div className="ac6-chart-hint w-full uppercase leading-none tracking-[0.06em]">
         {slot.label}
       </div>
       <div
@@ -91,7 +91,7 @@ export function StandardAcViewer({ build, partsById }: Props) {
     <div className="ac6-block space-y-2 p-2">
       <h3 className="ac6-block-title">AC VIEWER · STANDARD</h3>
 
-      <p className="text-[10px] uppercase tracking-[0.06em] text-cyan-200/70 md:hidden">
+      <p className="ac6-chart-hint uppercase tracking-[0.06em] md:hidden">
         COMPOSITE LAYOUT ON WIDER VIEWPORTS.
       </p>
 
@@ -119,7 +119,7 @@ export function StandardAcViewer({ build, partsById }: Props) {
                 className="h-10 w-10 shrink-0 object-contain opacity-95"
               />
               <div className="min-w-0">
-                <div className="text-[10px] uppercase tracking-[0.15em] text-cyan-200/70">
+                <div className="ac6-chart-hint uppercase tracking-[0.15em]">
                   {slot.label}
                 </div>
                 <div className="truncate text-xs font-medium text-cyan-50">{name}</div>

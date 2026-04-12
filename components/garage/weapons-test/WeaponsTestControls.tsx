@@ -23,15 +23,9 @@ type Props = {
   disabled?: boolean;
 };
 
-const btn =
-  "rounded border px-2 py-1 text-[10px] font-semibold uppercase tracking-wide transition-colors";
+const tab = "classic-tab text-[10px] focus-visible:outline-none";
 
-const toggleBtn = (on: boolean) =>
-  `${btn} ${
-    on
-      ? "border-cyan-400/55 bg-cyan-950/55 text-cyan-50"
-      : "border-cyan-800/40 text-cyan-200/65"
-  }`;
+const toggleTab = (on: boolean) => `${tab} ${on ? "classic-tab-active" : ""}`;
 
 export function WeaponsTestControls({
   loadout,
@@ -56,13 +50,11 @@ export function WeaponsTestControls({
   return (
     <div className="space-y-2">
       <div className="space-y-1">
-        <span className="text-[9px] uppercase tracking-wide text-cyan-200/55">
-          Target
-        </span>
+        <p className="ac6-chart-hint m-0">Target</p>
         <div className="flex flex-wrap gap-1">
           <button
             type="button"
-            className={toggleBtn(targetMode === "dummy")}
+            className={toggleTab(targetMode === "dummy")}
             disabled={disabled}
             onClick={() => onTargetMode("dummy")}
           >
@@ -70,7 +62,7 @@ export function WeaponsTestControls({
           </button>
           <button
             type="button"
-            className={toggleBtn(targetMode === "compare")}
+            className={toggleTab(targetMode === "compare")}
             disabled={disabled || !compareTargetAvailable}
             onClick={() => onTargetMode("compare")}
             title={
@@ -96,10 +88,7 @@ export function WeaponsTestControls({
             <option value="">No weapons</option>
           ) : (
             loadout.map((w) => (
-              <option
-                key={w.id}
-                value={w.id}
-              >
+              <option key={w.id} value={w.id}>
                 {w.slot}: {w.name} ({w.family})
               </option>
             ))
@@ -110,7 +99,7 @@ export function WeaponsTestControls({
       <div className="flex flex-wrap gap-1">
         <button
           type="button"
-          className={toggleBtn(multiWeapon)}
+          className={toggleTab(multiWeapon)}
           disabled={disabled}
           onClick={() => onMultiWeapon(!multiWeapon)}
         >
@@ -118,7 +107,7 @@ export function WeaponsTestControls({
         </button>
         <button
           type="button"
-          className={toggleBtn(autoFire)}
+          className={toggleTab(autoFire)}
           disabled={disabled || loadout.length === 0}
           onClick={() => onAutoFire(!autoFire)}
         >
@@ -127,10 +116,8 @@ export function WeaponsTestControls({
       </div>
 
       {multiWeapon && loadout.length > 0 ? (
-        <div className="rounded border border-cyan-800/25 bg-cyan-950/15 px-1.5 py-1">
-          <p className="mb-1 text-[9px] uppercase text-cyan-200/50">
-            Armed (salvo)
-          </p>
+        <div className="ac6-inner-frame px-1.5 py-1">
+          <p className="ac6-chart-hint m-0 mb-1">Armed (salvo)</p>
           <div className="flex flex-col gap-0.5">
             {loadout.map((w) => (
               <label
@@ -155,7 +142,7 @@ export function WeaponsTestControls({
       <div className="flex flex-wrap gap-2">
         <button
           type="button"
-          className={`${btn} border-cyan-600/50 bg-cyan-900/40 text-cyan-100 hover:bg-cyan-800/50 active:scale-[0.98]`}
+          className="classic-tab classic-tab-active text-[10px] focus-visible:outline-none disabled:opacity-40"
           disabled={disabled || loadout.length === 0}
           onMouseDown={onFireDown}
           onMouseUp={onFireUp}
@@ -170,7 +157,7 @@ export function WeaponsTestControls({
         </button>
         <button
           type="button"
-          className={`${btn} border-zinc-600/50 bg-zinc-900/40 text-zinc-200 hover:bg-zinc-800/50`}
+          className="ac6-btn text-[10px] focus-visible:outline-none disabled:opacity-40"
           disabled={disabled}
           onClick={onReset}
         >
@@ -179,18 +166,12 @@ export function WeaponsTestControls({
       </div>
 
       <div className="flex flex-wrap gap-1">
-        <span className="w-full text-[9px] uppercase text-cyan-200/55">
-          FX quality
-        </span>
+        <span className="w-full ac6-chart-hint">FX quality</span>
         {(["low", "high", "off"] as const).map((q) => (
           <button
             key={q}
             type="button"
-            className={`${btn} ${
-              quality === q
-                ? "border-cyan-400/60 bg-cyan-950/60 text-cyan-50"
-                : "border-cyan-800/40 text-cyan-200/70"
-            }`}
+            className={toggleTab(quality === q)}
             onClick={() => onQuality(q)}
           >
             {q}
