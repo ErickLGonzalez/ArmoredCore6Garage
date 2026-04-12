@@ -34,7 +34,7 @@ export default function GarageClassicPage() {
             <div className="ac6-header-util-row">
               <Link
                 href="/garage"
-                className="classic-tab px-2 py-[3px] text-[10px] focus-visible:outline-none"
+                className="classic-tab text-[10px] focus-visible:outline-none"
               >
                 MODERN GARAGE
               </Link>

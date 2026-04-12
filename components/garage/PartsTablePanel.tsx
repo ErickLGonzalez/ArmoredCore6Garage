@@ -776,14 +776,14 @@ export function PartsTablePanel({ parts }: Props) {
           </div>
           <button
             type="button"
-            className="classic-tab px-2 py-[3px] text-[10px]"
+            className="classic-tab text-[10px]"
             onClick={savePreset}
           >
             SAVE PRESET
           </button>
           <button
             type="button"
-            className="classic-tab px-2 py-[3px] text-[10px] disabled:opacity-40"
+            className="classic-tab text-[10px] disabled:opacity-40"
             disabled={!selectedPreset}
             onClick={deletePreset}
           >
@@ -801,14 +801,14 @@ export function PartsTablePanel({ parts }: Props) {
           <div className="flex flex-wrap gap-0.5">
             <button
               type="button"
-              className="classic-tab px-2 py-[3px] text-[10px]"
+              className="classic-tab text-[10px]"
               onClick={() => setAllCols(true)}
             >
               ALL ON
             </button>
             <button
               type="button"
-              className="classic-tab px-2 py-[3px] text-[10px]"
+              className="classic-tab text-[10px]"
               onClick={() => setAllCols(false)}
             >
               NAME ONLY
@@ -929,28 +929,28 @@ export function PartsTablePanel({ parts }: Props) {
                         <div className="mt-2 flex flex-wrap gap-0.5">
                           <button
                             type="button"
-                            className="classic-tab px-2 py-[3px] text-[10px]"
+                            className="classic-tab text-[10px]"
                             onClick={() => setAllFilterOptions(k, true)}
                           >
                             ALL
                           </button>
                           <button
                             type="button"
-                            className="classic-tab px-2 py-[3px] text-[10px]"
+                            className="classic-tab text-[10px]"
                             onClick={() => setAllFilterOptions(k, false)}
                           >
                             NONE
                           </button>
                           <button
                             type="button"
-                            className="classic-tab px-2 py-[3px] text-[10px]"
+                            className="classic-tab text-[10px]"
                             onClick={() => clearFilter(k)}
                           >
                             CLEAR
                           </button>
                           <button
                             type="button"
-                            className="classic-tab px-2 py-[3px] text-[10px]"
+                            className="classic-tab text-[10px]"
                             onClick={() => setOpenFilterCol(null)}
                           >
                             CLOSE

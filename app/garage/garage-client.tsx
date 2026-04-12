@@ -317,8 +317,7 @@ export function GarageClient({
     `classic-tab ${on ? "classic-tab-active" : ""} focus-visible:outline-none`;
   const utilityTabCls =
     "classic-tab focus-visible:outline-none";
-  const utilityMiniCls =
-    `${utilityTabCls} px-1.5 py-[1px] text-[9px]`;
+  const utilityMiniCls = `${utilityTabCls} text-[9px]`;
 
   return (
     <>
