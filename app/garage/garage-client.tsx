@@ -30,6 +30,7 @@ import {
 } from "@/lib/calc";
 import { assemblyFromGarageIds } from "@/lib/garage/assembly-from-ids";
 import { decodeGarageBuild, encodeGarageBuild } from "@/lib/garage/build-url";
+import { pickActiveBuildAnalysis } from "@/lib/garage/pick-active-build-analysis";
 import type { GarageBuildIds } from "@/lib/garage/default-assembly";
 import {
   partsForSlot,
@@ -230,17 +231,25 @@ export function GarageClient({
     }
   }, []);
 
-  const analysisAActive = useMemo((): BuildAnalysis | null => {
-    if (!analysisA) return null;
-    if (showModifiedUnitSpecs && analysisAModified) return analysisAModified;
-    return analysisA;
-  }, [analysisA, analysisAModified, showModifiedUnitSpecs]);
+  const analysisAActive = useMemo(
+    () =>
+      pickActiveBuildAnalysis(
+        analysisA,
+        analysisAModified,
+        showModifiedUnitSpecs,
+      ),
+    [analysisA, analysisAModified, showModifiedUnitSpecs],
+  );
 
-  const analysisBActive = useMemo((): BuildAnalysis | null => {
-    if (!analysisB) return null;
-    if (showModifiedUnitSpecs && analysisBModified) return analysisBModified;
-    return analysisB;
-  }, [analysisB, analysisBModified, showModifiedUnitSpecs]);
+  const analysisBActive = useMemo(
+    () =>
+      pickActiveBuildAnalysis(
+        analysisB,
+        analysisBModified,
+        showModifiedUnitSpecs,
+      ),
+    [analysisB, analysisBModified, showModifiedUnitSpecs],
+  );
 
   const m4A = useMemo(
     () =>
