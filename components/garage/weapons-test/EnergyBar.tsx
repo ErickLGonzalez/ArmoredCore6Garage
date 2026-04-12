@@ -16,10 +16,19 @@ export function EnergyBar({ current, max, label = "ATTACKER EN" }: Props) {
           {Math.round(current)} / {Math.round(max)}
         </span>
       </div>
-      <div className="h-2 overflow-hidden rounded-sm border border-cyan-700/50 bg-cyan-950/70">
+      <div
+        className="h-2 overflow-hidden border-2 border-[var(--ui-border)]"
+        style={{
+          background: "color-mix(in srgb, var(--ui-panel-bottom) 90%, black)",
+        }}
+      >
         <div
-          className="h-full bg-gradient-to-r from-cyan-800 to-cyan-400 transition-[width] duration-75"
-          style={{ width: `${pct}%` }}
+          className="h-full transition-[width] duration-75"
+          style={{
+            width: `${pct}%`,
+            background:
+              "linear-gradient(90deg, var(--ui-tab-bottom), var(--ui-tab-active-top))",
+          }}
         />
       </div>
     </div>

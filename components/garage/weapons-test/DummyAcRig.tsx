@@ -16,9 +16,13 @@ export function DummyAcRig({
 }: Props) {
   return (
     <div
-      className={`relative flex h-full min-h-[140px] flex-col items-center justify-end overflow-hidden rounded border border-cyan-800/40 bg-gradient-to-b from-cyan-950/40 to-zinc-950/80 p-2 ${
+      className={`relative flex h-full min-h-[140px] flex-col items-center justify-end overflow-hidden border-2 border-[var(--ui-border)] p-2 ${
         hitFlash ? "ring-2 ring-amber-400/70" : ""
       }`}
+      style={{
+        background:
+          "linear-gradient(180deg, color-mix(in srgb, var(--ui-panel-bottom) 55%, transparent), color-mix(in srgb, black 88%, var(--ui-panel-bottom)))",
+      }}
     >
       <p className="absolute left-2 top-2 z-[2] text-[9px] font-semibold uppercase tracking-[0.12em] text-cyan-200/65">
         {label}

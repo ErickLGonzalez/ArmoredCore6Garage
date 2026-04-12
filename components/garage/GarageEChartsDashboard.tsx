@@ -288,14 +288,14 @@ export function GarageEChartsDashboard({
 
   return (
     <div className="space-y-4">
-      <div className="flex flex-wrap items-center gap-2 border-b border-cyan-800/25 pb-2">
-        <span className="rounded border border-cyan-600/40 bg-cyan-950/40 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-cyan-200">
+      <div className="flex flex-wrap items-center gap-2 border-b-2 border-[var(--ui-border)] pb-2">
+        <span className="ac6-strip text-[10px] font-semibold uppercase tracking-wide text-cyan-200">
           {weightClass}
         </span>
         {tags.map((t) => (
           <span
             key={t}
-            className="rounded bg-cyan-900/30 px-1.5 py-0.5 text-[9px] uppercase tracking-wide text-cyan-100/80"
+            className="ac6-strip py-0.5 text-[9px] uppercase tracking-wide text-cyan-100/80"
           >
             {t}
           </span>
@@ -403,7 +403,7 @@ export function GarageEChartsDashboard({
         {aimOk && aimOption ? (
           <div>
             <p className="ac6-chart-section-title">COMBAT ENVELOPE</p>
-            <p className="mb-1 text-[10px] text-cyan-200/55">
+            <p className="ac6-chart-hint mb-1">
               Aim assist vs distance (smooth). Red marks: unit ideal range.
             </p>
             <EChartBase
@@ -418,7 +418,7 @@ export function GarageEChartsDashboard({
         {energyOption ? (
           <div>
             <p className="ac6-chart-section-title">ENERGY SYSTEMS</p>
-            <p className="mb-1 text-[10px] text-cyan-200/55">
+            <p className="ac6-chart-hint mb-1">
               Normal vs redline recharge; shaded delay window.
             </p>
             <EChartBase
@@ -436,7 +436,7 @@ export function GarageEChartsDashboard({
         {recoilOption ? (
           <div>
             <p className="ac6-chart-section-title">WEAPON HANDLING</p>
-            <p className="mb-1 text-[10px] text-cyan-200/55">
+            <p className="ac6-chart-hint mb-1">
               Recoil build-up; bands: stable / unstable / break thresholds.
             </p>
             <EChartBase
@@ -445,23 +445,23 @@ export function GarageEChartsDashboard({
               option={recoilOption}
             />
             <div className="mt-2 grid grid-cols-2 gap-1.5 text-[10px] sm:grid-cols-4">
-              <div className="rounded border border-cyan-800/30 px-2 py-1 text-cyan-100/85">
+              <div className="ac6-strip text-cyan-100/85">
                 <span className="text-cyan-200/60">Σ DPS</span>{" "}
                 <span className="font-mono">{formatNumber(analysis.dps)}</span>
               </div>
-              <div className="rounded border border-cyan-800/30 px-2 py-1 text-cyan-100/85">
+              <div className="ac6-strip text-cyan-100/85">
                 <span className="text-cyan-200/60">Σ burst</span>{" "}
                 <span className="font-mono">
                   {formatNumber(analysis.burstDps)}
                 </span>
               </div>
-              <div className="rounded border border-cyan-800/30 px-2 py-1 text-cyan-100/85">
+              <div className="ac6-strip text-cyan-100/85">
                 <span className="text-cyan-200/60">Impact/s</span>{" "}
                 <span className="font-mono">
                   {formatNumber(analysis.impactPerSecond)}
                 </span>
               </div>
-              <div className="rounded border border-cyan-800/30 px-2 py-1 text-cyan-100/85">
+              <div className="ac6-strip text-cyan-100/85">
                 <span className="text-cyan-200/60">Acc IPS</span>{" "}
                 <span className="font-mono">
                   {formatNumber(analysis.accumulativeImpactPerSecond)}
@@ -474,7 +474,7 @@ export function GarageEChartsDashboard({
 
         <div>
           <p className="ac6-chart-section-title">DEFENSIVE PROFILE</p>
-          <p className="mb-1 text-[10px] text-cyan-200/55">
+          <p className="ac6-chart-hint mb-1">
             Raw stats on radar axes (max scales to the larger set when
             comparing).
           </p>
@@ -489,7 +489,7 @@ export function GarageEChartsDashboard({
 
       <div>
         <p className="ac6-chart-section-title">MATCHUP INSIGHTS (HEURISTIC)</p>
-        <p className="mb-1 text-[10px] text-cyan-200/55">
+        <p className="ac6-chart-hint mb-1">
           Exploratory grid from mobility, bulk, and sigma weapon stats — not
           sim-validated.
         </p>

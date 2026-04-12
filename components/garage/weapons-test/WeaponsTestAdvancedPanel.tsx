@@ -113,16 +113,13 @@ export function WeaponsTestAdvancedPanel({
         />
       </div>
 
-      <div className="space-y-1 border-t border-cyan-800/30 pt-2">
+      <div className="space-y-1 border-t-2 border-[var(--ui-border)] pt-2">
         <p className="text-[9px] font-semibold uppercase tracking-[0.1em] text-cyan-200/60">
           Per-family tuning
         </p>
         <div className="grid gap-2">
           {FAMILIES.map((fam) => (
-            <div
-              key={fam}
-              className="rounded border border-cyan-800/25 bg-cyan-950/20 p-1.5"
-            >
+            <div key={fam} className="ac6-inner-frame p-1.5">
               <p className="mb-1 text-[9px] font-mono uppercase text-cyan-300/80">
                 {fam}
               </p>
@@ -148,7 +145,7 @@ export function WeaponsTestAdvancedPanel({
         </div>
       </div>
 
-      <div className="space-y-1 border-t border-cyan-800/30 pt-2">
+      <div className="space-y-1 border-t-2 border-[var(--ui-border)] pt-2">
         <p className="text-[9px] font-semibold uppercase tracking-[0.1em] text-cyan-200/60">
           Replay
         </p>

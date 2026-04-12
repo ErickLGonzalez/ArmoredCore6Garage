@@ -42,11 +42,7 @@ function passesFilter(e: WeaponTestEvent, f: Filter): boolean {
 type Props = { events: WeaponTestEvent[] };
 
 const tabCls = (on: boolean) =>
-  `rounded border px-1.5 py-0.5 text-[9px] font-semibold uppercase ${
-    on
-      ? "border-cyan-500/50 bg-cyan-950/50 text-cyan-100"
-      : "border-cyan-800/35 text-cyan-200/60"
-  }`;
+  `classic-tab text-[9px] focus-visible:outline-none ${on ? "classic-tab-active" : ""}`;
 
 export function EventFeed({ events }: Props) {
   const [filter, setFilter] = useState<Filter>("all");
@@ -61,7 +57,7 @@ export function EventFeed({ events }: Props) {
   }, [events, filter]);
 
   return (
-    <div className="rounded border border-cyan-800/30 bg-black/25 px-2 py-1.5 font-mono text-[10px] leading-relaxed text-cyan-100/80">
+    <div className="ac6-inner-frame px-2 py-1.5 font-mono text-[10px] leading-relaxed text-cyan-100/80">
       <div className="mb-1 flex flex-wrap items-center justify-between gap-1">
         <p className="text-[9px] font-semibold uppercase tracking-wide text-cyan-200/60">
           Combat log
